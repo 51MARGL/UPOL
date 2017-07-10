@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="Table" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cv.pkg8.pkg2.GradeTableController">
+    <center>
+        <TableView fx:id="table" editable="true"/> 
+    </center>
+    <bottom>
+        <GridPane alignment="CENTER" hgap="5" vgap="5">
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="0" GridPane.columnIndex="0">
+                <Button fx:id="addButton" text="Add" HBox.hgrow="ALWAYS" onAction="#addAction" minWidth="150" />
+                <Button fx:id="deleteButton" text="Delete" HBox.hgrow="ALWAYS" onAction="#deleteAction" minWidth="150" GridPane.rowIndex="0" GridPane.columnIndex="1"/>
+            </HBox> 
+            <HBox spacing="10" alignment="CENTER_LEFT" GridPane.rowIndex="1" GridPane.columnIndex="0">
+                <Button fx:id="okButton" text="Ok" HBox.hgrow="ALWAYS" onAction="#okAction" defaultButton="true" minWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="0"/>
+                <Button fx:id="cancelButton" text="Cancel" HBox.hgrow="ALWAYS" onAction="#cancelAction" cancelButton="true" minWidth="150" GridPane.rowIndex="1" GridPane.columnIndex="1"/>
+            </HBox>         
+        </GridPane>
+    </bottom>
+</BorderPane>

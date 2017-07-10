@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+
+<BorderPane id="MainForm" prefHeight="200" prefWidth="320" xmlns:fx="http://javafx.com/fxml/1" fx:controller="cv.pkg8.pkg2.MainFormController">
+    <top>
+        <MenuBar>
+            <Menu text="_Student">
+                <MenuItem text="_Add" onAction="#addStudentAction" accelerator="ctrl+n" />
+                <MenuItem fx:id="menuEdit" text="_Edit" onAction="#editStudentAction" accelerator="ctrl+e" />
+                <MenuItem fx:id="menuDelete" text="_Delete" onAction="#deleteStudentAction" accelerator="ctrl+d" />
+                <SeparatorMenuItem />
+                <MenuItem text="E_xit" onAction="#exitAction" accelerator="ctrl+x" />
+            </Menu>
+            <Menu text="_Report">
+                <MenuItem fx:id="menuOpen" text="_Open" onAction="#openReport" accelerator="ctrl+o" />
+                <SeparatorMenuItem />
+            </Menu>
+        </MenuBar>
+    </top>
+	
+    <center>
+        <ListView fx:id="sListView" onMouseClicked="#openReportMouse"/>
+    </center>
+    
+    <bottom>
+        <HBox spacing="10" alignment="CENTER_LEFT">
+            <Button fx:id="btnAdd" text="Add"  HBox.hgrow="ALWAYS"  onAction="#addStudentAction" minWidth="50"  />
+            <Button fx:id="btnEdit" HBox.hgrow="ALWAYS" text="Edit" onAction="#editStudentAction" minWidth="50"/>
+            <Button fx:id="btnDelete" HBox.hgrow="ALWAYS" text="Delete" onAction="#deleteStudentAction" minWidth="50"/>
+        </HBox>       
+    </bottom>
+</BorderPane>

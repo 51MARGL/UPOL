@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import java.lang.*?>
+<?import java.util.*?>
+<?import javafx.scene.*?>
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.scene.text.Text?>
+
+<GridPane xmlns:fx="http://javafx.com/fxml/1" fx:controller="cv.pkg8.pkg2.StudentDialogController" minHeight="130" minWidth="250" alignment="CENTER" hgap="5" vgap="5">
+	
+    <Text text="Name"  GridPane.rowIndex="1" GridPane.columnIndex="0" />
+    <TextField fx:id="txtName" GridPane.rowIndex="1" GridPane.columnIndex="1" />
+	
+    <Text text="Program"  GridPane.rowIndex="2" GridPane.columnIndex="0" />
+    <TextField fx:id="txtProgram" GridPane.rowIndex="2" GridPane.columnIndex="1" />
+	
+    <Text fx:id="lbNotification" text="" GridPane.rowIndex="3" GridPane.columnIndex="0" GridPane.columnSpan="2" />
+	
+    <HBox spacing="10" alignment="CENTER_RIGHT" GridPane.rowIndex="4" GridPane.columnIndex="0" GridPane.columnSpan="2">
+        <Button fx:id="okButton" text="Ok" onAction="#okAction" defaultButton="true" />
+        <Button text="Cancel" onAction="#cancelAction" cancelButton="true" />
+    </HBox>
+</GridPane>
