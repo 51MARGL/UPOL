@@ -1,0 +1,315 @@
+/* pøednáška z óesek èíslo 10 */
+
+Implementaèní aspekty: Windows
+------------------------------
+- vlákno - základní jednotka vykonávající èinnost (úèastní se plánování)
+- proces - obsahuje jedno a více vláken (spoleèné zdroje a pamì)
+- job - sluèuje nìkolik procesù dohromady (spoleèné správa, nastavení kvót, atd.)
+- fiber - "odlehèená vlákna" implementována v kontextu vlákna (kooperativní multitasking)
+
+Vznik procesu:
+- není vyžadován vztah rodiè-potomek
+- CreateProcess - funkce vytváøející nový proces (10+ argumentù); pøíprava ve spolupráci s daným subsystémem, více verzí jednoho programu v jednom souboru
+- CreateThread - funkce vytváøející nové vlákno v principu podobném pthread_create
+
+BOOL WINAPI CreateProcess(
+... /* hodnì argumentù, jeden z nichž obsahuje 16 dalších */
+);
+HANDLE WINAPI CreateThread(
+... /* hodnì argumentù */
+);
+
+- plánování se úèastní vlákna
+
+Stavy vláken:
+- initialized - bìhem inicializace vlákna
+- ready - èekající na bìh (z tìchto vláken vybíra scheduler další pro bìh)
+- standby - vlákno pøipraveno k bìhu na konkrétním CPU
+  - pøechod do running
+  - pøechod do ready (pokud vlákno s vyšší prioritou pøešlo do režimu standby)
+- running - vlákno bìží; možné pøechody
+  - vlákno s vyšší prioritou získalo CPU (návrat do standby nebo ready)
+  - po vypršení kvanta ==> ready
+  - èekání na událost ==> waiting
+  - ukonèení vlákna
+- waiting - èeká na nìjakou událost; pøechod do ready, standby èi running (v pøipadì úloh s vysokou prioritou)
+- transition - zásobník je mimo fyzickou pamì (pøechod do ready)
+- terminated - vlákno je ukonèeno (lze zmìnit na initialized)
+
+- pokud se objeví vlákno s vyšší prioritou ve stavu ready než má vlákno ve stavu running, dostane CPU; aktuálnì bìžící vlákno je pøesunuto na zaèátek pøíslušné fronty
+
+Priority:
+- priorita - hodnota 0-31 pøiøazena vláknu (32úrovòová fronta)
+- tøída priority - vlastnost procesu udávající základní prioritu vláken
+  - Real-time (31)
+  - High (13)
+  - Above normal (10)
+  - Normal (8)
+  - Below normal (6)
+  - Idle (4)
+- priority vláken - Time critical, highest, above normal, normal, below normal, lowest, idle
+- priorita vláken je dána relativnì k prioritì procesu + další úpravy
+- kategorie priorit
+  - idle (0) - zero page thread (not available to Win32 applications)
+  - ?
+  - ?
+  - ?
+  - ?
+
+Velikost kvanta:
+- závisí na verzi OS
+  - workstation - 6 jednotek (2 tiky pøerušení èasovaèe)
+  - server - 36 jednotek (12 tikù)
+- velikost jde mìnit (v nastavení nebo doèasnì)
+- pøi èekání, pøepnutí, atd. se velikost kvanta mírnì snižuje
+- proces na popøedí - všechna jeho vlákna mají 3x vìtší kvantum
+
+Doèasné zvýšení priority (Priority Boost):
+- u procesù s dynamickou úrovní
+- po dokonèení I/O zvýšena priorita o
+  - +1: disk, CD-ROM, grafická karta
+  - +2: síová karta, ser. port
+  - +6: klávesnice, myš
+  - +8: zvuková karta
+  - po uplynutí kvanta se priorita snižuje o 1 až na základní hodnotu
+
+- po èekání na událost nebo synchronizaci s jiným vláknem
+  - na dobu jednoho kvanta zvýšena priorita o 1
+  - pøi synchronizaci - vlákno mùže získat prioritu o 1 vyšší nìž mìlo vlákno, na které se èekalo
+- vlákno na popøedí po dokonèení èekací operace ==> zvýšení o 2
+...
+
+SMP:
+- proces i vlákno má nastavenou masku affinity - seznam povolených CPU, kde mùže bìžet
+- každé vlákno má ještì 2 hodnoty - ideální procesor a minulý procesor
+- procesor pro vlákno je vybírán následovnì
+  - 1 neèinný CPU
+  - 2 ideální CPU
+  - 3 minulý CPU
+  - 4 aktuální CPU
+- každý procesor má svùj vlastní plánovaè ==> lepší škálování
+
+Implementaèní aspekty: MacOS X
+------------------------------
+- koncepènì vychází z Unixu ==> pojetí procesù, vláken
+- k plánování se používá víceúrovòová fronta
+
+Grand Central Dispatch:
+- rozšíøení OS a prog. jazykù
+- umožòuje snadno provádìt bloky kódu ve vláknech
+- existuje nìkolik front, kam se jednotlivé úlohy øadí (každá má thread-pool)
+- globální fronty se umožòují pøizpùsobit konkrétnímu HW
+- soukromé fronty (úkoly zpracovávány sekvenènì), ale v samostatném vláknu
+- rozšíøení C (resp. Objective C) ==> blok kódu:
+  x = ^{ printf("Foo!\n"); }
+  y = ^(int a) { return a * 10; }
+  x(); y(20);
+- pøíklad použití:
+  // vybrat frontu, pøedat blok k vykonání
+  dipsatch_async(dispatch_get_main_queue(), ^{ ... });
+
+Synchronizace procesù a uváznutí
+================================
+Synchornizace vláken a procesù
+------------------------------
+- procesy a vlákna pøistupují ke sdíleným zdrojùm (pamìt, FS)
+- pøíklad: souèasné zvýšení hodnoty promìnné o 1 (problém ABA)
+  ;; X++
+  mov eax, [0xdeadbeef]
+  add eax, 1
+  mov [0xdeadbeef], eax
+- scénáø
+  - 1 A: naète hodnotu promìnné X z pamìti do registru (X = 1)
+  - 2 A: zvýší hodnotu v registru o 1
+  - 3 B: naète hodnotu promìnné X z pamìti do registru (X = 1)
+  - 4 A: uloží hodnotu zpìt do pamìti (X = 2)
+  - 5 B: zvýší hodnotu v registru o 1
+  - 6 B: uloží hodnotu zpìt do pamìti (X = 2)
+- chyba soubìhu (race-condition) ==> nároèné na debuggování
+- nejznámìjší chyba: Therac-25
+  - uèebnicový pøíklad na chybu soubìhu a toho, jak se nemá dìlat software
+  - systém pro ozaøování
+  - 2 režimy funkce:
+    - krátké pulzy elektronù o vysoké intenzitì
+    - obrovské záøení rozprostøeno na velkou plochu ==> vyrovnání
+  - jistá sekvence operací (nutno provést bìhem 8 sekund) zpùsobila chybu
+  - systém byl schopen záøit na malou oblast velkým záøením
+  - pacienti ozáøeni
+    - nìkolik na to zemøelo
+  - bylo tìžké pøijít na to, co to dìlalo
+- øešení ==> atomické operace a kritická sekce
+
+Atomický pøístup do pamìti
+--------------------------
+- obecnì pøístupy do pamìti nemusí být atomické (záležitosti CPU, pøekladaèe)
+- ==> vícevláknové aplikace (pøerušení); víceprocesorové poèítaèe (cache)
+- lze vynutit urèité chování ==> klíèové slovo volatile - èasto záleží na pøekladaèi
+- memory barriers umožòují vynutit si synchronizaci (záležitost CPU)
+
+Atomické operace
+----------------
+- Test-and-Set (TAS): nastav promìnnou a vra její pùvodní hodnotu
+- Swap: atomicky prohodí 2 hodnoty
+- Compare-and-Swap (CAS): ovìøí, jestli se daná hodnota rovná požadované, a pokud ano, pøiøadí ji novou hodnotu (CMPXCHG)
+- Fetch-and-Add: vrátí hodnotu místa v pamìti a zvýší jeho hodnotu o 1 (XADD)
+- Load-link/Store-Conditional (LL/CS): naète hodnotu a pokud bìhem ètení nebyla zmìnìna, uloží do ní novou hodnotu
+
+Kritická sekce (critical section)
+---------------------------------
+- obecnì tøeba zajistit, aby se sdílenými zdroji pracoval jen 1 proces
+- ==> vzájemné vylouèení (mutual exclusion)
+- ==> problém kritické sekce
+- èást kódu, kdy program pracuje se sdílenými zdroji (napø. pamìtí)
+- pokud 1 proces je v kritické sekci, další proces nesmí vstoupit do své kritické
+- každý proces pøed vstupem žádá o povolení vstoupit do kritické sekce
+- ukázka kódu:
+
+  do {
+      // vstupni protokol KS
+      ... prace se sdilenymi daty
+      // vystupni protokol KS
+      ... zbyly kod
+  } while (1);
+
+- obr. Tan 103
+
+Požadavky na kritickou sekci:
+- vzájemné vylouèení - maximálnì 1 proces je v daný okamžik v kritické sekci
+- absence zbyteèného èekání - není-li žádný proces v kritické sekci a proces do ní chce vstoupit, není mu bránìno
+- zaruèený vstup - proces snažící se vstoupit do KS do ní v koneèném èase vstoupí
+
+V kontextu OS:
+- potøeba synchronizovat èinnost uživatelských procesù/vláken
+- v kontextu jádra øada soubìžných èinností
+  - nepreemptivní jádro OS (Linux < 2.6, Windows 2000, XP)
+  - preemptivní jádro (Linux >= 2.6, Solaris, IRIX)
+
+Øešení:
+- zablokování pøerušení (použitelné v rámci jádra OS); více CPU ==> neefektivní
+
+Aktivní èekání:
+- spinlocks
+- øešení è. 1:
+
+  int lock = 0;
+  while (lock) { } // èekej
+  lock = 1;
+  // kritická sekce
+  lock = 0;
+
+- vstup do kritické sekce a její zamèení není provedeno atomicky!!!
+- race-condition!!!
+
+X86
+wait:                 ;; while (lock) { }
+  mov eax, [ebp - 4]
+  cmp eax, 0x0
+  jne wait
+  mov eax, 0x01       ;; lock = 1
+  mov [ebp - 4], eax
+
+Java Byte Code:
+ 0: aload_0           // while (lock) { }
+ 1: getfield    #2    // Field lock:I
+ 4: ifeq        10
+ 7: goto        0
+10: aload_0           // lock = 1
+11: iconst_1
+12: putfield    #2    // Field lock:I
+
+Øešení è. 2:
+- uvažujme následující atomickou operaci
+
+  bool test_and_set(bool *target) {
+      bool rv = *target;
+      *target = true;
+      return rv;
+  }
+
+- a kód
+
+  while (test_and_set(&lock) == true) { }
+  // kritická sekce
+  lock = false
+
+Øešení è. 3:
+- "spinlock"
+- uvažujme následující atomickou operaci, která prohodí 2 hodnoty
+
+  void swap(bool *a, bool* b) {
+      bool tmp *a;
+      *a = *b;
+      *b = *tmp;
+  }
+
+- a kód
+
+  key = true;
+  while (key == true)
+    swap(&lock, &key);
+  // kritická sekce
+  lock = false;
+
+Petersonùv algoritmus
+---------------------
+- øešení vzájemného vylouèení bez použití atomických operací
+- TODO dostudovat
+
+Proces A:
+  lockA = true;
+  turn = B;
+  while (lockB && (turn == B)) { }
+  ...
+  lockA = false;
+
+Proces B:
+  lockB = true;
+  turn = A;
+  while (lockA && (turn == A)) { }
+  ...
+  lockB = false;
+
+- vyžaduje férové plánování
+
+Semafor
+-------
+- chránìná promìnná obsahující poèítadlo s nezápornými celými èísly
+- operace P (proberen - zkusit): pokud je hodnota èísla nenulová, sníží hodnotu o 1, jinak èeká, až bude hodnota zvýšena (operace nìkdy oznaèována i jako wait)
+
+  void P(Semaphore s) {
+      while (s <= 0) { }
+      s--;
+  }
+
+- operace V (verhogen - zvýšit): zvýšit hodnotu o 1 (operace nìkdy oznaèována jako signal, post)
+
+  void V(Semaphore s) {
+      s++;
+  }
+
+- operace P a V se provádí atomicky
+
+- binární semafor - mùže nabývat hodnot 0, 1 (mutex, implementace kritické sekce)
+- obecný semafor - slouží k øízení pøístupu ke zdrojùm, kterých je koneèné množství
+- implementace s pomocí aktivního èekání nebo OS (==> pasivní èekání)
+
+  struct sem {
+      int value;
+      struct process *list;
+  };
+
+  void P(struct sem *s) {
+      s->value--;
+      if (s->value < 0) {
+          // pøidej proces do s->list;
+          block(); // uspí aktuální proces
+      }
+  }
+
+  void V(struct sem *s) {
+      s->value++;
+      if (s->value <= 0) {
+          // odeber proces P z s->list
+          wakeup(P);
+      }
+  }

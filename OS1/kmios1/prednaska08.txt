@@ -1,0 +1,199 @@
+...
+Základní vlastnosti UNIXù
+-------------------------
+Rozhraní v unixu:
+- vrstvená architektura a pojící prvky
+- Tan. 682
+- systémové volání
+- 
+...
+
+XNU/Darwin
+----------
+- X is Not Unix
+- èást Darwinu, èást MacOS X
+- hybridní kernel
+- sluèuje jádro Mach a FreeBSD
+- z Mach si bere pøevážnì správu procesoru, pamìt, IPC
+- z BSD bere POSIX API, síování, souborový systém
+- MacOS X certifikovaný jako UNIX
+- rozhraní nad jádrem (frameworky, kity)
+  - Cocoa (Objective-C)
+  - Carbon (zpìtná kompatibilita)
+  - Quartz 2D, OpenGL
+
+Windows 1.01 /* všimnìte si, dlaždice se vrací do módy - pøekrývání oken si licencoval Apple */
+
+Historie Windows
+----------------
+Windows 1.0, 2.x:
+- nadstavba nad MS-DOSem
+- kooperativní multitasking
+- softwarová virtuální pamìt založená na segmentaci
+
+Windows 3.x:
+- pøidávají lepší práci s pamìti
+- lepší ovladaèe a další funkcionalita: práce s fonty (TrueType), video, síování (bez TCP/IP), SMB (lokální sítì - sdílení souborù)
+
+Windows 9x:
+- integrace MS-DOSu + GUI
+- pamì a pøístup k zaøízením si øeší po svém (32 bitù)
+- preemptivní multitasking
+- zpìtná kompatibilita
+- stále jednouživatelský OS
+
+Windows NT
+----------
+- vychází z OS/2
+- kompatibilita s verzemi (W9x, atd.)
+- nìkolik obecných principù
+  - bezpeènost (certifikace pro armádu)
+  - spolehlivost (interní testování)
+  - kompatibilita s ostatními systémy (OS/2, POSIX)
+  - pøenositelnost (HAL - Hardware Abstraction Layer)
+  - rozšiøitelnost (s ohledem na vývoj HW)
+  - výkon
+- objektový pøístup
+- implementovaný v C/C++
+- hybridní architektura
+  - oddìlené procesy pro subsystémy (mikrokernel)
+  - spousta funkcionality v jaderném prostoru (monolitický kernel)
+
+Windows NT: Architektura
+------------------------
+Windows Executive:
+- klíèová èást OS: pøes Ntdll.dll poskytuje funkce do uživatelského prostoru
+- obsahuje jednotlivé èásti jádra
+  - configuration manager
+  - process thread manager
+  - I/O manager
+  - security reference manager
+  - PnP manager
+  - virtual memory manager
+  - IPC manager
+  - cache manager
+  - object manager
+  - memory manager
+  - a další (mimo jiné GDI, Windows, USER, ...)
+
+Subsystémy:
+- "pohled" na funkce poskytované Windows executive (Tan. 794)
+- jeden subsystém Windows (csrss.exe), další pro POSIX, OS/2, ...
+- další systémové procesy (Session Manager - smss.exe, atd.)
+
+Android & iOS
+-------------
+- jejich jádra vycházi z existujících systémù (Linux, resp. Darwin)
+- jiný userland (uživatelský prostor)
+
+Procesy
+=======
+- neformálnì: proces je bìžící program (vykonává èinnost)
+- proces charakterizuje
+  - kód programu
+  - pamìový prostor
+  - data - statická (alokována pøi inicializaci) a dynamická (prùbìžnì, heap)
+  - zásobník
+  - registry
+- operaèní systém: organizace sekvenèních procesù
+- oddìlení jednotlivých úloh (abstrakce)
+- multiprogramování: (zdánlivì) soubìžný bìh více procesù
+- efektivní využití prostøedkù CPU (èekání na I/O)
+- komunikace mezi procesy, sdílení zdrojù ==> synchronizace
+
+Životní cyklus procesu
+----------------------
+Obecný životní cyklus procesu:
+- nový (new) - proces byl vytvoøen
+- pøipravený (ready) - proces èeká, až mu bude pøidìlen CPU
+- bìžící (running) - CPU byl pøidìlen procesor a právì provádí èinnost
+- èekající (waiting/blocked) - proces èeká na vnìjší událost (napø. na vyøízení I/O požadavku, synchronizaèní primitiva)
+- ukonèený (terminated) - proces skonèil svou èinnost (dobrovolnì vs. nedobrovolnì)
+
+Rozšíøení:
+- suspend - proces byl odsunut do sekundární pamìti (obr. Sta 123)
+- ready/suspend + block/suspend - vylepšení pøedchozího mechanismu
+  - pøi nedostatku RAM - odsunutí procesù, pokud se s nimi dlouze nepracuje
+  - mùže docházet k trashingu: pøesunutí procesu do sekundární pamìti a naètení zpìt také zabírá nìjaký èas (systém dìlá spoustu neužiteèné práce)
+- fronty pro pøechod mezi stavy (obr. Sta 121)
+
+Sta 123: /* formule pro náèrt */
+New->Ready
+Ready<->Running
+Running->Terminated
+Running->Blocked
+Blocked->Ready
+ReadySuspended<->Ready
+BlockedSuspended<->Blocked
+BlockedSuspended->ReadySuspended
+
+Sta 121:
+   Ready
+-->|||||||||||---->CPU--->
+|                      |
+^-----------------------
+|                      |
+|  Blocked #1          |
+^--|||||||||||----------
+|                      |
+|  Blocked #2          |
+^--|||||||||||----------
+       ...
+
+Informace o procesu
+-------------------
+- tabulka procesù ==> PCB: process control block - informace o procesu
+
+Informace identifikující proces:
+- identifikátor procesu, uživatele, rodièovského procesu
+
+Stavové informace:
+- stav uživatelských registrù
+- stav øídících registrù (IP, PSW - pøíznakový registr)
+- vrchol zásobníku(ù)
+
+Øídící informace:
+- informace sloužící k plánování (stav procesu, priorita, odkazy na èekající události)
+- informace o pøidìlené pamìti
+- informace o využívaných I/O zaøízeních, otevøených souborech, atd.
+- oprávnìní, atd.
+
+Pøepínání procesù (context switch)
+----------------------------------
+1. uložení stavu CPU (kontextu, tj. registrù, IP, SP) do PCB aktuálního procesu
+2. aktualizace PCB (zmìna stavu, atd.)
+3. zaøazení procesu do pøíslušné fronty
+4. volba nového procesu
+5. aktualizace datových struktur pro nový proces (nastavení pamìti, atd.)
+6. naètení kontextu z PCB nového procesu
+
+- ==> jde øešit softwarovì nebo s podporou HW (rùzná nároènost na èas CPU)
+- kooperativní vs. preemptivní pøepínání
+  - kooperativní
+    - jednotlivé procesy rozhodují samy, kdy pøechází mezi stavy
+    - pokud nìkterý proces nechce dát prostor ostatním, systém se zasekne
+  - preemptivní
+    - proces má pøidìlené èasové kvantum (max. doba bìžení)
+    - pøi vypršení kvanta proces pøechází ze stavu running do stavu ready
+    - procesor ale neví, kolik èasu bude proces potøebovat
+      - pøepínání mùže nastávat v nevhodné okamžiky --> horší výkon
+
+Dùvody k pøepínání:
+- vypršení èasového kvanta (nutná podpora HW)
+- pøerušení I/O (aktuální proces mùže pokraèovat vs. èekající proces mùže zaèít bìžet)
+- výpadek pamìové stránky, vyvolání výjimky (napø. dìlení nulou)
+
+Plánování procesù
+-----------------
+- potøeba efektivnì plánovat procesorový èas
+- èasové kvantum: maximální èas pøidìlený procesu
+- samotné pøepnutí procesu má režii (uložení kontextu, vyprázdnìní cache) ==> latence
+- jak zvolit velikost? ==> interaktivita vs. odvedená práce
+- CPU-I/O Burst cycle: pravidelné støídání požadavkù na CPU a I/O
+- ==> procesy nároèné na CPU vs. I/O
+
+Typy plánování:
+- dlouhodobé - rozhoduje, zda bude pøijat k bìhu (zmìna stavu z new na ready)
+- støednìdobé - naètení/odložení procesu do sekundární pamìti
+- krátkodobé - rozhoduje dostupné procesy ke spuštìní na CPU
+- I/O - rozhoduje jednotlivé požadavky na I/O

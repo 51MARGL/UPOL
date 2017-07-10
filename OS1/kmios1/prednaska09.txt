@@ -1,0 +1,264 @@
+/* pøednáška z óesek */
+_asm
+{
+; obsah pøednášky psát sem
+}
+
+Plánování procesù (pokr.)
+-------------------------
+Rùzné typy úloh/systémù:
+- interaktivní
+- dávkové zpracovávání
+- pracující v reálném èase
+
+Obecné požadavky na plánování procesù:
+- spravedlnost - každému procesu by v rozumné dobì mìl být pøidìlen CPU
+- vyváženost - celý systém bìží
+- efektivita - maximální využití CPU
+- maximalizace odvedené práce (throughput)
+- minimalizace doby odezvy
+- minimalizace doby prùchodu systémem (turnaround)
+
+Algoritmy pro plánování procesù
+-------------------------------
+- vhodné pro dávkové zpracování:
+First-Come-First-Served:
+- první proces získá procesor
+- nové procesy èekají ve frontì
+- proces po skonèení èekání, zaøazen na konec fronty
+- nepreemptivní
+- jednoduchý, neefektivní
+
+Shortest Job First:
+- vybere takový proces, který pobìží nejkratší dobu
+- nepreemptivní
+- zlepšuje celkovou prùchodnost systémem
+- je potøeba znát (odhadnout) èas, který proces potøebuje
+- u interaktivních systémù lze použít informace o využití CPU
+
+Shortest Remaining Time Next:
+- pokud nový proces potøebuje k dokonèení èinnosti ménì èasu než aktuální, je spuštìn
+- preemptivní
+
+- vhodné pro interaktivní systémy:
+Round robin:
+- každý proces má pevnì stanovené kvantum
+- velikost kvanta? (==> mírnì vìtší než je typicky potøeba)
+- pøipravené procesy jsou øazeny ve frontì a postupnì dostávají CPU
+- vhodný pro obecné použití (relativnì spravedlivý)
+- protìžuje na CPU nároèné procesy (==> pøidaná další fronta pro procesy po zpracování I/O, Sta 406)
+
+Sta 406:
+---------------------
+|  Ready            |
+-->|||||||||------>CPU
+|                   ^
+|   Aux ready       |
+|-->||||||||------->|
+|                   |
+|     I/O #1        |
+|<--||||||||<-------|
+|     I/O #2        |
+|<--||||||||<-------|
+
+Víceúrovòová fronta (obr. Sta 399):
+- každý proces má definovanou prioritu
+- statické vs. dynamické nastavení priority (napø. vyšší priorita po I/O)
+- systém eviduje pro každou prioritu frontu (èekající procesy)
+- riziko vyhladovìní procesù s nízkou prioritou
+- rozšíøení: nastavení rùzných velikostí kvant pro jednotlivé priority (pøesun mezi prioritami, nižší priorita ==> delší kvantum)
+
+Sta 399:
+        #1
+|->||||||||||---->CPU
+|                  |
+|       #2         |
+|->||||||||||----->|
+|                  |
+|       #3         |
+|->||||||||||----->|
+|                  V
+|      I/O         |
+|<-||||||||||<-----|
+
+Shortest Process Next:
+- vhodný pro interaktivní systémy (krátká doba èinnost + èekání)
+- používá se odhad, podle pøedchozí aktivity procesu
+
+Guaranteed Scheluding:
+- reálnì pøidìluje stejný èas CPU
+- máme-li n procesù, každý proces má získat 1/n CPU
+- urèí se pomìr èasu kolik získal a kolik má získat (< 1 - proces mìl ménì èasu)
+- volí se proces s nejmìnším pomìrem
+
+Lottery Scheduling:
+- proces dostane pøídìl "losù"
+- procesy voleny náhodnì (proporcionální pøidìlování)
+- možnost vzájemné výmìny losù mezi procesy
+
+Fair-share Scheduling:
+- plánování podle skupin procesù (napø. podle uživatelù)
+
+Úlohy bìžící v reálném èase
+---------------------------
+- nutné, aby systém zareagoval na požadavek v požadovaném intervalu
+- dva typy úloh
+  - hard real-time - požadavek je potøeba vyøešit do urèité pøesnì dané doby (intervalu - ms)
+  - soft real-time - zpoždìní vyøešení úlohy je tolerovatelné
+- periodické vs. neperiodické úlohy
+- systém nemusí být schopen všem požadavkùm vyhovìt
+
+Varianty plánování:
+- statickou tabulkou - obsluha periodických úkolù je dána pøedem
+- statické definice priorit - jednotlivým úlohám jsou nastaveny priority, aby byla splnìna zadaná kritéria
+- dynamické plánování - proces je spuštìn, pokud je možné splnit jeho požadavky
+- dynamická nejlepší snaha (dynamic best effort) - žádná omezení, pokud by nebylo možné splnit všechny požadavky v systému, proces je odstranìn
+
+Vlákna
+------
+- proces = sekvence vykonávaných instrukcí v jednom pamìovém prostoru
+- procesy jsou od sebe izolovány ==> nemusí být vždy žádoucí
+- obecnìjší pøístup ==> proces = správa zdrojù (data, kód), vlákno = vykonávaný kód
+- možnost více vláken v rámci jednoho procesu
+- každé vlákno má své registry, zásobník, IP, stav (stejnì jako proces); jinak jsou zdroje sdílené
+- vlákna sdílí stejné globální promìnné (data) ==> žádná ochrana (pøedpokládá se, že není tøeba ==> potøeba synchronizace)
+- využití vláken
+  - rozdìlení bìhu na popøedí a na pozadí (CPU vs. I/O)
+  - asynchronní zpracování dat
+  - víceprocesorové stroje
+  - modulární architektura
+
+Vztah proces-vlákno:
+- 1:1 - systémy, kde proces = vlákno
+- 1:N - systémy, kde proces mùže mít více vláken (nejèastìjší øešení)
+- N:1 / M:N - více procesù pracuje s jedním vláknem (clustery, hypotetické øešení)
+
+Implementace vláken:
+- jako knihovna v uživatelském prostoru
+- souèást jádra operaèního systému
+- kombinované øešení
+- green threads
+  - JVM, jiné VM
+  - bìhové prostøedí rozhoduje o tom, která èást kódu bude probíhat
+
+Implementace vláken
+-------------------
+V uživatelském prostoru:
+- proces sám se stará o správu a pøepínaní vláken
+- vlastní tabulka vláken
+- nejde použít preempce ==> kooperativní pøepínání (rychlé - není potøeba systémové volání)
+- možnost použít plánovací algoritmus dle potøeby
+- problém s plánováním v rámci systému
+- problém s blokujícími systémovými voláními
+
+V jádøe:
+- jádro spravuje pro každé vlákno struktury podobnì jako pro procesy (registry, stavy, ...)
+- øeší problém s blokujícími voláními
+- vytvoøení vlákna pomalejší (recyklace ==> pooly)
+- pøepínání mezi vlákny jednoho procesu rychlejší (než mezi procesy; ale pomalejší než u vláken v uživatelském prostoru)
+- preemptivita
+
+Hybridní:
+- proces má M vláken v jádøe, které ma každé N[i] vláken v uživatelském prostoru
+- pøíliš komplikované øešení
+  - používá jen Solaris
+
+Implementaèní aspekty: UNIX
+---------------------------
+- proces - pùvodnì základní entita vykonávající èinnost
+- procesy tvoøí hierarchii, každý proces identifikován pomocí PID
+- systém pøi inicializaci spustí první proces (init)
+- nový proces (potomek) vytvoøen voláním fork() - vytvoøí kopii aktuálního procesu
+
+  pid_t n_pid = fork();
+  if (n_pid < 0) { /* chyba */ }
+  else if (n_pid == 0) { /* kód potomka */ }
+  else { /* kód rodièe */ }
+
+/*
+
+  pid_t n_pid = fork();
+  if (n_pid < 0) {
+      /* chyba */
+  } else if (n_pid == 0) {
+      /* kód potomka */
+  } else {
+      /* kód rodièe */
+  }
+
+*/
+
+- používá se spoleènì s voláním exec - nahraje do pamìti kód ze souboru a zaène jej provádìt
+  - volat v rámci kódu potomka
+- v rámci vztahu rodiè-potomek jsou sdílené nìkteré zdroje (napø. popisovaèe souborù)
+- sirotci - pokud rodièovský proces skonèí døív, pøejde pod init
+- zombie - proces již skonèil, ale existuje v systému
+- priorita - (anglické) nice (40 hodnot)
+  - 0 až 19 - uživatelské procesy
+  - 20 až 40 - systémové procesy
+  - èím nižší, tím je proces milejší (nice) a má nižší prioritu
+
+- vlákna pøidána do Unixù až pozdìji (døíve i ve formì knihoven)
+- ==> není zcela konzistentní s pùvodní koncepcí
+- jak se má zachovat fork()?
+- oddìlené mechanismy pro synchronizaci vláken a procesù
+- vlákno - bìžná procedura s jedním argumentem vracející jednu hodnotu
+
+  void *foo(void *arg) {
+      /* kód vlákna */
+      return (void *) 42;
+  }
+  pthread_t thr;
+  void *result;
+
+                               /* argument vlákna */
+  pthread_create(&thr, NULL, foo, (void *) 123);
+  /* kód provádìný hlavním vláknem */
+  pthread_join(thr, &result);
+
+Plánování procesù v Linuxu
+--------------------------
+- internì jádro pracuje s vlákny i procesy stejnì
+- proces/vlákno ==> task (úèastní se plánování)
+- systémvoé volání clone - zobecnìný fork (umožòuje definovat, které struktury se mají sdílet)
+  - pamìový prostor
+  - otevøené soubory
+  - I/O
+  - id rodièe
+  - ...
+- stavy úloh:
+  - bìžící
+  - pøipravené k bìhu
+  - uspané-pøerušitelné
+    - èeká na nìjakou podmínku
+  - uspané-nepøerušitelné
+    - èeká na nìjakou kritickou HW operaci
+  - zastavené
+  - skonèené (zombie)
+- je možné vybrat typ plánovaèe
+  - obecný
+  - dávkové úlohy
+  - FIFO
+    - proces se pøerušuje sám
+  - RR (round robin - realtime)
+    - preempce
+
+Døíve:
+- úplnì nejdøíve round-robin
+- 2.4: plánování rozdìleno do epoch; každý proces mùže použít jedno kvantum v rámci epochy; pokud jej nespotøeboval (polovina pøesunuta do další epochy) ==> prohledává všechny procesy ==> O(N)
+
+O(1) plánovaè:
+- 140 front priorit - prvních 100 RT, zbytek bìžné procesy
+- èekající procesy v active runqueue, po vyèerpání pøidìleného èasu pøesunuty do expired runqueue - po vyèerpání active runqueue prohozeny
+- heuristiky urèující, jestli daný proces zatìžuje CPU, I/O nebo je interaktivní ==> doèasná úprava priorit (I/O mùže dostat až 5 úrovní navíc)
+- SMP
+  - samostatné plánování pro každý procesor
+  - nový proces umístìn náhodnì
+  - každých 200 ms se zkontroluje vytížení a provede se vyvážení výkonu
+
+Completely Fair Scheduler:
+- varianta Guaranteed schedeleru
+- procesy organizovány v RB-stromu (podle toho kolik dostaly èasu)
+- priority øešeny pomocí koeficientù
+- na papíøe horší
+  - v realitì se ukázalo, že je efektivnìjší než O(1) plánovaè

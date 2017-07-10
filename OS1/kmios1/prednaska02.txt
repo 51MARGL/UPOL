@@ -1,0 +1,257 @@
+Výchozí byte:
+11010110
+
+SHR výchozí, 1:
+01101011 [0]
+
+SAR výchozí, 1: - pùvodní nejvyšší bit doleva
+11101011
+
+ROL výchozí, 1:
+10101101
+
+ROR výchozí, 1:
+01101011
+
+Bitové posuny == násobení/dìlení mocninou 2.
+- výhodné, vysoká rychlost
+
+Rotace - doplní bity pomocí zahozených
+
+PDP9, PDP11 nepodporovaly rotaci bitù
+- pøi implementaci jazyka C autoøi nezavedli rotace
+
+Registr pøíkazù
+---------------
+- jednotlivé instrukce nastavují hodnoty bitù v registru EF(lags)
+- ne všechny instrukce mìní všechny pøíznaky
+- registr EF mj. obsahuje pøíznaky:
+  - SF (sign)
+    - pokud je výsledek záporný
+  - ZF (zero)
+    - pokud je výsledek nula
+  - CF (carry)
+    - pokud pøi operaci došlo k pøenosu mezi øády
+    - eg. 1111 1111 + 1 = [1] 0000 0000
+      - jednièka se "pøenáší" v CF
+  - OF (overflow)
+    - pøíznak pøeteèení mimo daný rozsah hodnot
+    - pro èísla s plovoucí øádovou èárkou
+- nìkteré další:
+  - TF (trap)
+    - slouží ke krokování
+  - DF (direction)
+    - ovlivòuje chování instrukcí blokového pøenosu
+  - IOPL (I/O privilege level)
+    - úroveò oprávnìní (2 bity, pouze jádro)
+  - IF (interrupt)
+    - možnost zablokovat nìkterá pøerušení (pouze jádro)
+
+Adresace pamìti
+---------------
+- lineární struktura s pevnou délkou a náhodným pøístupem
+- pøímá adresa - ukazuje na pevnì dané místo v pamìti
+- nepøímá adresa - pøed pøeètením hodnoty se dopoèítá z hodnot registrù podle vzorce:
+    adresa = posunutí + báze + index * factor
+- posunutí je konstanta
+- báze a index jsou registry
+- factor je èíslo 1, 2, 4, nebo 8
+- kteroukoliv èást vzorce lze vypustit - nic nelze zopakovat, nic pøidat
+
+
+Adresace pamìti v assembleru x86
+--------------------------------
+- v assembleru se ètení/zápis do pamìti zapisuje ve tvaru:
+velikost PTR [ ... ]
+- velikost = BYTE, WORD, DWORD
+napø.
+    mov dword ptr [ebx], eax
+    add ax, word ptr [ebx + esi * 2 + 10]
+- pokud lze odvodit velikost dat z použitých registrù, je možné vypustit velikost PTR
+napø.
+    mov [eax], ebx
+    add ax, [ebx + esi * 2 + 10]
+- POZOR!!! mov word ptr [eax + esi * 2 + 100], 42
+  - nutno uvést velikost - velikost 42 neznámá, musíme specifikovat
+- pøi pøístupu k promìnným ve VS jsou adresy doplnìny automaticky
+    int a;
+    _asm {
+        mov eax, a ; mov eax, dword ptr [ebp - n]
+    }
+
+Vztah adresace pamìti procesoru a jazyka C
+------------------------------------------
+- dereference
+    mov eax, dword ptr [ebx]          ;; eax := *ebx
+- pole
+    short *a = malloc(sizeof(short) * 10);
+    _asm {
+        mov ebx, a
+        mov ax, [ebx + esi * 2]       ;; ax := a[esi]
+    }
+- strukturované hodnoty
+    struct foo { int x; int y; int z[10]; };
+    struct foo *a = malloc(sizeof(struct foo));
+    _asm {
+        mov ebx, a
+        mov [ebx], ecx                ;; a->x := ecx
+        mov [ebx + 4], ecx            ;; a->y := ecx, pøeskoèit první 4 (x)
+        mov [ebx + esi * 4 + 8], ecx  ;; a->z := ecx, pøeskoèit pr. 8 (x a y)
+    }
+
+Zarovnání hodnot
+----------------
+- adresa pamìti mem je zarovnána na n bytù, pokud je mem násobkem n
+- z pamìti procesor ète celé slovo (napø. 32 bitù) -> vhodné, aby ètená hodnota ležela na zarovnané pamìti (rychlejší pøístup, snažèí implementace CPU)
+- nìkteré CPU neumožòují èíst data z nezarovnané adresy (RISC), jiné penalizují zpomalením výpoètu
+- hodnoty jsou zarovnány na svou velikost, napø.
+  char  1B
+  short 2B
+  int   4B
+- tzn. hodnoty typu short jsou v pamìti vždy na adresách, které jsou násobky 2, hodnoty int 4 atd.
+- |.|.|s|h|r|t|.|.| - nutno èíst dvakrát po 4B
+   0 1 2 3 4 5 6 7
+    JEDNO|||DRUHÉ
+- velikost struktur se obvykle zaokrouhluje na 4 nebo 8B (smìrem nahoru)
+
+struct foo {
+    char a;
+    /* mezera 3B */
+    int b;
+    char c;
+    /* mezera 1B */
+    short d;
+};
+- toto je chování pøekladaèe (lze zmìnit)
+|a|.|.|.|b|b|b|b|c|.|d|d|    (12B)
+ 0 1 2 3 4 5 6 7 8 9 1011
+
+Segmentace x86
+--------------
+- i386 má ve skuteènosti 48bitové adresy: selector (16 b) + offset(32 b)
+- selector je urèen pomocí segmentových registrù (CS, DS, SS, ES, FS, GS)
+- segmentový registr vìtšinou urèen implicitnì -> precuje se jen s offsetem
+- lineární adresa = DT[selector] + offset (kde DT je LDT nebo GDT)
+
+Uložení vícebytových hodnot: endianita
+--------------------------------------
+- liší se mezi procesory -> potøeba brát v úvahu pøi návrhu datových formátù a protokolù
+- little-endian: hodnoty jsou zapisovány od nejménì významného (x86, Amd64, Alpha, ...)
+- big-endian: hodnoty jsou zapisovány od nejvíce významného (SPARC, IBM POWER, Motorola 68000, ...)
+- bi-endian: ARM, PowerPC, SparcV9, IA-64, ... (za urèitých okolností lze pøepínat)
+
+0A0B0C0D
+
+0D    0A    a
+0C    0B    a+1
+0B    0C    a+2
+0A    0D    a+3
+big   little
+
+Reprezentace hodnot
+-------------------
+- èísla v doplòkovém kódu (zápornou hodnotu dostaneme inverzí bitù a pøiètením 1) -> snadná manipulace
+- unsigned vs. signed
+- pokud se hodnota nevejde do rozsahu typu -> pøeteèení/podteèení
+    char a = 127 + 1;          /* -128 */
+    unsigned char c = 255 + 1; /* 0 */
+    char b = -10 - 120;        /* 126 */s
+
+Øetìzce
+-------
+ASCII (American Standard Code for Information Interchange)
+- zpùsob zakódování znakù
+- pùvodnì použité 7bitové hodnoty (pozdìji 8)
+- øídící znaky (CR, LF, BELL, TAB, backspace, ...)
+- národní abecedy - horní polovina tabulky, kódování ISO-8859-X, Windows-125X, ...
+  - nelze kombinovat více národních abeced v jednom textu (eg. azbuku a severské znaky)
+
+Unicode
+- znaková sada (definuje vazbu èíslo<->znak)
+  - jenom tabulka, ne zpùsob kódování
+- nìkolik tzv. rovin po 65535 znacích (v souèasnosti 110 000+ jazykù)
+- první rovina se nazývá základní (Basic Multilingual Plane, BMP) - znaky západních jazykù
+
+USC (Universal Character Set)
+- zpùsob kódování znakù Unicode
+- pevnì daná velikost
+  - lze jednoduše dopoèítat pozici znaku v textu (jednoduché násobení)
+  - ALE plýtvání (viz. ALM3)
+- UCS-2 - 16 bitù na znak, odpovídá základní rovinì UNICODE
+- UCS-4 - 32 bitù na znak, všechny znaku UNICODE
+
+UTF-8 (Unicode Transformation Format)
+- kódování znakù s promìnlivou délkou
+- zpìtnì kompatibilní s ASCII
+bity  rozsah UNICODE      byte 1   byte 2   byte 3   byte 4
+7     0000-007F           0xxxxxxx
+11    0080-07FF           110xxxxx
+16    0800-FFFF           1110xxxx
+21    10000-1FFFFF        11110xxx
+26    200000-3FFFFFF      111110xx
+31    4000000-7FFFFFFF    1111110x
+
+UTF-16
+- promìnlivá délka kódování
+- rozšiøuje UCS-2
+- varianty UTF-16BE a UTF-16LE (BIG, LITTLE ENDIAN)
+- Byte Order Mark (BOM) - umožòuje urèit typ kódování
+
+Intel X86: Bìh programu a podmínìné skoky
+-----------------------------------------
+- program zpracovává jednu instrukci za druhou (pokud není uvedeno jinak)
+  -> skok
+- nepodmínìný skok
+  - operace JMP r/m/i - ekvivalent GOTO (použití pro implementaci smyèek)
+- není pøítomná operace ekvivalentní if
+- podmínìný skok je operace ve tvaru Jcc, provede skok na místo v programu, pokud jsou nastaveny pøíslušné pøíznaky
+- napø. JZ i (provede skok, pokud výsledek pøedchozí operace byl nula), dál JNZ, JS, JNS, ...
+
+- porovnání èísel
+  - srovnání èísel jako rozdíl (operace CMD r/m, r/m/i, je jako SUB, ale neprovádí pøiøazení)
+  - JE skok pøi rovnosti, JNE pøi nerovnosti (v podstatì JZ, JNZ)
+  - a další operace
+
+mov ecx, DWORD PTR [esp + 0x4]
+mov eax, 0x1
+cmp ecx, 0x0
+jle 1c <main + 0x1c> ; byl prvni operand mensi nez druhy operand
+imul ecx
+sub ecx, 0x1
+jmp 9 <main + 0x9>
+ret
+
+00000000 <main>:
+0: 8b 4c 24 04
+4: b8 01 00 00 00
+9: 83 f9 00
+c: 0f 8e 01 00 00 00
+12: f7 e9
+14: 83 e9 01
+17: e9 ed ff ff ff
+1c: c3
+
+Intel x86: Podmínìné skoky a porovnání
+--------------------------------------
+- pøíklad použití
+
+- podmínìné skoky pro porovnání bezznaménkových hodnot
+instrukce  alt. jméno   pøíznaky          podmínka
+JA         JNBE         (CF or ZF) = 0    A > B
+JAE        JNB          CF = 0            A >= B
+JB         JNAE         CF = 1            A < B
+JBE        JNA          (CF or ZF) = 1    A <= B
+
+Jump if Not Below or Equal
+Jump if Not Below
+Jump if Not Above or Equal
+Jump if Not Above
+
+- podmínìné skoky pro porovnání znaménkových hodnot
+instrukce  alt. jméno   pøíznaky                  podmínka
+JG         JNLE         (SF = OF) & ZF = 0        A > B
+JGE        JNL          (SF = OF)                 A >= B
+JL         JNLE         (SF != OF)                A < B
+JLE        JNL          (SF != OF) nebo ZF = 1    A <= B
+
+(Greater, Lesser)

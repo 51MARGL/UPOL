@@ -1,0 +1,320 @@
+Pøerušení
+---------
+- mechanismus umoòující reagovat na asynchronní události
+- nejèastìji vyvolané vnìjším zaøízením (napø. stisk klávesnice, pøíchod síového paketu), které vyaduje CPU
+- pokud vznikne pøerušení (Interrupt Request - IRQ; testuje se po provedení instrukce), èinnost procesoru je zastavena a je vyvolána obsluha pøerušení
+- po skonèení obsluhy pøerušení program pokraèuje tam, kde byl pøerušen
+- obsluné rutiny - velice podobné bìnım funkcím
+- procesor ví, kde jsou uloeny obsluné rutiny pøerušení ==> èíslo pøerušení ==> vektor pøerušení (pole adres)
+- soubìh více pøerušení ==> øadiè pøerušení
+  - pøerušení je moné pøerušit
+  - pøerušení nelze pøerušit (øazení pøerušení)
+  - systém priorit (pøerušení s niší prioritou nemùe pøerušit, pokud ji bìí pøerušení s vyšší, a musí poèkat)
+- maskovatelné a nemaskovatelné pøerušení (lze/nelze blokovat)
+- na x86 je 256 pøerušení (prvních 32 speciální urèení pro vıjimky)
+- adresa vektoru pøerušení (IDT - Interrupt Descriptor Table) uloena v registru IDTR
+- pøi pøerušení se na zásobník uloí aktuální adresa (CS + EIP) + EFLAGS
+- obsluná rutina obvykle ukládá i ostatní registry
+- provede se obsluha pøerušení
+- návrat z obsluhy pøerušení je realizovanı operací IRET
+
+Další uití systému pøerušení:
+- ošetøení vyjímek (dìlení nulou, neplatná operace)
+- debugování (krokování, breakpointy)
+- explicitní vyvolání pøerušení operace INT ==> systémové volání
+
+LINUX
+Vector     - Description
+0          - Divison by zero
+6          - Invalid instruction
+7          - No coprocessor
+8          - Double fault
+14         - Page fault
+32         - IRQ0: Timer
+33         - IRQ1: Keyboard
+34         - IRQ2: PIC cascading
+38         - IRQ6: Floppy
+46         - IRQ14: Disk controller
+128 (0x80) - System call (Linux defined)
+129-238    - External inputs
+239        - Local APIC timer interrupt
+251-253    - Interprocessor interrupts
+
+- na x86 256 pøerušení (prvních 32 speciální urèení pro vıjimky)
+
+I/O zaøízení
+------------
+Aktivní èekání:
+(jako chtít po panu dìkanovi, aby nám pøenesl uhlí do sklepa - není to nemoné, ale pan dìkan by mohl èas strávit efektivnìji nìèím smysluplnìjším)
+- procesor pracuje se zaøízením pøímo (intrukce in, out - zápis/ètení hodnoty z portu)
+- vıpoèetnì nároèné (obzvláš pro pøenosy velkıch dat); omezené na speciální operace (jen zápis/ètení)
+
+DMA:
+- øadiè DMA dostane poadavek: ètení/zápis + adresu v pamìti
+- pøedá poadavek øadièi zaøízení (napø. disku)
+- zapisuje/ète data z/do pamìti
+- dokonèení je oznámeno øadièi DMA
+- DMAC vyvolá pøerušení
+- pø. Tan p.277
+
+ CPU <-> DMA Controller <-> Disk Controller -> Pamì
+  |            |                  |              |
+-----------------------------------------------------
+
+1. CPU naprogramuje DMA.
+2. DMA pak øíká Disku, co naèítat, kam uloit.
+3. Disk pøenese data do pamìti.
+4. Disk pak uvìdomí DMA o pøenosu.
+5. DMA pak pøeruší procesor - data jsou dostupná v pamìti.
+
+Sdílení pamìového prostoru:
+- zaøízení mají pøímı pøístup k operaèní pamìti
+- více pøíští semestr v KMI/OS2
+
+Rozšíøení instrukèní sady x86
+-----------------------------
+Reimy práce CPU
+----------------
+- od OS oèekáváme
+  - správu a sdílení procesoru (více procesù zaráz je mono)
+  - správu pamìti (procesy jsou v pamìti oddìleny)
+  - komunikaci mezi procesy (IPC), sdílení dat
+  - obsluhu zaøízení a organizaci dat (souborovı systém, síové rozhraní, uivatelské rozhraní)
+- není ádoucí, aby
+  - kadı proces implementoval tuto funkcionalitu po svém
+  - kadı proces mìl pøístup ke všem monostem hardwaru
+- ==> jádro operaèního systému ==> sdílení funkcionality, zajištìní bezpeènosti/konzistence systému
+- CPU rùzné reimy práce
+  - privilegovanı (kernel mode) - bìí v nìm jádro OS (umoòuje vše)
+  - neprivilegovanı (user mode) - bìí v nìm aplikace (nìkteré funkce omezeny)
+- existují i další módy, moc se nepouívají; x86 má 4 módy oznaèované jako ring 0 a 3; (OS/2 pouívá 3 úrovnì oprávnìní, VMS 4 - kernel, executive, supervisor a user)
+
+ring 0 = privilegovanı
+ring 1 
+ring 2 
+ring 3 = neprivilegovanı
+
++----------+
+|user-space|
++----------+
+|  kernel  |
++----------+
+|    HW    |
++----------+
+
+Systémová volání
+----------------
+- pøepnutí do reimu jádra pøes vıjimku, pøerušení nebo systémové volání
+- systémové volání: komunikace aplikace s jádrem OS pomocí pøesnì definovaného rozhraní
+- pøepnutí do reimu jádra by mìlo bıt co nejrychlejší
+- rùzné metody
+
+SW pøerušení:
+- OS ma definované èíslo pøerušení obsluhující systémová volání (Linux: 0x80, Windows NT: 0x2e, MS-DOS: 0x21)
+- je zvolen jeden registr (na i386 typicky EAX), kterı udává èíslo poadavku (napø. otevøení souboru, atd.)
+- ostatní registry slouí k pøedání argumentù (pøíp. se pouije zásobník)
+- je vyvoláno SW pøerušení
+
+INT èíslo_pøerušení
+
+Speciální instrukce:
+- pro zrychlení systémovıch volání bıvají do ISA zaèlenìny speciální instrukce
+- i386: SYSENTER/SYSCALL, SYSEXIT/SYSRET
+         do privileg.      do neprivileg.
+
+Volací brány (call gates):
+- zvláštnost x86
+- volá se specifická funkce, která se postará o pøechod z jednoho módu do druhého
+- vyuívá mechanizmus spojenı se segmentací
+- monost pøecházet mezi rùznımi úrovnìmi oprávnìní
+- pouívaly jej Windows NT (pøesun ke specializovanım instrukcím)
+
+Historické záleitosti
+----------------------
+Poznámka:
+- procesory X86 mají monost bìet v nìkolika reimech
+- pro jednoduchost uvaujeme pouze chránìnı mód (protected mode), kde je vıše zmínìná funkcionalita k dispozici
+- ve starším reálném módu není moné od sebe oddìlit jádro a aplikace
+
+MS-DOS:
+- poskytoval své sluby pøerušením 0x21
+- aplikace i OS ve stejném reimu ==> vše povoleno
+
+BIOS:
+- zajišuje základní operace poèítaèe (rodina PC)
+- obsluné rutiny BIOSu navázány na pøerušení (0x10 - obrazovka, 0x13 - práce s diskem, 0x16 - klávesnice)
+- souèasné OS jej pøevánì ignorují
+
+Reprezentace èísel s plovoucí øádovou èárkou
+--------------------------------------------
+- standard IEEE 754
+- èísla zakódovaná ve tvaru
+
+hodnota = (-1)^znaménko * mantisa * 2^exponent
+
+Jednoduchá pøesnost:
+- single precision, float
+- velikost 32 bitù
+- 1 bit znaménko, 8 bitù exponent (v doplòkovém kódu), 23 bitù mantisa
+
+Dvojitá pøesnost:
+- double precision, double
+- velikost 64 bitù
+- 1 bit znaménko, 11 bitù exponent (v doplòkovém kódu), 52 bitù mantisa
+
+Rozšíøená pøesnost:
+- extended precision, long double
+- velikost 80 bitù
+- 1 bit znaménko, 15 bitù exponent (v doplòkovém kódu), 64 bitù mantisa
+
+Poznámky:
+- existuje záporná nula
+- existují nekoneèna - maximální exponent + nulová mantisa
+- existuje NaN (Not a Number) - maximální exponent + nenulová mantisa
+
+Zásobníkové CPU
+---------------
+- dvì koncepce CPU - registrové vs. zásobníkové
+- registrové: operandy uloeny na registrech (naètení/uloení dat z/do registru)
+- zásobníkové
+  - operandy na zásobníku
+  - pøidávání/odebírání hodnot pøes push/pop, pop/store
+  - operace pracují s vrcholem zásobníku - add, sub, dup, swap
+    - add seète vrchní dva a vısledek uloí (5 7 9 -> 12 9)
+    - sub odeète
+    - dup duplikuje (5 7 9 -> 5 5 7 9)
+    - mul násobí
+    - atd.
+  - eg. a^2 - 1:
+    load 1
+    load a
+    dup
+    mul
+    sub
+  - obvykle druhı zásobník pro volání funkcí
+  - vıraznì jednodušší instrukèní sada
+
+Floating-Point Unit (FPU)
+-------------------------
+- øeší vıpoèty s èísly s plovoucí øádovou èárkou
+- pracuje s 80bitovımi hodnotami (nutné pøevody)
+- vychází s koprocesoru 80x87 (pùvodnì oddìlená jednotka)
+- ==> odlišná architektura + omezení
+- ==> zásobníkovı procesor, pøenášení dat pouze pøes pamìt
+- zásobník má kapacitu 8 hodnot
+- se zásobníkem jde pracovat jako s registry (ST(0) a ST(7))
+- ST(0) ukazuje na vrchol zásobníku
+
+Operace:
+- FLD, FST - naètení hodnot na zásobník, odebrání hodnoty ze zásobníku (dalé FLDZ (nula?), FLD0 (nula?), FLDPI (pí) pro uloení konstant)
+- FADD, FSUB, ... - numerické operace, jako jeden argument se pouívá vrchol zásobníku (registr ST(0)), jako druhı je moné pouít kteroukoli hodnotu ze zásobníku (registr ST(1-7)), pøíp. hodnotu v pamìti
+- vìtvení kódu øešeno pomocí porovnání FCOM a podmínìnıch pøiøazení FCOMVx (FCMOVE, FCMOVB, ...)
+- další operace FSQRT, FSIN, FCOS, ...
+
+Volání funkcí:
+- pøi volání funkcí jsou hodnoty pøedávány pøes zásobník
+- návratová hodnota pøes ST(0)
+
+Další rozšíøení
+---------------
+- podpora "multimédií"
+- SIMD (single instruction multiple data)
+
+MMX:
+- 64bitové registry mm0-mm7 (shodné s ST(0)-ST(7))
+- moné pouívat jako vektor 1-, 2-, 4-, 8bitovıch celıch èísel
+- operace se saturací (bez pøeteèení)
+  - eg. 240 + 20 == 255 (RGB)
+
+SSE:
+- 128bitové registry XMM0-XMM7
+- kapacita pro 4 FP hodnoty s jednoduchou pøesností
+- základní aritmetika
+
+SSE2:
+- operace pro práce s hodnotami s dvojitou pøesností (CAD)
+- monost pouívat hodnoty v registrech XMM0-7 jako vektory celıch èísel (16 8bitovıch hodnot, 8 16bitovıch, atd.); vèetnì saturace
+
+AMD64
+-----
+- 64bitové rozšíøení ISA procesorù x86 (oznaèovaná i jako EM64T, x86_64, x64)
+- rozšíøení velikosti registrù na 64 bitù (rax, rdx, rcx, rbx, rsi, rdi, rsp, rbp)
+- nové 64bitové registry r8-r15
+  - spodních 32 bitù jako registry rXd (napø. r8d)
+  - spodních 16 bitù jako registry rXw (napø. r8w)
+  - spodních 8 bitù jako registry rXb (napø. r8b)
+- nové 128bitové registry xmm8-xmm15
+- nejnovìjší procesory s AVX (Sandy Bridge, Bulldozer) rozšiøují xmm0-xmm15 na 256 bitù (registry ymm0-ymm15)
+- adekvátní rozšíøení operací (prefix REX -> 32bitová instrukce pøevedena na 64bitovou); omezení délky instrukce na 15 B
+- v operacích je moné pouívat jako konstanty maximálnì 32bitové hodnoty ==> vıjimkou je operace (movabs r, i)
+
++---------------------+
+|        RAX          |
++---------+-----------+
+|         |    EAX    |
+|         +-----+-----+
+|         |     | AX  |
+|         |     +--+--+
+|         |     |AH|AL|
++---------+-----+--+--+
+63        31    15 7  0
+
+- rozšíøení adresního prostoru
+- fyzicky adresovatelnıch typicky 2^36 a 2^46 B pamìti (virtuální pamìt 2^48 B)
+
+Reimy práce:
+- 64bitová ISA je velice podobná 32bitové ==> minimální reie
+- Long mode: dva submody (ve kterıch jsou k dispozici 64bitová rozšíøení)
+  - 64-bit mode: OS i aplikace v 64bitovém reimu
+  - compatibility mode: umoòuje spouštìt 32bitové aplikace v 64bitovém OS
+- Legacy mode: reimy pro zajištìní zpìtné kompatibility (protected mode, real mode)
+- pro vıpoèty s èísly s plovoucí øádovou èárkou se pouívají operace SSE, SSE2
+
+Volací konvence:
+- vìtší mnoství registrù umoòuje efektivnìjší volání funkcí (podobné fastcall)
+- monost zakódovat strukturovanou hodnotu do registru
+- zarovnání zásobníku na 16 B
+- sjednocení volacích konvencí (v rámci platformy)
+
+AMD64: Volací konvence - Windows
+--------------------------------
+- první 4 argumenty: rcx, rdx, r8, r9
+- èísla s plovoucí øádovou èárkou pøes: xmm0-xmm3
+- na zásobníku se vytváøí stínové místo pro uloení argumentù
+- zbytek pøes zásobník
+- návratové hodnoty pøes rax nebo xmm0
+
+// a -> rcx, b -> xmm1, c -> r8, d -> xmm3
+void foo(int a, double b, int c, float d);
+
+sub rsp, 0x28                    ; (0x20 + 0x08 -- kvuli zarovnani po call)
+movabs rcx, <addr: msg>
+call printf
+add rsp, 0x28
+
+- caller-saved: rax, rcx, rdx, r8, r9, r10, r11
+- callee-saved: rbx, rbp, rdi, rsi, rsp, r12, r13, r14, r15
+
+AMD64: Volací konvence - UNIX
+-----------------------------
+- prvních 6 argumentù: rdi, rsi, rdx, rcx, r8, r9
+- float èísla pøes xmm0-xmm7 (poèet pouitıch registrù musí bıt v AL)
+- zbytek zásobník (zprava doleva)
+- návratové hodnoty pøes rax nebo xmm0
+- pod vrcholem zásobníku oblast 128 B (èervená zóna) pro libovolné pouití
+  - po volání mùe obsahovat cokoliv
+
+// a -> rdi, b -> xmm0, c -> rsi, d -> xmm1; 2 -> al
+void foo(int a, double b, int c, float d);
+
+- caller-saved: rax, rdi, rsi, rdx, rcx, r8, r9, r10, r11
+- callee-saved: rbx, rsp, rbp, r12, r13, 14, 16
+
+Architektura x32
+----------------
+- není fyzická - èistì vìc pøekladaèe
+- omezení pøekladaèe, které si pøekladaè dá sám
+- pouívá jen 32bitové instrukce a hodnoty
+- pouívá celou sadu registrù, které jsou k dispozici
+- mùe bıt rychlejší ne architektura AMD64, by je její podmnoinou
+  - doktor Krajèa s tímhle dostal a 30% zrychlení programu

@@ -1,0 +1,241 @@
+GENERIC HUMANOID CARBON UNIT
+
+Intel x86: program a podmínìné skoky
+------------------------------------
+JMP r/m/i - ekvivalent GOTO (nastaví registr EIP na dané místo)
+CMP r/m, r/m/i - jako SUB, ale neprovádí pøiøazení
+JZ r/m/i - JUMP ZERO - skoèí, pokud ZF = 1
+JNZ, JS, JNS, ... (dle EF registru)
+
+Na architektuøe x86 ne všechny instrukce nastavují pøíznaky. Pøíznaky by mìly nastavovat aritmetické instrukce, logické souèty, souèiny, bitové posuny. Skoky by nemìly mìnit pøíznaky.
+
+cmp eax, ebx
+je skok_rovno
+add eax, 1
+jg skok_vetsi ; nebude fungovat - (add eax, 1) zmìnilo registr pøíznaku
+
+Lze použít i jiné instrukce než cmp a test - ostatní arit. operace také nastavují pøíznaky (inc a dec nenastavují všechny pøíznaky (napø. CF))
+
+smycka:
+  sub eax, 1
+  jz konec
+  jmp smycka
+konec:
+
+Dobré mít dokumentaci procesoru.
+
+Smyèky
+------
+Pro snadnìjší implemenataci smyèek zavedeny speciální operace.
+JECXZ, JCXZ - provede skok, pokud registr ECX/CX je nulový (neni potøeba explicitnì testovat ECX)
+LOOP - odeète jednièku od ECX a, pokud v registru ECX není nula, provede skok
+
+jecxz r/m/i
+==
+cmp ecx, 0
+jz adr
+
+loop adr
+==
+sub ecx, 1
+jnz adr
+
+Pozn.
+Uvádí se, že složené operace jsou pomalejší než jednotlivé kroky.
+Podmínìné skoky obecnì zpomalují bìh programu ==> zrušení výpoètu v pipeline.
+Procesory implementují rùzné heuristiky pro odhad, jestli daný skok bude proveden.
+ - statický pøistup (napø. u skokù zpìt se pøedpokládá, že budou provedeny)
+ - dynamický pøístup (na základì historie skokù se rozhodne)
+ - nápovìda poskytnutá programátorem (pøíznak v kódu)
+
+Odhad skokù (Branch Prediction)
+-------------------------------
+- procesory používají kombinace výše zmínìných metod (hlavnì dynamický odhad)
+- ètyøstavové poèítadlo:
+  - pøi každém prùchodu procesor ukládá do Branch Prediction Buffer (2b pøíznak, jestli byl skok proveden nebo ne) a postupnì pøechází mezi 4 stavy:
+    - 11 - strongly taken (maximální šance skoku)
+    - 10 - weakly taken
+    - 01 - weakly not taken
+    - 00 - strongly not taken (minimální šance skoku)
+- až na 00 pøedpokládá, že skok bude proveden
+- velikost BPB a poèáteèní stav poèítadla se mezi procesory liší
+- problém: pravidelné støídání úspešnosti ==> dvouúrovòový odhad (vzor chování) (50% chyba odhadu)
+
+Two-level adaptive predictor
+----------------------------
+
+
+                 Pattern history table
+                      |    |
+Branch History        |    |
+    |0110|      ->    |####| -> Prediction
+                      |  . |
+                      |  . |
+                      |  . |
+
+
+
+
+
+- pro každý vzor existuje odhad založený na výše zmínìném pøístupu
+- velikost vzoru závisí na procesoru
+- globální vs. lokální tabulka
+
+Zásobník
+--------
+- procesor má vyèlenìný úsek pamìti pro zásobník (LIFO) ==> mezivýpoèty, návratové adresy, lokální promìnné, ...
+- vyšší prog. jazyky obvykle neumožòují pøímou manipulaci se zásobníkem (pøesto má zásadní úlohu)
+- procesory i386 mají 1 zásobník, který roste shora dolù
+- registr ESP ukazuje na vrchol zásobníku (mov eax, [esp] naète hodnotu na vrcholu zásobníku)
+- uložení/odebrání hodnot pomocí operací
+
+PUSH r/m/i    ;; sub esp, 4
+              ;; mov [esp], op1
+
+POP r/m       ;; mov op, [esp]
+              ;; add esp, 4
+
+- registr ESP musí vždy obsahovat èíslo, které je násobek 4
+
+Volání podprogramù/funkcí
+-------------------------
+- k volání podprogramu se používá operace CALL r/m/i ==> uloží na zásobník hodnotu registru IP (aby se vìdìlo, kam se vrátit) a provede skok
+
+push eip          ;; tato operace neexistuje
+jmp <addr>
+
+- k návratu z funkce se používá operace RET ==> odebere hodnotu ze zásobníku a provede skok na adresu danou touto hodnotou
+- použití zásobníku umožòuje rekurzi
+
+Volání funkcí:
+- pøedání parametrù
+- vytvoøení lokálních promìnných
+- provedené funkce
+- odstranìní informací ze zásobníku
+- návrat z funkce, pøedání výsledku
+
+Konvecne volání funkcí
+----------------------
+- zpùsob, jakým jsou pøedávány argumenty funkcím, jsou jen konvence (specifické pro pøekladaè, i když èasto souèástí specifikace ABI (Application Binary Interface) OS)
+- pøedávání pomocí registrù (dohodou se urèí registry), pøíp. zbývající argumenty se uloží na zásobník
+- pøedávání argumentù èistì pøes zásobník
+- kdo odstraní pøedané argumenty ze zásobníku? (volaná funkce nebo volající?)
+
+Konvence C (cdecl):
+- argumenty jsou pøedané èistì pøes zásobník
+- zprava doleva
+- argumenty ze zásobníku odstraòuje volající
+- umožòuje funkce s promìnlivým poètem parametrù
+
+Konvence Pascal (pascal):
+- argumenty jsou pøedané èistì pøes zásobník
+- zleva doprava
+- argumenty ze zásobníku odstraòuje volaný
+- neumožòuje funkce s promìnlivým poètem parametrù
+
+Konvence fastcall (fastcall, msfastcall):
+- první dva parametry jsou pøedány pomocí ECX, EDX
+- zbylé argumenty jsou na zásobníku zprava doleva
+- argumenty ze zásobníku odstraòuje volaný
+- mírnì komplikuje funkce s promìnlivým poètem parametrù
+- pod tímto jménem mohou existovat rùzné konvence
+
+- návratová hodnota se na i386 obvykle pøedává pomocí registru EAX, pøíp. EDX:EAX
+- vìtší hodnoty pøedávané odkazem
+
+Rámec funkce (stack frame):
+- pøi volání funkcí se na zásobníku vytváøí tzv. rámec (stack frame)
+- obsahuje pøedané argumenty, adresu návratu, pøíp. lokální promìnné
+- k pøístupu k tomuto rámci se používá registr EBP
+
+Volání funkce s konvencí cdecl
+------------------------------
+Volání funkce:
+- na zásobník jsou uloženy parametry funkce zprava doleva (push <arg>)
+- zavolá se funkce (call <adresa>), na zásobník se uloží adresa návratu
+- funkce uloží obsah registru EBP na zásobník (adresa pøedchozího rámce)
+- funkce uloží do registru EBP obsah ESP (zaèátek nového rámce)
+- vytvoøí se na zásobníku místo pro lokální promìnné
+- na zásobníku se uloží registry, které se budou mìnit (push <reg>)
+
+foo(1, 2, 3):                                               STACK
+ push 3                                                |      3       |
+ push 2                                                |      2       |
+ push 1                                                |      1       |
+ call foo                                              | návrat. adr. |
+ add esp, 12 ;posunout za pøedávané argumenty          |     ebp      |
+ ...                                                   |              |
+ ...                                                   | LOKÁLNÍ      |
+ foo:                                                  |     PROMÌNNÉ |
+  push ebp ; uschovat (pøi zanoøení procedur)          |              |
+  mov ebp, esp ; zafixovat pøed lok. prom.             |     ebx      |
+  sub esp, n * 4 ; potøebné místo pro lokální promìnné
+  push ebx
+  ...
+  mov eax, 42
+  ;úklid po funkci
+  pop ebx
+  mov esp, ebp ;odstraní lok. prom.
+  pop ebp ; pùvodní stav ebp pro volající proceduru
+  ret
+
+ebp je dobré zafixovat pro odpíchnutí se na místa na zásobníku:
+
+EBP + 4 - návrat. adresa ;; celkem nezajímavé
+EBP + 8 - 1. argument
+EBP + 12 - 2. argument
+EBP - 4 - 1. lok. promìnná
+EBP - 8 - 2. lok. promìnná
+
+Uchovávání registrù:
+- uchovávání všech použitých registrù na zaèátku každé funkce nemusí být efektivní
+  - pøed voláním funkce si uložíme hodnoty registrù, které chceme zachovat, na zásobník, a po volání je opìtovnì obdržíme
+- používá se konvence, kdy se registry dìlí na
+  - callee-saved - o chování hodnot se stará volaný (EBX, ESI, EDI)
+    - pøed i po funkci musí mít stejnou hodnotu
+  - caller-saved - o chování hodnot se stará volající (EAX, ECX, EDX)
+    - zde pravidlo výše neplatí - volající si to musí ošetøit sám
+- po návratu z funkce mohou registry EAX, ECX a EDX obsahovat cokoliv
+
+Pøerušení
+---------
+- mechanismus umožòující reagovat na asynchronní události
+- nejèastìji vyvolané vnìjším zaøízením (napø. stisk klávesnice, pøíchod síového paketu), které vyžaduje CPU
+- pokud vznikne pøerušení (Interrupt Request - IRQ; testuje se po provedení instrukce), èinnost procesoru je zastavena a je vyvolána obsluha pøerušení
+- po skonèení obsluhy pøerušení program pokraèuje tam, kde byl pøerušen
+- obslužné rutiny - velice podobné bìžným funkcím
+- procesor ví, kde jsou uloženy obslužné rutiny pøerušení ==> èíslo pøerušení ==> vektor pøerušení (pole adres)
+- soubìh více pøerušení ==> øadiè pøerušení
+  - pøerušení je možné pøerušit
+  - pøerušení nelze pøerušit (øazení pøerušení)
+  - systém priorit (pøerušení s nižší prioritou nemùže pøerušit, pokud již bìží pøerušení s vyšší, a musí poèkat)
+- maskovatelné a nemaskovatelné pøerušení (lze/nelze blokovat)
+- na x86 je 256 pøerušení (prvních 32 speciální urèení pro výjimky)
+- adresa vektoru pøerušení (IDT - Interrupt Descriptor Table) uložena v registru IDTR
+- pøi pøerušení se na zásobník uloží aktuální adresa (CS + EIP) + EFLAGS
+- obslužná rutina obvykle ukládá i ostatní registry
+- provede se obsluha pøerušení
+- návrat z obsluhy pøerušení je realizovaný operací IRET
+
+Další užití systému pøerušení:
+- ošetøení vyjímek (dìlení nulou, neplatná operace)
+- debugování (krokování, breakpointy)
+- explicitní vyvolání pøerušení operace INT ==> systémové volání
+
+LINUX
+Vector     - Description
+0          - Divison by zero
+6          - Invalid instruction
+7          - No coprocessor
+8          - Double fault
+14         - Page fault
+32         - IRQ0: Timer
+33         - IRQ1: Keyboard
+34         - IRQ2: PIC cascading
+38         - IRQ6: Floppy
+46         - IRQ14: Disk controller
+128 (0x80) - System call (Linux defined)
+129-238    - External inputs
+239        - Local APIC timer interrupt
+251-253    - 
+

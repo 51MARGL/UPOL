@@ -1,0 +1,207 @@
+/**
+ * 12. pøednáška z KMI/OS1. 2016-05-03
+ *
+ * @author zaplmi06
+ */
+
+Meziprocesorní komunikace (IPC)
+===============================
+IPC: Inter-process communication
+--------------------------------
+- procesy oddìlené, potøeba kooperace
+  - sdílení informací
+  - zrychlení výpoètu (rozdìlení úlohy na podúlohy)
+  - soubìžná èinnost
+  - modularita
+  - oddìlení privilegií
+- základní kategorie:
+  - synchronizace
+  - sdílená pamì
+  - zasílání zpráv
+  - vzdálené volání procedur
+- rozlíšujeme rùzné charakteristiky
+  - zda komunikují dva pøíbuzné (mající spoleèného rodièe) nebo zcela cizí procesy
+  - zda komunikující proces mùže jen èíst èi jen zapisovat data
+  - poèet procesù zapojených do komunikace
+  - zda jsou komunikující procesy synchronizovány, napø. ètecí proces ète, až je co èíst
+  - zda jsou v rámci jednoho systému
+
+Sdílená pamì
+-------------
+- procesy sdílejí úsek pamìti ==> nutná spolupráce se správou pamìti
+- ètení i zápis, náhodný pøístup
+- deklarace, že pamì je sdílená + namapování do adresního prostoru
+- velikost úseku pamìti i adresa zaokrouhleny na násobky stránek pamìti (typicky 4 KB)
+- pamì mùže být namapována na rùzné adresy!!!
+
+Windows:
+- používá se mechanismus pro mapování souborù do pamìti
+- CreateFileMapping, MapViewOfFile
+- lze použít i stránkovací soubor
+
+Unix:
+- shmget - vytvoøí/najde úsek sdílené pamìti s danými klíèi (nastaví oprávnìní)
+- shmat a shmdt - namapuje/odmapuje sdílenou pamì z adresního prostoru
+// shm = shared memory
+
+Signály
+-------
+- mechanizmus podobný pøerušení (asynchronní volání)
+- základní forma komunikace v unixech
+- proces mùže definovat vlastní handlery tìmto signálùm
+- procesu je možné zaslat jeden z celoèíselných signálù
+- nìkteré speciální urèení (pøípadnì nastavené implicitní handlery)
+  - SIGINT - ukonèení procesu (Ctrl+C)
+  - SIGQUIT - ukonèení procsu (Ctrl+/) + Core dump
+  - SIGSTOP - pozastavení procesu (Ctrl+Z)
+  - SIGCONT - pokraèování zastaveného procesu
+  - SIGCHLD - zmìna stavu potomka (rodiè vyzvedne návratovou hodnotu a ukonèí potomka - jinak by byl zombie proces)
+  - SIGKILL - nezablokovatelný signál ukonèující proces
+  - SIGFPE, SIGBUS, ... - oznamování systémových chyb
+  - SIGUSR1, SIGUSR2 - uživatelské signály
+  - SIGALRM - alarm
+  - SIGPIPE - pøerušená roura
+- race-conditions
+- nelze zasílat složitìjší zprávy
+
+Roury
+-----
+- typická vlastnost unixových OS (ale podpora i ve Windows)
+- mechanizmus umožòující jednosmìrnou komunikaci mezi procesy
+- komunikace 2 procesù (jeden zapisující konec, druhý ètecí konec)
+- First-In-First-Out
+- umožòuje propojit vstupy výstupy procesù ==> kompozice do vìtších celkù
+- pøíklad v shellu: cat foo.log | grep "11/11/2011" | wc -l
+  - cat vypíše obsah souboru
+  - grep podle regex dává výstup nebo zahazuje øádky vstupu
+  - wc (word count) - poèítá øádky, které dostal na vstup
+  - celkovì to spoèítá øádky z logu, které obsahují datum 11/11/2011
+- využití spoleènì se stdin a stdout
+- typické použití:
+  - rodièovský proces vytvoøí rouru vyvoláním pipe (2 popisovaèe souborù - zápis a ètení)
+  - po zavolání fork() potomek dìdí oba tyto popisovaèe
+  - rodiè i potomek zavírají nepotøebné popisovaèe
+  - je možné zapisovat/èíst z/do jednotlivých popisovaèù souborù
+- u procesu lze pøenastavit popisovaèe pro stdin a stdout, aby ukazovaly na konec roury
+- rodiè mùže propojit 2 potomky (oba dìdí popisovaèe)
+
+//stdin, stdout, stderr jsou soubory
+//printf("foo"); == fprintf(stdout, "foo");
+
+- v Linuxu velikost bufferu 64 KB
+- pokud je plný, zapisující proces je pozastaven; pokud je prázdný, ètecí proces je pozastaven
+- více ètenáøù/písaøù ==> race-condition (operace nemusí být atomické)
+
+Pojmenované roury (FIFO):
+- soubor, který se chová jako roura
+- volání a program mkfifo
+- umožòuje komunikaci napøíbuzných procesù
+
+Pseudo-roury:
+- systém emulující roury (MS-DOS), ale vytváøí mezi-soubory
+- dir | sort | more
+- ==> dir > 1.tmp && sort <1.tmp >2.tmp && more <2.tmp
+- data do 1 pomocného, ten se pak pøepíše do 2., s 2. se pak pracuje dál
+- omezeno na sekvenèní provádìní
+
+Zasílání zpráv
+--------------
+- message passing
+- obecný mechanizmus komunikace mezi procesy (==> rùzné varianty)
+- vhodný pro poèítaèe se sdílenou pamìtí i pro distribuované systémy
+- základní operace:
+  - send(dest, message)
+  - receive(src, message)
+- send i receive ==> jako blokující/neblokující operace
+  - send i receive blokující - synchronizace
+  - send neblokující, receive blokující - pøíjemce èeká na zprávu
+  - send i receive neblokující
+
+Adresace:
+- pøímá - vhodne pro kooperující procesy
+- nepøímá
+  - zprávy jsou zasílány do fronty (mailbox), odkud jsou vyzvedány pøíjemcem
+  - rùzné varianty 1:1, 1:N, N:1, M:N
+    - kolik procesù komunikuje s kolika prostøednictvím jednoho mailboxu
+
+- zprávy - hlavièka + tìlo zprávy ==> (odlišení od volání)
+- tìlo zprávy: pevná vs. promìnlivá velikost
+- hlavièka: typ zprávy, zdroj, cíl, délka zprávy, (kontrolní informace, priorita)
+
+Vzájemné vylouèení:
+- zasíláním zpráv lze implementovat vzájemné vylouèení
+- využívá se blokující receive
+- spoleèná schránka obsahuje žádnou nebo 1 zprávi ==> token udávající, že lze  vstoupit do kritické sekce
+  - pokud je ve schránce 1 zpráva ==> doruèena právì 1 procesu, ostatní jsou blokovány
+  - pokud je fronta prázdná, všechny procesy jsou blokovány
+
+void p() {
+    message msg;
+    while (1) {
+        receive(box, msg);
+        //kriticka sekce
+        send(box, msg);
+    }
+}
+
+void main() {
+    create_mailbox(box);
+    send(box, null);
+    par_begin(p(), p(), p());
+}
+
+Zasílání zpráv v OS
+-------------------
+POSIX Message Queue:
+- nepoužívá se èasto, není souèástí std. knihovny (librt)
+- velikost fronty a zpráv pevná (definovaná pøi otevøení)
+- mq_open, mq_send, mq_receive //mq = message queue
+- v souèasnosti se používá spíš D-BUS
+
+Windows:
+- Windows je událostmi øízený systém
+- zprávy zasílané jednotlivým oknùm (všechno je okno)
+- 
+
+int WINAPI WinMain(HINSTANCE hInstance, HINSTANCE hPrevInstance,
+                   LPCSTR lpCmdLine, int nCmdShow)
+{
+    MSG msg;
+    while (GetMessage(&msg, NULL, 0, 0) > 0)
+    {
+        TranslateMessage(&msg);
+        DispatchMessage(&msg);
+    }
+    return msg.wParam;
+}
+
+Další mechanizmy
+----------------
+- Remote Procedure Calls
+  - klient volá zástupnou funkcí (stub)
+  - zástupná funkce provede pøevod parametrù a odešle zprávu
+  - jádro pøedá zprávu cílovému poèítaèi
+  - server zpracuje pøíchozí zprávu (provede pøevod parametrù)
+  - provede se funkce
+  - odpovìï je vrácena opaèným zpùsobem
+- rùzné implementace - CORBA, .NET Remoting, Java Remote Method Invocation, XML-RPC, protokol SOAP
+- Windows: DDE, COM, clipboard, Mailslots, pojmenované roury (i pøes sí)
+- (unixové) sockety - jako síové rozhraní, ale lokální (==> rychlejší)
+
+Zkouška
+=======
+2 èásti - písemná a ústní
+Písemná:
+- 5 až 6 otázek z celého semestru
+- z pøednášek i cvièení
+- cca 30 minut (+- 5 minut)
+
+Ústní:
+- Krajèa se doptá na odpovìdi z písemné èásti (co nešlo pøeèíst, bylo nesrozumitelné, ...), pøípadnì na vìci okolo
+- obojetné bite (bit èi byte?) škrtáno automaticky
+
+- podmínka úèasti je zápoèet
+- nìkdo se zapisoval na zkoušku bez zápoètu a blokoval místo
+  - výpis termínù dopadl tak, že nedošel nikdo nebo 1 až 3 lidé
+- neblokovat místo, abychom se mohli den pøedem odhlásit
+- seznam otázek a témat bude vyvìšen na stránkách (v podstatì obsah semestru)

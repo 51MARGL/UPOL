@@ -1,0 +1,230 @@
+Objektový soubor
+----------------
+- formát dle OS
+- obecnì obsahuje
+  - hlavièka - informace o souboru
+  - objektový kód - strojový kód + data
+  - exportované symboly = seznam poskytovaných symbolù (napø. funkce nedeklarované jako static)
+    - static podobný význam jako private z OOP
+    - static viditelný jen v rámci kompilovaného souboru
+    - zbytek viditelný pøi linkování i odjinud
+  - importované symboly - seznam symbolù použitých v tomto souboru
+    - import adress table
+    - hlavièkové soubory obsahují prototypy funkcí
+      - eg. void printf(char *fmt, ...);
+      - neobsahují celé tìlo
+    - vìci z jiných naincludovaných knihoven
+  - informace o pøemíštìní - seznam míst, kde je potøeba upravit v pøípadì pøesunutí kódu
+  - debugovací informace
+- rozdìlení na sekce
+  - kód
+  - data jen pro ètení (konstanty, const)
+  - inicializovaná data (globální promìnné, statické promìnné)
+- program navíc obsahuje v pamìti informace o neinicializovanýh datech, atd.
+- možnost sdílet jednotlivé èásti mezi instancemi programu
+- tento formát je èasto sdílený i binárními soubory
+
+Linkování
+---------
+- spojí jednotlivé objektové soubory do spustitelného formátu (slouèí jednotlivé sekce)
+- postará se o správné umíštìní kódu a vyøešení odkazù na chybìjící funkce a promìnné
+- pøipojení knihoven (hlavièkové soubory vìtšinou neobsahují žádný kód!)
+
+Staticky linkované knihovny:
+- archiv objektových souborù (+ informace o symbolech)
+- výhody: jednoduchá implementace, nulová režie pøi bìhu aplikace, žádné závislosti (výsledný *.exe soubor obsahuje všechny potøebné prvky z knihoven)
+- nevýhody: velikost výsledného binárního souboru, aktualizace knihovny ==> nutnost rekompilace
+
+Dynamicky linkované knihovny:
+- knihovna je naètena až pøi spuštìní programu
+- sdílení kódu
+- nutnost provázat adresy v kódu s knihovnou
+- nutná spolupráce OS
+
+Dynamicky linkované knihovny
+----------------------------
+- problém: umíštìní knihovny v pamìti
+
+Øešení v UNIXu:
+- sdílené knihovny (shared objects, foo.so)
+- ==> position independent code (PIC) - kód, který lze spustit bez ohledu na adresu v pamìti
+- x86 používá èasto relativní adresování (i tak je PIC pomalejší než bìžný kód)
+- pøi spuštìní dynamický linker (ld.so) provede pøenastavení všech odkazù na vnìjší knihovny
+- Global Offset Table (GOT) - tabulka sloužící k výpoètu absolutních adres (nepøímá adresace)
+// je to pravda, nedìlal jsem si benchmark
+- Procedure Linkage Table (PLT) - tabulka absolutních adres funkcí
+  - na zaèátku PLT obsahuje volání linkeru
+  - pøi volání funkce se provede skok do PLT
+  - nastaví se informace o funkci pro linker a ten se zavolá
+  - linker najde adresu funkce, nastaví záznam v PLT
+  - linker zavolá funkci
+  - další volání se provádí bez úèasti linkeru ==> adresa v PLT
+
++Code:---------+
+|call func@PLT |
+|...           |
+|...           |
++--------------+
+
++PLT:---------------+
+|PLT[0]:            |
+|  call resolver    |
+|...                |
+|PLT[n]:            |
+|  jmp *GOT[n]      |
+|  prepare resolver |
+|  jmp PLT[0]       |
++-------------------+
+
++GOT:-----+
+|...      |
+|GOT[n]:  |
+|  <addr> |
++---------+
+
++Code:-+
+|func: |
+|  ... |
+|  ... |
++------+
+
+Øešení ve Windows:
+- Dynamic-link library (DLL)
+- Windows nepoužívá PIC ==> každá knihovna má svou adresu v pamìti
+- v pøípadì kolize nutnost pøesunu + pøepoèet absolutních adres
+- každý program obsahuje import adress table (IAT) - tabulka adres volaných funkcí (nepøímá adresace)
+- inicializace pøi spuštìní
+- volání pøes call [adresa] nebo thunk table
+
+...kód...
+00401002 CALL 00401D82
+...thunk table...
+00301D82 JMP DWORD PTR DS:[40204C]
+...adresy funkcí...
+40204C > FC 3D 57 7C    ; adresa
+
+- vyhledávání funkcí podle èísla nebo jména (binární vyhledávání)
+
+// call [0x12...78]
+// ==
+// mov eax, [0x12...78]
+// call eax
+
+Dynamicky nahrávané knihovny
+----------------------------
+- možnost explicitnì nahrát knihovnu za bìhu
+- implementace pluginu (pøíklad použití)
+- mechanismus podobný dynamickému linkování
+- Unix: dlopen, dlsym (vyhledá funkci dle jména)
+- Windows: LoadLibrary, GetProcAddr
+- kombinace: zpoždìné naèítání knihoven
+
+Virtuální stroje
+----------------
+- virtualizace systému vs. virtualizace procesu
+- program se nepøekládá do strojového kódu cílového procesoru
+- bytecode: instrukèní sada virtuálního procesoru (virtuálního stroje VM)
+- bytocode ==> interpretace jednotlivých instrukcí nebo pøeklad do instrukèní sady cílového procesoru bìhovým prostøedím
+- pøenositelný kód nezávislý na konkrétním procesoru
+- možnost lépe kontrolovat bìh kódu (oprávnìní, pøístupy)
+  - izolovanìjší procesy - lepší kontrola, ale vìtší režie
+- režie interpretace/pøekladu
+- VM mùže øešit i komplexnìjší úlohy než bìžný CPU (správa pamìti, výjimky, ...)
+- pøíklady: Java Virtual Machine (& Java Byte Code), Common Language Runtime (& Common Intermediate Language), UCSD Pascal (p-code), LLVM, atd.
+
++-------+
+|Procesy|
++-------+
+|  VM   | // jasnì definovaná a ostrá hranice mezi procesy a HW, lepší správa
++-------+
+|  OS   |
++-------+
+|  CPU  |
++-------+
+
+JIT pøeklad
+-----------
+- bìhové prostøedí generuje kód dané architektury za bìhu (von Neumannova architektura!)
+- možnost optimalizace pro konkrétní typ CPU
+- optimalizace podle aktuálnì provádìného kódu (profilování)
+  - bìhové prostøedí sleduje, které èásti kódu jsou využívány intenzivnì
+  - na základì toho zvolí vhodnou optimalizaci
+  - typicky rozbalení smyèek
+    - místo èasté iterace nakopíruje tìlo vícekrát, interuje ménìkrát
+
+Zásobníkové virtuální stroje:
+- jednoduchá instrukèní sada ==> snadná implementace
+- potøeba více instrukcí, nicménì kratší kód
+  - horší pøeklad do skuteèných ISA
+- JVM, CLR
+
+Registrové virtuální stroje:
+- efektivní pøeklad do instrukèní sady (pipelined) procesorù
+- odolnìjší proti chybám
+- Dalvik - Android, minimální spotøeba pamìti
+- Parrot - Perl 6 nebo LLVM - optimalizace pøes Single Static Assignment
+  - každá promìnná pøiøazena právì 1
+- více dle skuteèných ISA, ale implementace horší
+
+Java Virtual Machine a Java Bytecode
+------------------------------------
+- 1995: SUN prog. jazyk Java 1.0
+- pøeklad Java ==> Java Bytecode (JBC)
+- JBC vykonáván pomocí JVM
+- implmentace JVM není definována (pouze specifikované chování), JBC lze
+  - interpretovat
+  - pøeložit do strojového kódu daného stroje (JIT i AOT)
+    - JIT = Just in Time
+    - AOT = Ahead of Time (pøed spuštìním programu pøeložit)
+  - provést pomocí konkrétního CPU
+- JVM - virtuální zásobníkový procesor
+- malý poèet instrukcí (< 256)
+- zásobník obsahuje rámce (rámec je tvoøen pøi zavolání funkce)
+  - lokální promìnné, mezivýpoèty
+  - operand stack - slouží k provádìní výpoètù
+- heap s automatickou správou pamìti
+- jednoduché i velmi komplexní operace (volání funkcí, výjimky)
+- základní aritmetika s primitivními datovými typy (hodnoty menší než int pøevedeny na int)
+- speciální operace pro práci s prvními argumenty, lokálními prostøedími, jednièkou, nulou
+- pouze relativní skoky
+
+eg.
+public static void foo(int a, int b) {
+    System.out.println(a + b);
+}
+
+Code:
+0: getstatic      #21; //Field java/lang/System.out:Ljava/io/PrintStream;
+3: iload_0
+4: iload_1
+5: iadd
+6: invokevirtual  #27; //Method java/io/PrintStream.println:(I)V
+9: return
+
+Common Language Runtime
+-----------------------
+- Microsoft .NET implementuje obdobný pøístup
+- Common Language Runtime (CLR) + Common Intermediate Language (CIL) - bìhové prostøedí + bytecode
+- koncepènì velice podobné JVM a JBC
+- od zaèátku navržen s podporou více jazykù
+- pøi prvním zavolání metody ==> pøeklad do strojového kódu CPU
+  - JVM musí metodu spustit nìkolikrát (v øádech 1000) než se jej rozhodne pøeložit do kódu CPU (namísto interpretování)
+
+Opuštìní bìhového prostøedí:
+- Java: Java Native Interface - rozhraní pro spolupráci s C++
+- .NET: Platform Invocation Service (P/Invoke) - umožòuje spouštìt kód z DLL
+- použít v nejkrajnìjších situacích
+  - v momentì použití jsme závislí na OS
+  - kód se stává nepøenositelným
+
+MacOS X
+-------
+Multi-Architecture Binaries:
+- souèást jednoho binárního souboru je kód pro víc architektur (napø. Motorola 68k + PowerPC)
+  - historické dùvody
+  - Apple mìl poèítaèe více architektur
+  - výrobci softwaru chtìli jednotnou distribuci
+- Universal binaries - možnost více platforem (nejen i386/PowerPC, ale i 32/64 bitù)
+- pro pøechod od procesorù PowerPC k i386 ==> technologie Rosetta ==> pøeklad kódu
+  - program se prùbìžnì pøekládal z jedné architektury do druhé
+  - Apple bližší info zamlèuje

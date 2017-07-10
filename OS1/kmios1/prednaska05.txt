@@ -1,0 +1,174 @@
+Další ISA a pøeklad programu
+============================
+AT&T Syntaxe
+------------
+- kód v assembleru jde zapsat více zpùsoby
+- dosud používaná syntaxe se oznaèuje jako Intel
+- èasto se používá alternativní syntaxe AT&T
+- operace zapisované ve tvaru (pøiøazení zleva doprava, jako SEC 103)
+
+<jmeno><velikost> zdroj, cil
+
+- <jmeno> oznaèuje název operace mov, add, cmp
+- <velikost> je písmeno b, w, l nebo q (1, 2, 4 nebo 8 B)
+- registry se zapisují ve tvaru %reg (napø. %eax)
+- konstanty zaèínají znak $ (napø. $100)
+- adresace pamìti ve tvaru disp(base, index, scale)
+(napø. -10(%ecx, %ebx, 2) -> [ecx + 2 * ebx - 10])
+
+AT&T                        Intel
+pushw %ax                   push ax
+movl $100, %eax             mov eax, 100
+addl %ebx, %eax             add eax, ebx
+subl (%eax), %ecx           sub ecx, [eax]
+subl (%eax, %ebx), %ecx     sub ecx, [eax + ebx]
+subl -10(%eax), %ecx        sub ecx, [eax - 10]
+andw $42, -16(%eax)         and word ptr [eax - 16], 42
+
+SPARC
+-----
+- rodina procesorù (kompletní dokumentace pod GPL)
+- každá instrukce zabírá v pamìti právì 4B (zjednodušení èinnosti dekódovací jednotky)
+- snaha eliminovat množství operací
+- operace bìžnì se tøemi operandy
+- velké množství registrù (øádovì stovky), bìžnì dostupných 32 registrù
+- globální registry g0-g7 (g0 je vždy nula)
+- registrové okno - 24 registrù
+  - i0-i7 - argumenty pøedané funkci         (vstupní)
+  - l0-l7 - lokální promìnné                 (lokální)
+  - o0-o7 - argumenty pøedávané další funkci (výstupní)
+  umožòuje elegantní volání funkcí/procedur
+        |i|l|o|
+-> posun    |i|l|o|     pøi volání se okno posune - výstup se stává vstupem
+-> další volání |i|l|o|
+
+- speciální využití nìkterých registrù
+  - fp - frame pointer (i6)
+  - sp - stack pointer (o6)
+  - návratová adresa - i7/o7
+- pøíklady operací
+
+add %i0, 1, %l1       ; l1 := i0 + 1
+subcc %i1, %i2, %i3   ; i3 := i1 - i2
+subcc %i1, %i2, %g0   ; g0 := i1 - i2 (cmp) g0 je vždy 0, pøíznaky nastaveny
+or %g0, 123, %l1      ; l1 := g0 | 123 (mov)
+
+- malá velikost instrukce
+  - operace neumožòují adresovat pamì ==> specializované operace ld, st
+    ==> load/store architektura
+  - internì se pracuje s celými registry
+  - jako konstanty jde bìžnì používat pouze hodnoty -4096 až 4095
+  - pøiøazení velkých èísel ve dvou krocích
+
+    sethi 0x226AF3, %l1   ; nastav horni bity
+    or %l1, 0x1EF, %l1    ; nastav dolni bity
+
+- jednoduché instrukce
+- potenciálnì rychlejší zpracování
+- skoky se neprovádí okamžitì (ba = jmp ... branch always)
+- k optimálnímu využití pipeliningu se pøidá delay slot
+- ještì je zpracována následující instrukce
+- možnost nastavit annul bit, operace v delay slotu se provede jenom, pokud se provede i skok
+
+cmp %l1, %l2
+bl, a addr
+mov %g0, %l3
+
+ARM
+---
+- rodina procesorù typicky využívaná v embedded a pøenosných zaøízeních
+- optimalizace na nízkou spotøebu napájení a pamìti
+- není jeden výrobce
+- základní jádro je licencováno výrobcùm k výrobì SoC (Qualcomm Snapdragon, nVidia Tegra, Apple A4-A9, ...)
+- Raspberry PI - ideální pro výuku OS
+
+Instrukèní sada:
+- podpora nìkolika rùzných typù instrukèních sad (+ rozšíøení dle modelu)
+- load/store architektura
+- 32 registrù, z toho jen 16 je v daný okamžik použitelných (R0 - R15)
+- R13 - Stack Pointer, R14 - Link Register, R15 - Program Counter
+- registry > R8 jsou pøepínány podle aktuálního režimu procesoru (napø. pøi ošetøení pøerušení)
+
+Instrukèní sada (pùvodní):
+- všechny instrukce o velikosti 32 bitù
+- obvykle 2-3 operandy, pøíznaky nastavují jen programátorem urèené instrukce
+- možnost podmínìného vykonávání instrukcí (redukování skokù)
+- jako pøímé hodnoty lze používat jen 8bitová èísla
+
+;; vypocet absolutni hodnoty bez podmineneho skoku
+EOR r1, r1, r1   ; r1 := r1 xor r1
+CMP r0, r1       ; nastav priznaku r0 - r1
+SUBLT r0, r1, r0 ; r0 := r1 - r0
+
+//<russian> we save every byte </russian>
+Instrukèní sada Thumb:
+- zahuštìní kódu (velikost instrukce 16 bitù)
+- zmenšení poètu operandù (podobná ISA x86)
+- bez možnosti podmínìného provádìní instrukcí
+
+Další instrukèní sady:
+- Thumb-2 - podobná Thumb, efektivnìjší kódování instrukcí (lepší výkon)
+- Jazelle - spouštìní Java bytecode
+
+- nemusíme si vybírat sadu, pro kterou programovat - lze mezi nimi volnì pøepínat (pokud to na tom chipu je)
+
+Shrnutí koncepcí
+----------------
+RISC: Reduced Instruction Set Computer
+- zjednodušený návrh a implementace CPU
+- rychlejší bìh, urèitá omezení
+
+CISC: Complete (Complex) Instruction Set Computer
+- poskytují operace velice blízké vyšším PJ
+- snadné pro ruèní programování
+- nároèné na implementaci CPU (+ již nepoužívané instrukce v ISA - zpìtná kompatibilita)
+
+Reálnì...:
+- procesory typu CISC provádí rozklad operací na mikrooperace ==> vnitønì RISC
+- další úroveò abstrakce
+- vnitønì dochází ještì k dalším úpravám kódu, napø. pøejmenování registrù
+- out-of-order execution ==> rozdìlení (mikro)operací jednotlivým jednotkám ==> paralelismus
+- plánování O-o-O komplikuje návrh CPU
+
+VLIW: Very Large Instruction Word
+- snaha využít nìkolik funkèních jednotek
+- jedna instrukce mùže obsahovat nìkolik operací
+  ==> soubìžné zpracování
+- spolupráce s pøekladaèem ==> "CPU nemusí hádat, jak pobìží program"
+- složitìjší návrh dekódovací jednotky
+- programátor urèí, co dìlat soubìžnì
+- IA-64 od Intelu
+- nesplnilo oèekávání, neujalo se
+
+Pøeklad programu (jazyk C)
+==========================
+- preprocesor - expanduje makra, odstraní nepotøebný kód, naète požadované hlavièkové soubory (napø. math.h) - deklarace struktur, deklarace prototypù, ...
+  - kód pro preprocessor zaèíná #
+    - považován za komentáø pro zbytek programu
+    - #define
+    - #include
+    - #if
+    - #ifdef
+    - #ifndef
+    - ...
+- pøekladaè - generuje kód v assembleru
+- assembler - vygeneruje objektový kód (foo.c ==> foo.obj/foo.o)
+  - chybí vazby na funkce, promìnné, ... definované jinde
+  - další informace - data, komentáøe, servisní informace (.eh_frame)
+- linker - slouèí nìkolik souborù s objektovým kódem + knihovny do spustitelného formátu
+
+Poznámky:
+- nìkteré kroky mohou být slouèeny nebo vypuštìny
+- nìkteré vyšší programovací jazyky jsou (BÚNO) pøekládány do nižšího jazyka (napø. C)
+- oddìlený pøeklad do objektových souborù a jejich spojení ==>
+  - možnost kombinovat rùzné programovací jazyky
+  - komplikuje interprocedurální optimalizace
+
+- direktivy pøekladaèe mohou zastavit pøeklad ve fázích
+gcc -E foo.c //ve fázi preprocessoru
+gcc -S foo.c //kód v assembleru         .cfi... = pomocné direktivy
+gcc -c foo.c //objektový kód      rozsypaný èaj - èistì binární kód
+objdump -d -M intel foo.o //disassembly
+objdump -s foo.o // jednotlivé sekce
+gcc -o foo foo.c // finální binárka
+objdump -d -M intel foo | less //celý program v assembleru

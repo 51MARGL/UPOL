@@ -1,0 +1,257 @@
+Synchronizace procesù a uváznutí (pokraèování)
+==============================================
+Semafor (pokraèování)
+---------------------
+  void V(struct sem *s) {
+      s->value++;
+      if (s->value <= 0) {
+          // odeber proces P z s->list
+          wakeup(P);
+      }
+  }
+
+- operace musí být provedeny atomicky (øešení?)
+- seznam by mìl být jako FIFO
+- spolupráce wakeup (a block) s plánovaèem
+- všimnìte si záporné hodnoty s->valie ==> poèet èekajících procesù
+
+Další synchornizaèní nástroje
+-----------------------------
+Bariéry:
+- synchronizaèní metoda vyžadující, aby se proces zastavil v daném bodì, dokud všechny procesy nedosáhnou daného bodu
+
+Read-Write zámky:
+- vhodne pro situace, které ètou i zapisují do sdíleného prostøedku
+- ètìcí a zapisovací režim zámku
+- vhodný pokud jde rozlišit ètenáøe a písaøe (písaøù je víc)
+
+Podmínìná promìnná:
+- èekání na zmìnu promìnné - neefektivní èekání
+- operace wait, signal
+- kombinace se zamykáním
+
+Monitor
+-------
+- modul nebo objekt
+- v jeden okamžik mùže kteroukoliv metodu používat pouze 1 proces/vlákno
+- nutná podpora prog. jazyka
+- Java (synchronized), .NET (lock)
+- rozšíøení o podporu èekání (Wait, Pulse /* notify v Javì */, PulseAll) ==> možnost odemèít zámek spoleènì s èekáním
+
+Monitor v Javì
+--------------
+// Synchronized zamkne objekt pro práci jednoho vlákna.
+// Jiné vlákno získá pøístup až potom, co to pùvodní vlákno skonèí s prací.
+// Pouze pro metody synchronized, ostatní metody nejsou kritické
+// na sdílený pøístup.
+public class Bank {
+    private String name;
+    private int[] account;
+
+    public synchronized void transfer(int from, int to, int amount) {
+        account[from] -= amount;
+        account[to] += amount;
+    }
+
+    public synchronized int summary() {
+        int sum = 0;
+        for (Integer a: account) {
+            sum += a;
+        }
+        return sum;
+    }
+
+    public String getName() {
+        return name;
+    }
+}
+
+Monitor v Javì a C#
+-------------------
+Java:
+public synchronized void foo() {
+    // kód
+}
+public void foo() {
+    synchronized (this) {
+        // kód
+    }
+}
+
+C#:
+public void foo() {
+    lock(this) {
+        // kód
+    }
+}
+
+Synchronizaèní primitiva ve Windows
+-----------------------------------
+- obecný mechanismus - synchronizaèní objekty se nacházejí ve 2 stavech (signalizovaný vs. nesignalizovaný)
+- signalizovaný objekt je dostupný (mutex, semaphore, event, thread, etc.)
+- (univerzální) èekací funkce (WaitForSingleObject, WaitForMultipleObject) - èeká, dokud se objekt(y) nedostanou do signalizovaného stavu
+- èekací funkce slouží také k manipulaci s mutexy, semafory, ...
+- CreateMutex, CreateSemaphore, ... (možnost vytvoøit pojmenované objekty)
+- ReleaseMutex, ReleaseSemaphore, SetEvent
+- SignalObjectAndWait - kombinuje pøedchozí operace do jedné atomické
+
+Další synchronizaèní metody:
+- Interlocked API (atomické operace), spinlocks (jádro)
+- kritická sekce (EnterCriticalSection, LeaveCriticalSection)
+
+Synchronizaèní primitiva v unixech
+----------------------------------
+Synchronizace procesù:
+- SYSTEM V IPC
+- sdílená pamì, semafory, zasílání zpráv
+- práce se semafory (skupiny semaforù) - semget, semctl, semop (mj. spoleèné rozhraní pro operace typu P a V), ...
+- sdílené všemi procesy ==> správá oprávnìní
+
+Synchronizace vláken:
+- libpthread - mutexy, semafory, rw-zámky, bariéry (pthread_mutex_lock, pthread_mutex_trylock, pthread_mutex_unlock, pthread_cond_wait, pthread_cond_signal, sem_wait, sem_post, ...)
+- futexy (jiný název pro kritickou sekci)
+
+Atomické operace:
+- chybí obecné rozhraní v uživatelském prostoru
+- glib, lib_atomic_ops (knihovny suplující tuto funkènost)
+- jádro používá vlastní sadu operací (atomic\_read, atomic_set, ...)
+
+Deadlock
+--------
+/* obrázek dopravní zácpy na køižovatce */
+- uváznutí - systém se dostal do stavu, kdy nemùže dál pokraèovat
+- U množiny procesù došlo k uváznutí (deadlocku), pokud každý proces z této množiny èeká na událost, kterou pouze proces z této množiny mùže vyvolat
+
+Užívání prostøedkù:
+- request - požadavek na prostøedek, není-li k dispozici, proces èeká
+- use - proces s prostøedkem pracuje
+- release - uvolnìní prostøedku pro další použití
+
+Podmínky vzniku:
+- Mutual Exclusion - alespoò 1 prostøedek je výluènì užíván 1 procesem
+- Hold & Wait - proces vlastní alespoò 1 prostøedek a èeká na další
+- No Preemption - prostøedek nelze násilnì odebrat
+- Circular Wait - cyklické èekání (proces A vlastní prostøedek 1, chce prostøedek 2, který drží proces B, který souèasnì žádá o prostøedek 1)
+
+Øešení deadlocku
+----------------
+Ignorace:
+- "neøešení", v praxi èasto používané /* pštrosí algoritmus */
+
+Detekce (detection & recovery):
+- pokud vznikne deadlock, je detekován a nìkterý proces odstranìn
+- k detekci se používá alokaèní graf prostøedkù a graf èekání
+- alokaèní graf:
+  - orientovaný graf
+  - dva typy uzlù - prostøedek, proces
+  - hrana proces-prostøedek - proces èeká na prostøedek
+  - hrana prostøedek-proces - prostøedek je vlastnìn procesem
+- graf èekání vznikne vynecháním uzlù prostøedkù a pøidáním hran Pn -> Pm pokud existovaly hrany Pn -> R a R -> Pm, kde Pn a Pm jsou procesy a R je prostøedek
+- deadlock vznikne, pokud je v grafu èekání cyklus
+- ==> odebrání prostøedkù, odstranìní procesu (Jak vybrat obì?), opakované zpracování (rollback)
+- Kdy má smysl provádìt detekci?
+
+/*
+alokaèní graf prostøedkù: p = proces, r = prostøedek
+ p1->r1
+ r1->p2
+ p2->r3
+ r3->p5
+ p2->r4
+ r4->p3
+ p3->r5
+ r5->p4
+ p4->r2
+ r2->p1
+ p2->r5
+
+graf èekání (obsahuje cyklus):
+ p1->p2
+ p2->p5
+ p2->p3
+ p2->p4
+ p3->p4
+ p4->p1
+
+*/
+
+Zamezení vzniku (prevention):
+- snažíme se zajistut, že nìkterá z podmínek není splnìna
+- zamazení výluènému vlastnìní prostøedku (èasto nelze z povahy zaøízení)
+- zamezení držení a èekání
+  - proces zažádá o všechny prostøedky hned na zaèátku
+  - problém s odhadem
+  - plítvání a hladovìní
+  - množství prostøedkù nemusí být známé pøedem
+  - jde použít i v prùbìhu procesu (ale proces se musí vzdát všech prostøedkù)
+- zavedení možnosti odejmout prostøedek - vhodné tam, kde lze odejmout prostøedky tak, aby nešlo poznat, že byly odebrány
+- zamezení cyklickému èekání - zavedení globálního èíslování prostøedkù a možnost žádat prostøedky jen v daném poøadí
+
+Vyhýbání se uváznutí (avoidance):
+- procesy žádají prostøedky libovolnì
+- systém se snaží vyhovìt tìm požadavkùm, které nemohou vést k uváznutí
+- je potøeba znát pøedem, kolik prostøedkù bude vyžádáno
+- tomu je pøizpùsobeno plánování procesù
+- bezpeèný stav - existuje poøadí procesù, ve kterém jejich požadavky budou vyøízeny bez vzniku deadlocku
+- systém, který není v bezpeèném stavu, nemusí být v deadlocku
+- systém odmítne pøidìlení prostøedkù, pokud by to znamenalo pøechod do nebezpeèného stavu (proces musí èekat)
+
+Algorimus na bázi alokaèního grafu:
+- vhodný, pokud existuje jen 1 instance každého prostøedku
+- do alokaèního grafu pøidáme hrany (proces-prostøedek) oznaèující potenciální žádosti procesu a prostøedky
+- žádosti o prostøedek se vyhoví pouze tehdy, pokud konverze hrany na hranu typu (prostøedek-je-vlastnìn-procesem) nepovede ke vzniku cyklu
+
+Bankéøùv algoritmus:
+- vhodny tam, kde je vìtší poèet prostøedkù daného typu
+- na zaèátku každý proces oznámí, kolik prostøedkù jakého typu bude maximálnì potøebovat
+- pøi žádosti o prostøedky systém ovìøí, jestli se nedostane do nebezpeèného stavu
+- pokud nelze vyhovìt, je proces pozdržen
+- porovnávají se volné prostøedky s aktuálnì pridìlenými a maximálními
+
+Bankéøùv algoritmus
+-------------------
+- uvažujme m prostøedkù a n procesù
+- matice n krát m
+  - max - poèet prostøedkù, které bude každý proces žádat
+  - assigned - poèet pøiøazených prostøedkù jednotlivým procesùm
+  - needed - poèet prostøedkù, které bude každý proces ještì potøebovat
+    (evidentnì needed = max - assigned)
+- vektory velikosti m
+  - E - poèet existujících prostøedkù
+  - P - poèet aktuálnì držených prostøedkù
+  - A - poèet dostupných zdrojù (evidentnì A = E - P)
+
+Algoritmus:
+1. najdi øádek i v needed takový, že needed[i] <= A, pokud takový není, systém není v bezpeèném stavu
+2. pøedpokládej, že proces skonèil a uvolnil své zdroje, i. e., A <- A + assigned[i] a odstraò øádky i ze všech matic
+3. opakuj body 1 a 2, dokud nejsou odstranìny všechny procesy nebo není jasné, že systém není v bezpeèném stavu
+
+Pøíklad:
+
+assigned:
+  K L M N
+ +-------
+A|3 0 1 1
+B|0 1 0 0
+C|1 1 1 0
+D|1 1 0 1
+E|0 0 0 0
+
+needed:
+  K L M N
+ +-------
+A|1 1 0 0
+B|0 1 1 2
+C|3 1 0 0
+D|0 0 1 0
+E|2 1 1 0
+
+E = <6, 3, 4, 2>
+P = <5, 3, 2, 2>
+A = <1, 0, 2, 0>
+
+- podmínku splòuje proces D ==> odebrán a A <- <2, 1, 2, 1>
+- podmínku splòuje proces A ==> odebrán a A <- <5, 1, 3, 2>
+- podmínku splòuje proces B ==> odebrán a A <- <5, 2, 3, 2>
+- podmínku splòuje proces C ==> odebrán a A <- <6, 3, 4, 2>
+- podmínku splòuje proces E ==> odebrán a A <- <6, 3, 4, 2>
