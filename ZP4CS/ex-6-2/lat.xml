@@ -1,0 +1,61 @@
+<ordered_set>
+<elements>
+<element id="1">
+<x>250</x>
+<y>20</y>
+<objects></objects>
+<attributes>
+tubeHeight, messureInterval, accuracy, messuringDate, codeQuality, waterAmount, windStrength, windDirection, rainfall, wind
+</attributes>
+</element>
+<element id="2">
+<x>130</x>
+<y>130</y>
+<objects>Wind</objects>
+<attributes>
+messuringDate, codeQuality, windStrength, windDirection
+</attributes>
+</element>
+<element id="3">
+<x>310</x>
+<y>190</y>
+<objects>Anemometer</objects>
+<attributes>messureInterval, accuracy, wind</attributes>
+</element>
+<element id="4">
+<x>190</x>
+<y>130</y>
+<objects>Rainfall</objects>
+<attributes>messuringDate, codeQuality, waterAmount</attributes>
+</element>
+<element id="5">
+<x>250</x>
+<y>270</y>
+<objects>RainGauge, Anemometer, Rainfall, Wind</objects>
+<attributes></attributes>
+</element>
+<element id="6">
+<x>190</x>
+<y>190</y>
+<objects>Rainfall, Wind</objects>
+<attributes>messuringDate, codeQuality</attributes>
+</element>
+<element id="7">
+<x>250</x>
+<y>190</y>
+<objects>RainGauge</objects>
+<attributes>tubeHeight, rainfall</attributes>
+</element>
+</elements>
+<orders>
+<order bigger="1" smaller="2"/>
+<order bigger="1" smaller="3"/>
+<order bigger="1" smaller="4"/>
+<order bigger="1" smaller="7"/>
+<order bigger="2" smaller="6"/>
+<order bigger="3" smaller="5"/>
+<order bigger="4" smaller="6"/>
+<order bigger="6" smaller="5"/>
+<order bigger="7" smaller="5"/>
+</orders>
+</ordered_set>
