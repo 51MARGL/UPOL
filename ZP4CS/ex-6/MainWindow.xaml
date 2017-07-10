@@ -1,0 +1,22 @@
+﻿<Window x:Class="cv_6.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cv_6"
+        mc:Ignorable="d"
+        Title="Text Editor" Height="400" Width="725" Closed="Window_Closed" Closing="Window_Closing">
+    <Grid Height="369" VerticalAlignment="Bottom">
+        <Menu x:Name="menu" HorizontalAlignment="Left" Height="35" VerticalAlignment="Top" Width="717">
+            <MenuItem Header="File" Height="35" Width="62">
+                <MenuItem Header="Open" HorizontalAlignment="Left" Width="140" Click="MenuItem_Click"/>
+                <MenuItem Header="Save" HorizontalAlignment="Left" Width="140" Click="MenuItem_Click_1"/>
+                <Separator HorizontalAlignment="Left" Height="14" Width="140"/>
+                <MenuItem Header="Exit" HorizontalAlignment="Left" Width="140" Click="MenuItem_Click_2"/>
+            </MenuItem>
+        </Menu>
+        <Label x:Name="label" Content="FilePath" HorizontalAlignment="Left" Margin="0,35,0,0" VerticalAlignment="Top" Width="624"/>
+        <TextBox x:Name="textBox" HorizontalAlignment="Left" Height="272" Margin="0,61,0,0" TextWrapping="Wrap" VerticalAlignment="Top" Width="717" TextChanged="textBox_TextChanged"/>
+        <Label x:Name="label1" Content="Symbols:" HorizontalAlignment="Left" Margin="544,333,0,0" VerticalAlignment="Top" Width="89"/>
+    </Grid>
+</Window>
