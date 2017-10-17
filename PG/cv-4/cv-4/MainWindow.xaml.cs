@@ -21,27 +21,25 @@ namespace cv_4
     /// </summary>
     public partial class MainWindow : Window
     {
-        private Bitmap firstImage;
-        private Bitmap sourceImage;
-        private bool sliderDragging = false;
         public MainWindow()
         {
             InitializeComponent();
         }
 
-        private void LoadImage()
+        #region AppLogic
+        private void LoadImage(Bitmap source, System.Windows.Controls.Image imageControl)
         {
             try
             {
                 MemoryStream ms = new MemoryStream();
-                sourceImage.Save(ms, System.Drawing.Imaging.ImageFormat.Bmp);
+                source.Save(ms, ImageFormat.Bmp);
                 BitmapImage image = new BitmapImage();
                 image.BeginInit();
                 ms.Seek(0, SeekOrigin.Begin);
                 image.StreamSource = ms;
                 image.EndInit();
 
-                ResImage.Source = image;
+                imageControl.Source = image;
             }
             catch (Exception exc)
             {
@@ -49,61 +47,136 @@ namespace cv_4
             }
         }
 
-        private void CreateGreyBitmap(string SWaverage = "S")
+        private Bitmap ProcessBitmap(Bitmap defBitmap, string SWaverage = "S")
         {
-            var rect = new Rectangle(0, 0, firstImage.Width, firstImage.Height);
-            BitmapData data = firstImage.LockBits(rect, ImageLockMode.ReadOnly, firstImage.PixelFormat);
+            Bitmap resBitmap = defBitmap.Clone(new Rectangle(0, 0, defBitmap.Width, defBitmap.Height), defBitmap.PixelFormat);
+            Rectangle rect = new Rectangle(0, 0, resBitmap.Width, resBitmap.Height);
+            BitmapData bmpData = resBitmap.LockBits(rect, ImageLockMode.ReadWrite, resBitmap.PixelFormat);
+            IntPtr ptr = bmpData.Scan0;
 
-            var greyBitmap = new Bitmap(data.Width, data.Height, System.Drawing.Imaging.PixelFormat.Format32bppRgb);
+            int bytes = Math.Abs(bmpData.Stride) * resBitmap.Height;
+            byte[] rgbValues = new byte[bytes];
+            System.Runtime.InteropServices.Marshal.Copy(ptr, rgbValues, 0, bytes);
 
-            for (int y = 0; y < data.Height; y++)
+            for (int i = 0; i < rgbValues.Length; i += 3)
             {
-                for (int x = 0; x < data.Width; x++)
+                if (SWaverage == "S")
                 {
-                    Color PixelColor = Color.FromArgb(System.Runtime.InteropServices.Marshal.ReadInt32(data.Scan0, (data.Stride * y) + (3 * x)));
-                    int avg;
-                    if (SWaverage == "S")
-                    {
-                        avg = GetSimpleAverageRGB(PixelColor.R, PixelColor.G, PixelColor.B);
-                    }
-                    else
-                    {
-                        avg = GetWeightedAverageRGB(PixelColor.R, PixelColor.G, PixelColor.B);
-                    }
-                    avg = avg > 255 ? 255 : avg;
-                    greyBitmap.SetPixel(x, y, Color.FromArgb(avg, avg, avg));
+                    byte gray = GetSimpleAverageRGB(rgbValues[i], rgbValues[i + 1], rgbValues[i + 2]);
+                    rgbValues[i] = rgbValues[i + 1] = rgbValues[i + 2] = gray;
+                }
+                else if (SWaverage == "D")
+                {
+                    byte gray = GetSimpleAverageRGB(rgbValues[i], rgbValues[i + 1], rgbValues[i + 2]);
+                    GetDesaturatedRGB(rgbValues, gray, i);
+                }
+                else if (SWaverage == "W")
+                {
+                    byte gray = GetWeightedAverageRGB(rgbValues[i], rgbValues[i + 1], rgbValues[i + 2]);
+                    rgbValues[i] = rgbValues[i + 1] = rgbValues[i + 2] = gray;
                 }
             }
-            firstImage.UnlockBits(data);
-            sourceImage = greyBitmap;
-            LoadImage();
+            System.Runtime.InteropServices.Marshal.Copy(rgbValues, 0, ptr, bytes);
+
+            resBitmap.UnlockBits(bmpData);
+            return resBitmap;
         }
 
-        private int GetSimpleAverageRGB(int r, int g, int b)
+        private byte GetSimpleAverageRGB(byte r, byte g, byte b)
         {
-            return (r + g + b) / 3;
+            return (byte)((r + g + b) / 3);
         }
-        private int GetWeightedAverageRGB(int r, int g, int b)
+
+        private byte GetWeightedAverageRGB(byte r, byte g, byte b)
         {
-            return (int)(Rslider.Value * r + Gslider.Value * g + Bslider.Value * b);
+            return (byte)(Rslider.Value * r + Gslider.Value * g + Bslider.Value * b);
         }
+
+        private void GetDesaturatedRGB(byte[] values, byte gray, int index)
+        {
+            byte r = values[index];
+            byte g = values[index + 1];
+            byte b = values[index + 2];
+            byte commonCoef = (byte)((1 - Sslider.Value) * gray);
+            values[index] = (byte)(commonCoef + Sslider.Value * r);
+            values[index + 1] = (byte)(commonCoef + Sslider.Value * g);
+            values[index + 2] = (byte)(commonCoef + Sslider.Value * b);
+        }
+
+        public byte[] ToByteArray(Bitmap image, ImageFormat format)
+        {
+            using (MemoryStream ms = new MemoryStream())
+            {
+                image.Save(ms, format);
+                return ms.ToArray();
+            }
+        }
+
+        private string OpenImageDialog(Bitmap defImage, Bitmap sourceImage)
+        {
+            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            var result = dlg.ShowDialog();
+            if (result == true)
+            {
+                return dlg.FileName;
+            }
+            else
+            {
+                return "";
+            }
+        }
+
+        private void SaveImageDialog(Bitmap imageToSave)
+        {
+            try
+            {
+                Microsoft.Win32.SaveFileDialog sdlg = new Microsoft.Win32.SaveFileDialog();
+                sdlg.FileName = "ResImage";
+                sdlg.DefaultExt = ".jpg";
+                sdlg.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png|BMP (*.bmp)|*.bmp";
+                if (sdlg.ShowDialog() == true)
+                {
+                    ImageFormat format;
+                    switch (sdlg.Filter)
+                    {
+                        case "JPEG":
+                            format = ImageFormat.Jpeg;
+                            break;
+                        case "PNG":
+                            format = ImageFormat.Png;
+                            break;
+                        case "BMP":
+                            format = ImageFormat.Bmp;
+                            break;
+                        default:
+                            format = ImageFormat.Jpeg;
+                            break;
+                    }
+                    File.WriteAllBytes(sdlg.FileName, ToByteArray(imageToSave, format));
+                }
+            }
+            catch (Exception exc)
+            {
+                MessageBoxResult res = MessageBox.Show(exc.Message, "Save Error", MessageBoxButton.OK);
+            }
+        }
+        #endregion AppLogic
+
+        #region GreyScaleTab
+        private Bitmap firstImage;
+        private Bitmap firstSourceImage;
+        private bool sliderDragging = false;
 
         private void OpenFileBtn_Click(object sender, RoutedEventArgs e)
         {
             try
             {
-                Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
-                var result = dlg.ShowDialog();
-                if (result == true)
-                {
-                    string filePath = dlg.FileName;
-                    SelectedFileTextBox.Text = filePath;
-                    SelectMethodGroup.IsEnabled = true;
-                    firstImage = new Bitmap(SelectedFileTextBox.Text);
-                    sourceImage = new Bitmap(firstImage);
-                    LoadImage();
-                    CreateGreyBitmap();
-                }
+                SelectedFileTextBox.Text = OpenImageDialog(firstImage, firstSourceImage);
+                SelectMethodGroup.IsEnabled = true;
+                ImageGroup.IsEnabled = true;
+                firstImage = new Bitmap(SelectedFileTextBox.Text);
+                firstSourceImage = ProcessBitmap(firstImage, "S");
+                LoadImage(firstSourceImage, ResImage);
             }
             catch (Exception exc)
             {
@@ -114,31 +187,34 @@ namespace cv_4
         private void SimpleAverageRadioBtn_Checked(object sender, RoutedEventArgs e)
         {
             WeightedAverageGroupBox.IsEnabled = false;
-            CreateGreyBitmap("S");
-            LoadImage();
+            firstSourceImage = ProcessBitmap(firstImage, "S");
+            LoadImage(firstSourceImage, ResImage);
         }
 
         private void WeightedAverageRadioBtn_Checked(object sender, RoutedEventArgs e)
         {
             WeightedAverageGroupBox.IsEnabled = true;
-            CreateGreyBitmap("W");
-            LoadImage();
+            firstSourceImage = ProcessBitmap(firstImage, "W");
+            LoadImage(firstSourceImage, ResImage);
         }
 
         private void Window_Loaded(object sender, RoutedEventArgs e)
         {
             SimpleAverageRadioBtn.IsChecked = true;
             WeightedAverageGroupBox.IsEnabled = false;
+            ImageGroup.IsEnabled = false;
+            DesaturationGroupBox.IsEnabled = false;
+            ImageGroup2.IsEnabled = false;
             SimpleAverageRadioBtn.Checked += SimpleAverageRadioBtn_Checked;
             WeightedAverageRadioBtn.Checked += WeightedAverageRadioBtn_Checked;
         }
 
         private void RGBtextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (sourceImage == null || sliderDragging)
+            if (firstSourceImage == null || sliderDragging)
                 return;
-            CreateGreyBitmap("W");
-            LoadImage();
+            firstSourceImage = ProcessBitmap(firstImage, "W");
+            LoadImage(firstSourceImage, ResImage);
         }
 
         private void RGBslider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
@@ -149,8 +225,62 @@ namespace cv_4
         private void RGBslider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
         {
             sliderDragging = false;
-            CreateGreyBitmap("W");
-            LoadImage();
+            firstSourceImage = ProcessBitmap(firstImage, "W");
+            LoadImage(firstSourceImage, ResImage);
         }
+
+        private void SaveImageButton_Click(object sender, RoutedEventArgs e)
+        {
+            SaveImageDialog(firstSourceImage);
+        }
+        #endregion GreyScaleTab
+
+        #region DesaturationTab        
+        private Bitmap secondImage;
+        private Bitmap secondSourceImage;
+        private bool sliderDragging2 = false;        
+
+        private void OpenFileBtn2_Click(object sender, RoutedEventArgs e)
+        {
+            try
+            {
+                SelectedFileTextBox2.Text = OpenImageDialog(secondImage, secondSourceImage);
+                DesaturationGroupBox.IsEnabled = true;
+                ImageGroup2.IsEnabled = true;
+                secondImage = new Bitmap(SelectedFileTextBox2.Text);
+                secondSourceImage = ProcessBitmap(secondImage, "D");
+                LoadImage(secondSourceImage, ResImage2);
+            }
+            catch (Exception exc)
+            {
+                MessageBoxResult res = MessageBox.Show(exc.Message, "Error", MessageBoxButton.OK);
+            }
+        }
+
+        private void StextBox_TextChanged(object sender, TextChangedEventArgs e)
+        {
+            if (secondSourceImage == null || sliderDragging2)
+                return;
+            secondSourceImage = ProcessBitmap(secondImage, "D");
+            LoadImage(secondSourceImage, ResImage2);
+        }
+
+        private void Sslider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            sliderDragging2 = false;
+            secondSourceImage = ProcessBitmap(secondImage, "D");
+            LoadImage(secondSourceImage, ResImage2);
+        }
+
+        private void Sslider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            sliderDragging2 = true;
+        }
+
+        private void SaveImageButton2_Click(object sender, RoutedEventArgs e)
+        {
+            SaveImageDialog(secondSourceImage);
+        }
+        #endregion DesaturationTab
     }
 }

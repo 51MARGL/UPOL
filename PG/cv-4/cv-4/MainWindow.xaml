@@ -5,11 +5,11 @@
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         xmlns:local="clr-namespace:cv_4"
         mc:Ignorable="d"
-        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded">
+        Title="MainWindow" Height="350" Width="525" Loaded="Window_Loaded" Background="Silver">
     <Grid>
         <TabControl HorizontalAlignment="Left" Height="299" Margin="10,10,0,0" VerticalAlignment="Top" Width="497">
             <TabItem Header="Grey Scale">
-                <Grid Background="#FFE5E5E5">
+                <Grid Background="Wheat">
                     <GroupBox Header="File Select" HorizontalAlignment="Left" Height="57" Margin="10,10,0,0" VerticalAlignment="Top" Width="282">
                         <Grid>
                             <TextBox Name="SelectedFileTextBox" IsEnabled="False" HorizontalAlignment="Left" Height="23" Margin="0,2,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="199"/>
@@ -20,13 +20,12 @@
                         <Grid>
                             <RadioButton Name="SimpleAverageRadioBtn" Content="Simple Average" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="18" Width="105"/>
                             <RadioButton Name="WeightedAverageRadioBtn" Content="Weighted Average" HorizontalAlignment="Left" Margin="135,10,0,0" VerticalAlignment="Top" Height="18" Width="125"/>
-
                         </Grid>
                     </GroupBox>
-                    <GroupBox Header="Resulting Image" HorizontalAlignment="Left" Height="251" Margin="297,10,0,0" VerticalAlignment="Top" Width="194">
+                    <GroupBox Name="ImageGroup" Header="Resulting Image" HorizontalAlignment="Left" Height="251" Margin="297,10,0,0" VerticalAlignment="Top" Width="194">
                         <Grid>
                             <Image Name="ResImage" HorizontalAlignment="Left" Height="180" Margin="10,10,0,0" VerticalAlignment="Top" Width="162"/>
-
+                            <Button Name="SaveImageButton" Content="Save Image..." HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="75" Click="SaveImageButton_Click"/>
                         </Grid>
                     </GroupBox>
                     <GroupBox Name="WeightedAverageGroupBox" Header="Weighted Average" HorizontalAlignment="Left" Height="124" Margin="10,137,0,0" VerticalAlignment="Top" Width="282">
@@ -42,15 +41,31 @@
                             <TextBox Name="BtextBox" HorizontalAlignment="Left" Height="24" Margin="220,68,0,0" TextWrapping="Wrap" Text="{Binding ElementName=Bslider, Path=Value, StringFormat=0.000}" VerticalAlignment="Top" Width="40" TextChanged="RGBtextBox_TextChanged"/>
                         </Grid>
                     </GroupBox>
-
                 </Grid>
             </TabItem>
             <TabItem Header="Desaturation">
-                <Grid Background="#FFE5E5E5">
-
+                <Grid Background="Wheat">
+                    <GroupBox Header="File Select" HorizontalAlignment="Left" Height="57" Margin="10,10,0,0" VerticalAlignment="Top" Width="282">
+                        <Grid>
+                            <TextBox Name="SelectedFileTextBox2" IsEnabled="False" HorizontalAlignment="Left" Height="23" Margin="0,2,0,0" TextWrapping="Wrap" Text="" VerticalAlignment="Top" Width="199"/>
+                            <Button Name="OpenFileBtn2" Content="Open..." HorizontalAlignment="Left" Margin="204,2,0,0" VerticalAlignment="Top" Width="66" Height="23" Click="OpenFileBtn2_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Name="ImageGroup2" Header="Resulting Image" HorizontalAlignment="Left" Height="251" Margin="297,10,0,0" VerticalAlignment="Top" Width="194">
+                        <Grid>
+                            <Image Name="ResImage2" HorizontalAlignment="Left" Height="180" Margin="10,10,0,0" VerticalAlignment="Top" Width="162"/>
+                            <Button Name="SaveImageButton2" Content="Save Image..." HorizontalAlignment="Left" Margin="10,195,0,0" VerticalAlignment="Top" Width="75" Click="SaveImageButton2_Click"/>
+                        </Grid>
+                    </GroupBox>
+                    <GroupBox Name="DesaturationGroupBox" Header="Desaturation Level" HorizontalAlignment="Left" Height="58" Margin="10,110,0,0" VerticalAlignment="Top" Width="282">
+                        <Grid>
+                            <Slider Name="Sslider" Value="0.299" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="3" HorizontalAlignment="Left" Margin="35,10,0,0" VerticalAlignment="Top" Height="24" Width="180" Maximum="1" LargeChange="0.2" SmallChange="0.1" PreviewMouseDown="Sslider_PreviewMouseDown" PreviewMouseUp="Sslider_PreviewMouseUp"/>
+                            <Label Content="S" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="24"/>
+                            <TextBox Name="StextBox" HorizontalAlignment="Left" Height="24" Margin="220,10,0,0" TextWrapping="Wrap" Text="{Binding ElementName=Sslider, Path=Value, StringFormat=0.000}" VerticalAlignment="Top" Width="40" TextChanged="StextBox_TextChanged"/>
+                        </Grid>
+                    </GroupBox>
                 </Grid>
             </TabItem>
         </TabControl>
-
     </Grid>
 </Window>
