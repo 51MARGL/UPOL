@@ -23,6 +23,7 @@ namespace cv_4
     {
         private Bitmap firstImage;
         private Bitmap sourceImage;
+        private bool sliderDragging = false;
         public MainWindow()
         {
             InitializeComponent();
@@ -103,7 +104,6 @@ namespace cv_4
                     LoadImage();
                     CreateGreyBitmap();
                 }
-
             }
             catch (Exception exc)
             {
@@ -135,8 +135,20 @@ namespace cv_4
 
         private void RGBtextBox_TextChanged(object sender, TextChangedEventArgs e)
         {
-            if (sourceImage == null)
+            if (sourceImage == null || sliderDragging)
                 return;
+            CreateGreyBitmap("W");
+            LoadImage();
+        }
+
+        private void RGBslider_PreviewMouseDown(object sender, MouseButtonEventArgs e)
+        {
+            sliderDragging = true;
+        }
+
+        private void RGBslider_PreviewMouseUp(object sender, MouseButtonEventArgs e)
+        {
+            sliderDragging = false;
             CreateGreyBitmap("W");
             LoadImage();
         }
