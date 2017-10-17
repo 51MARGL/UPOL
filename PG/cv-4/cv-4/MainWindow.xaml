@@ -25,10 +25,23 @@
                     </GroupBox>
                     <GroupBox Header="Resulting Image" HorizontalAlignment="Left" Height="251" Margin="297,10,0,0" VerticalAlignment="Top" Width="194">
                         <Grid>
+                            <Image Name="ResImage" HorizontalAlignment="Left" Height="180" Margin="10,10,0,0" VerticalAlignment="Top" Width="162"/>
 
                         </Grid>
                     </GroupBox>
-                    <GroupBox Name="WeightedAverageGroupBox" Header="Weighted Average" HorizontalAlignment="Left" Height="124" Margin="10,137,0,0" VerticalAlignment="Top" Width="282"/>
+                    <GroupBox Name="WeightedAverageGroupBox" Header="Weighted Average" HorizontalAlignment="Left" Height="124" Margin="10,137,0,0" VerticalAlignment="Top" Width="282">
+                        <Grid>
+                            <Slider Name="Rslider" Value="0.299" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="3" HorizontalAlignment="Left" Margin="35,10,0,0" VerticalAlignment="Top" Height="24" Width="180" Maximum="1" LargeChange="0.1" SmallChange="0.01"/>
+                            <Slider Name="Gslider" Value="0.587" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="3" HorizontalAlignment="Left" Margin="35,39,0,0" VerticalAlignment="Top" Height="24" Width="180" Maximum="1" LargeChange="0.1" SmallChange="0.01"/>
+                            <Slider Name="Bslider" Value="0.144" AutoToolTipPlacement="TopLeft" AutoToolTipPrecision="3" HorizontalAlignment="Left" Margin="35,68,0,0" VerticalAlignment="Top" Height="24" Width="180" Maximum="1" LargeChange="0.1" SmallChange="0.01"/>
+                            <Label Content="R" HorizontalAlignment="Left" Margin="10,10,0,0" VerticalAlignment="Top" Height="24"/>
+                            <Label Content="G" HorizontalAlignment="Left" Margin="9,39,0,0" VerticalAlignment="Top" Height="24"/>
+                            <Label Content="B" HorizontalAlignment="Left" Margin="10,68,0,0" VerticalAlignment="Top" Height="24"/>
+                            <TextBox Name="RtextBox" HorizontalAlignment="Left" Height="24" Margin="220,10,0,0" TextWrapping="Wrap" Text="{Binding ElementName=Rslider, Path=Value, StringFormat=0.000}" VerticalAlignment="Top" Width="40" TextChanged="RGBtextBox_TextChanged"/>
+                            <TextBox Name="GtextBox" HorizontalAlignment="Left" Height="24" Margin="220,39,0,0" TextWrapping="Wrap" Text="{Binding ElementName=Gslider, Path=Value, StringFormat=0.000}" VerticalAlignment="Top" Width="40" TextChanged="RGBtextBox_TextChanged"/>
+                            <TextBox Name="BtextBox" HorizontalAlignment="Left" Height="24" Margin="220,68,0,0" TextWrapping="Wrap" Text="{Binding ElementName=Bslider, Path=Value, StringFormat=0.000}" VerticalAlignment="Top" Width="40" TextChanged="RGBtextBox_TextChanged"/>
+                        </Grid>
+                    </GroupBox>
 
                 </Grid>
             </TabItem>
