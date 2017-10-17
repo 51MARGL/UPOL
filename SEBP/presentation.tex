@@ -1,0 +1,150 @@
+\documentclass{beamer}
+\usepackage[utf8]{inputenc}
+\usepackage{multicol}	
+\usepackage[czech]{babel}
+\usepackage{animate}
+
+\usetheme{Boadilla}
+ 
+\graphicspath{{./Images/}}
+ 
+\title[Prezentace BP]
+{Jednoduchá hra s procedurálně generovaným obsahem}
+\author{Serhiy Kudryashov}
+\institute[UPOL]{Vedoucí práce: Mgr. Petr Osička, Ph.D. \linebreak\includegraphics[width=3cm]{UP_logo_stred_cz.png}}
+\date{2017}
+
+\AtBeginSection[]
+{
+  \begin{frame}
+    \frametitle{Obsah}
+    \begin{multicols}{1}
+  		\tableofcontents[currentsection,hideothersubsections]
+	\end{multicols}
+  \end{frame}
+}
+
+\begin{document}
+ 
+\frame{\titlepage}
+
+\begin{frame}{Obsah}
+	\begin{multicols}{1}
+  		\tableofcontents
+	\end{multicols}
+\end{frame}
+
+\section{Úvod}
+
+\begin{frame}
+	\frametitle{Úvod}
+	Motivace:
+	\begin{itemize}
+		 \item Nové zkušenosti
+		 \item Dozvědět více
+	 	 \item Kreativní přístup
+	\end{itemize}
+\end{frame}
+
+\begin{frame}
+	\frametitle{Úvod}
+	
+   Cíle práce:
+ 
+	\begin{itemize}
+ 		\item<2-> Prozkoumát možnosti procedurálního generování obsahu v počítačových hrách
+		\item<3-> Na příkladu hry zjištěné metody implementovat
+ 		\item<4-> Okomentovat vhodnost zjištěných metod
+ 		\item<5-> Případně různé metody porovnát
+	\end{itemize}
+\end{frame}
+
+\section{Použité technologie}
+	\subsection{Unity3D}
+	
+\begin{frame}
+	\frametitle{Unity3D}
+	\begin{center}
+		\includegraphics[height=3cm]{unity-logo.jpg}	
+	\end{center}
+	Unity3D je herní engine vyvinutý společností Unity Technologies pro vývoj her pro PC, konzole, mobily a web. 
+
+\end{frame}
+
+\begin{frame}
+	\frametitle{Unity3D}
+	
+	Možnosti Unity: 
+	\begin{itemize}
+ 		\item 2D a 3D hry libovolného žánru
+		\item {\settoheight{\dimen0}{C}C\kern-.05em \resizebox{!}{\dimen0}{\raisebox{\depth}{\bf \#}}} a Javascript
+ 		\item Intuitivní UI
+ 		\item Multiplatformní
+ 		\item Libovolné IDE
+	\end{itemize}
+
+\end{frame}
+	
+	\subsection{Adobe Photoshop}
+	
+\begin{frame}
+	\begin{center}
+		\includegraphics[height=3cm]{photoshop-logo.png}	
+	\end{center}
+	\frametitle{Adobe Photoshop}
+	Adobe Photoshop je bitmapový grafický editor pro tvorbu a úpravy bitmapové grafiky vytvořený firmou Adobe Systems.
+\end{frame}
+
+\section{O hře}
+	\subsection{Žanr}
+	\subsection{Koncept}
+		
+\begin{frame}
+	\frametitle{Žanr a Koncept}
+	Zvolení žanru a konceptu:
+	\begin{itemize}
+ 		\item Podpora procedurálního generování
+		\item Jednoduchost
+ 		\item Intuitivnost
+	\end{itemize}
+	\pause
+	Výsledek: 2D Roguelike Dungeon Crawler
+	\begin{center}
+		\includegraphics[height=3cm]{game-concept.png}	
+	\end{center}
+\end{frame}
+
+	\subsection{Grafická stránka}
+	
+\begin{frame}
+	\frametitle{Grafická stránka}	
+	
+	\begin{minipage}{0.45\linewidth}
+		\begin{figure}
+			\animategraphics[loop,controls,width=\linewidth]{5}{player-anim-}{0}{3}
+    		\caption{Příklad animace}		
+		\end{figure}    	
+	\end{minipage}\hfil
+	\begin{minipage}{0.55\linewidth}
+	Pixel art \\Druh počítačové grafiky:
+	\begin{itemize}
+ 		\item Vytvářen po jednotlivých pixelech(obrazových bodech)
+		\item Extrémně malé obrázky (většinou)
+ 		\item Každý pixel musí být přesně nabarven
+ 		\item Každý snímek je kreslen zvlášť
+	\end{itemize}
+	\end{minipage}
+\end{frame}
+
+
+\section{Uživatelské rozhraní}
+	\subsection{Hlavní menu}	
+	\subsection{Ve hře}	
+\section{Procedurální generovaní}
+	\subsection{Vyhody}
+	\subsection{Nevyhody}
+	\subsection{Zvolené algoritmy}
+	\subsection{Implementace}
+\section{Závěr}
+ 
+\end{document}
