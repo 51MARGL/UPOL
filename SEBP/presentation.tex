@@ -38,25 +38,26 @@
 
 \begin{frame}
 	\frametitle{Úvod}
-	Motivace:
+	{\large Motivace:
 	\begin{itemize}
 		 \item Nové zkušenosti
 		 \item Dozvědět více
 	 	 \item Kreativní přístup
 	\end{itemize}
+	}
 \end{frame}
 
 \begin{frame}
 	\frametitle{Úvod}
 	
-   Cíle práce:
+   {\large Dosažené cíle práce:
  
 	\begin{itemize}
- 		\item<2-> Prozkoumát možnosti procedurálního generování obsahu v počítačových hrách
-		\item<3-> Na příkladu hry zjištěné metody implementovat
- 		\item<4-> Okomentovat vhodnost zjištěných metod
- 		\item<5-> Případně různé metody porovnát
+ 		\item<2-> Prozkoumál jsem možnosti procedurálního generování obsahu v počítačových hrách
+		\item<3-> Vytvořil jsem hru a na její příkladu jsem zjištěné metody implementoval
+ 		\item<4-> Okomentoval jsem vhodnost zjištěných metod
 	\end{itemize}
+	}
 \end{frame}
 
 \section{Použité technologie}
@@ -122,7 +123,7 @@
 	
 	\begin{minipage}{0.45\linewidth}
 		\begin{figure}
-			\animategraphics[loop,controls,width=\linewidth]{5}{player-anim-}{0}{3}
+			\animategraphics[loop,controls,width=\linewidth]{3}{player-anim-}{0}{3}
     		\caption{Příklad animace}		
 		\end{figure}    	
 	\end{minipage}\hfil
@@ -141,11 +142,131 @@
 \section{Uživatelské rozhraní}
 	\subsection{Hlavní menu}	
 	\subsection{Ve hře}	
+	
+\begin{frame}
+	\frametitle{Uživatelské rozhraní}
+	
+	\begin{multicols}{4}
+  		\begin{itemize}
+ 			\item Počet zdraví
+			\item Minimapa
+ 			\item Action bar
+ 			\item Inventář
+		\end{itemize}
+	\end{multicols}
+	
+	\includegraphics[width=12.3cm, height = 6.5cm]{UI-game.png}	
+		
+\end{frame}
+
+
 \section{Procedurální generovaní}
-	\subsection{Vyhody}
-	\subsection{Nevyhody}
+
+\subsection{Výhody}
+\subsection{Nevýhody}
+	
+\begin{frame}
+\frametitle{Procedurální generovaní}
+Procedurální generování se vztahuje na herní obsah, který je vytvářen algoritmicky, nikoli ručně.
+	\begin{multicols}{2}
+		Výhody:
+  		\begin{itemize}
+  			\item Nepředvídatelnost
+ 			\item Zrychlení vývoje
+			\item Menší nároky na zdroje 
+		\end{itemize}
+		Nevýhody:
+		\begin{itemize}
+ 			\item Nezaručuje nelineárnost
+ 			\item Nepřirozenost
+		\end{itemize}
+	\end{multicols}		
+\end{frame}	
+
+\begin{frame}	
+	\frametitle{Procedurální generovaní}
+	Procedurální generování obsahu neznamená náhodné generování obsahu.	
+	\begin{multicols}{2}
+		Procedurálně generovaný obsah:
+  		\begin{itemize}
+ 			\item Vygenerované elementy
+			\item Algoritmus 
+		\end{itemize}
+		Náhodně generovaný obsah:
+		\begin{itemize}
+ 			\item Predefinované elementy
+ 			\item Sada pravidel
+		\end{itemize}
+	\end{multicols}		
+\end{frame}
+	
 	\subsection{Zvolené algoritmy}
+\begin{frame}
+	\frametitle{Zvolené algoritmy}
+	\begin{multicols}{3}
+  		\begin{itemize}
+ 			\item Celulární automat 
+			\item Perlinův šum
+ 			\item Voroného diagram
+		\end{itemize}
+	\end{multicols}
+	\begin{multicols}{3}
+  		\includegraphics[width=4cm, height=4cm]{celular-ex.png}
+  		\includegraphics[width=4cm, height=4cm]{perlin-ex.png}
+  		\includegraphics[width=4cm, height=4cm]{voronoi-ex.png}
+	\end{multicols}
+\end{frame}
 	\subsection{Implementace}
+	
+\begin{frame}
+	\frametitle{Celulární automat}
+	\begin{itemize}
+		\item Zaplnění mapy
+		\begin{center}		
+			\includegraphics[width=\linewidth]{celular-ex2.png}	
+		\end{center}	
+	\end{itemize}
+\end{frame}
+\begin{frame}
+	\frametitle{Celulární automat}
+	\begin{itemize}
+		\item Seskupení
+		\begin{center}
+			\item
+			\includegraphics[width=7cm]{moore-n.png}	
+		\end{center}
+	\end{itemize}	
+\end{frame}
+\begin{frame}
+	\frametitle{Celulární automat}
+	\begin{itemize}
+		\item Seskupení a vytvářetí průchodu
+		\begin{center}
+			\item
+			\includegraphics[width=\linewidth]{celular-ex3.png}	
+		\end{center}
+	\end{itemize}	
+\end{frame}
+\begin{frame}
+	\frametitle{Celulární automat}
+	\begin{itemize}
+		\item Použití
+		\begin{center}
+			\item
+			\includegraphics[width=7cm]{cave-paint.png}	
+		\end{center}
+	\end{itemize}	
+\end{frame}
+\begin{frame}
+	\frametitle{Celulární automat}
+	\begin{itemize}
+		\item Výsledek
+		\begin{center}
+			\item
+			\includegraphics[width=10cm]{cave-result.png}	
+		\end{center}
+	\end{itemize}	
+\end{frame}
 \section{Závěr}
  
 \end{document}

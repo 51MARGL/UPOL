@@ -1,19 +1,18 @@
-\beamer@endinputifotherversion {3.36pt}
 \select@language {czech}
 \beamer@sectionintoc {1}{\IeC {\'U}vod}{3}{0}{1}
-\beamer@sectionintoc {2}{Pou\IeC {\v z}it\IeC {\'e} technologie}{10}{0}{2}
-\beamer@subsectionintoc {2}{1}{Unity3D}{11}{0}{2}
-\beamer@subsectionintoc {2}{2}{Adobe Photoshop}{13}{0}{2}
-\beamer@sectionintoc {3}{O h\IeC {\v r}e}{14}{0}{3}
-\beamer@subsectionintoc {3}{1}{\IeC {\v Z}anr}{15}{0}{3}
-\beamer@subsectionintoc {3}{2}{Koncept}{15}{0}{3}
-\beamer@subsectionintoc {3}{3}{Grafick\IeC {\'a} str\IeC {\'a}nka}{17}{0}{3}
-\beamer@sectionintoc {4}{U\IeC {\v z}ivatelsk\IeC {\'e} rozhran\IeC {\'\i }}{18}{0}{4}
-\beamer@subsectionintoc {4}{1}{Hlavn\IeC {\'\i } menu}{19}{0}{4}
-\beamer@subsectionintoc {4}{2}{Ve h\IeC {\v r}e}{19}{0}{4}
+\beamer@sectionintoc {2}{Pou\IeC {\v z}it\IeC {\'e} technologie}{9}{0}{2}
+\beamer@subsectionintoc {2}{1}{Unity3D}{10}{0}{2}
+\beamer@subsectionintoc {2}{2}{Adobe Photoshop}{12}{0}{2}
+\beamer@sectionintoc {3}{O h\IeC {\v r}e}{13}{0}{3}
+\beamer@subsectionintoc {3}{1}{\IeC {\v Z}anr}{14}{0}{3}
+\beamer@subsectionintoc {3}{2}{Koncept}{14}{0}{3}
+\beamer@subsectionintoc {3}{3}{Grafick\IeC {\'a} str\IeC {\'a}nka}{16}{0}{3}
+\beamer@sectionintoc {4}{U\IeC {\v z}ivatelsk\IeC {\'e} rozhran\IeC {\'\i }}{17}{0}{4}
+\beamer@subsectionintoc {4}{1}{Hlavn\IeC {\'\i } menu}{18}{0}{4}
+\beamer@subsectionintoc {4}{2}{Ve h\IeC {\v r}e}{18}{0}{4}
 \beamer@sectionintoc {5}{Procedur\IeC {\'a}ln\IeC {\'\i } generovan\IeC {\'\i }}{19}{0}{5}
-\beamer@subsectionintoc {5}{1}{Vyhody}{20}{0}{5}
-\beamer@subsectionintoc {5}{2}{Nevyhody}{20}{0}{5}
-\beamer@subsectionintoc {5}{3}{Zvolen\IeC {\'e} algoritmy}{20}{0}{5}
-\beamer@subsectionintoc {5}{4}{Implementace}{20}{0}{5}
-\beamer@sectionintoc {6}{Z\IeC {\'a}v\IeC {\v e}r}{20}{0}{6}
+\beamer@subsectionintoc {5}{1}{V\IeC {\'y}hody}{20}{0}{5}
+\beamer@subsectionintoc {5}{2}{Nev\IeC {\'y}hody}{20}{0}{5}
+\beamer@subsectionintoc {5}{3}{Zvolen\IeC {\'e} algoritmy}{22}{0}{5}
+\beamer@subsectionintoc {5}{4}{Implementace}{23}{0}{5}
+\beamer@sectionintoc {6}{Z\IeC {\'a}v\IeC {\v e}r}{28}{0}{6}
