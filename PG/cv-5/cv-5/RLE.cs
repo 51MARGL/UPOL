@@ -33,7 +33,6 @@ namespace cv_5
             byte[] encodedData = File.ReadAllBytes(path);
             int width = BitConverter.ToInt32(encodedData, 0);
             int height = BitConverter.ToInt32(encodedData, 4);
-            Console.WriteLine("Wigth: " + width + " Height: " + height);
 
             List<byte> result = new List<byte>();
 
@@ -94,7 +93,7 @@ namespace cv_5
         {
             var data = bmp.LockBits(new Rectangle(0, 0, bmp.Width, bmp.Height), ImageLockMode.ReadOnly, PixelFormat.Format8bppIndexed);            
 
-            for (var rowIndex = bmp.Height - 1; rowIndex >= 0; rowIndex--)
+            for (var rowIndex = 0; rowIndex < bmp.Height; rowIndex++)
             {
                 byte? storedPixel = null;
                 var curPixelRepititions = 0;
