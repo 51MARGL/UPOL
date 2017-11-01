@@ -22,7 +22,7 @@ namespace cv_5
         static void Main(string[] args)
         {            
             RLE rle = new RLE();
-            byte[] result = rle.Encode(@"!!!.png");
+            byte[] result = rle.Encode(@"!!.jpg");
             File.WriteAllBytes("compressed.rle", result);
             Console.WriteLine("Done compression");
             Bitmap decoded = rle.RunLengthDecodeBitmap("compressed.rle");
