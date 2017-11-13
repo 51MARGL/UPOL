@@ -35,6 +35,7 @@ namespace cv_4
                 source.Save(ms, ImageFormat.Bmp);
                 BitmapImage image = new BitmapImage();
                 image.BeginInit();
+				
                 ms.Seek(0, SeekOrigin.Begin);
                 image.StreamSource = ms;
                 image.EndInit();

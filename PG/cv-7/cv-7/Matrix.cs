@@ -60,14 +60,8 @@ namespace cv_7
 
         public int this[int m, int n]
         {
-            get
-            {
-                return Get(m, n);
-            }
-            set
-            {
-                matrix[m, n] = value;
-            }
+            get => Get(m, n);
+            set => matrix[m, n] = value;
         }
 
         public override string ToString()

@@ -27,11 +27,11 @@ namespace cv_7
             else
                 newBitmap = new Bitmap(original.Width, original.Height, PixelFormat.Format1bppIndexed);
 
-            BitmapData originalData = original.LockBits(
+            var originalData = original.LockBits(
                new Rectangle(0, 0, original.Width, original.Height),
                ImageLockMode.ReadOnly, PixelFormat.Format24bppRgb);
 
-            BitmapData newData = newBitmap.LockBits(
+            var newData = newBitmap.LockBits(
                new Rectangle(0, 0, original.Width, original.Height),
                ImageLockMode.WriteOnly, PixelFormat.Format24bppRgb);
 
@@ -166,59 +166,63 @@ namespace cv_7
 
         private Matrix CreateDitheringMatrix(int n)
         {
-            Matrix m = new Matrix(2);
-            m[0, 0] = 0;
-            m[0, 1] = 2;
-            m[1, 0] = 3;
-            m[1, 1] = 1;
+            var m = new Matrix(2)
+            {
+                [0, 0] = 0,
+                [0, 1] = 2,
+                [1, 0] = 3,
+                [1, 1] = 1
+            };
             return CreateMatrix(m, n);
         }
 
 
         private Matrix CreateMatrix(Matrix m, int n)
         {
-            if (m.GetSize() < n)
+            while (true)
             {
-                int mSize = m.GetSize();
-                Matrix result = new Matrix(mSize * 2);
-                Matrix mx4 = 4 * m;
-                Matrix singleMatrix = new Matrix(mSize);
-                singleMatrix.FillWithConst(1);
-                for (int i = 0; i < mSize; i++)
+                if (m.GetSize() < n)
                 {
-                    for (int j = 0; j < mSize; j++)
+                    int mSize = m.GetSize();
+                    Matrix result = new Matrix(mSize * 2);
+                    Matrix mx4 = 4 * m;
+                    Matrix singleMatrix = new Matrix(mSize);
+                    singleMatrix.FillWithConst(1);
+                    for (int i = 0; i < mSize; i++)
                     {
-                        result[i, j] = mx4[i, j];
+                        for (int j = 0; j < mSize; j++)
+                        {
+                            result[i, j] = mx4[i, j];
+                        }
                     }
-                }
-                Matrix secondQuarter = mx4 + 2 * singleMatrix;
-                for (int i = 0; i < mSize; i++)
-                {
-                    for (int j = mSize; j < mSize * 2; j++)
+                    Matrix secondQuarter = mx4 + 2 * singleMatrix;
+                    for (int i = 0; i < mSize; i++)
                     {
-                        result[i, j] = secondQuarter[i, j - mSize];
+                        for (int j = mSize; j < mSize * 2; j++)
+                        {
+                            result[i, j] = secondQuarter[i, j - mSize];
+                        }
                     }
-                }
-                Matrix thirdQuarter = mx4 + 3 * singleMatrix;
-                for (int i = mSize; i < mSize * 2; i++)
-                {
-                    for (int j = 0; j < mSize; j++)
+                    Matrix thirdQuarter = mx4 + 3 * singleMatrix;
+                    for (int i = mSize; i < mSize * 2; i++)
                     {
-                        result[i, j] = thirdQuarter[i - mSize, j];
+                        for (int j = 0; j < mSize; j++)
+                        {
+                            result[i, j] = thirdQuarter[i - mSize, j];
+                        }
                     }
-                }
-                Matrix fourthQuarter = mx4 + singleMatrix;
-                for (int i = mSize; i < mSize * 2; i++)
-                {
-                    for (int j = mSize; j < mSize * 2; j++)
+                    Matrix fourthQuarter = mx4 + singleMatrix;
+                    for (int i = mSize; i < mSize * 2; i++)
                     {
-                        result[i, j] = fourthQuarter[i - mSize, j - mSize];
+                        for (int j = mSize; j < mSize * 2; j++)
+                        {
+                            result[i, j] = fourthQuarter[i - mSize, j - mSize];
+                        }
                     }
+                    m = result;
                 }
-                return CreateMatrix(result, n);
+                else return m;
             }
-            else return m;
-
         }
     }
 }

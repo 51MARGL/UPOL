@@ -21,10 +21,10 @@ namespace cv_7
     /// </summary>
     public partial class MainWindow : Window
     {
-        public Bitmap grayImageMap;
-        public Bitmap simpleImageMap;
-        public Bitmap randomImageMap;
-        public Bitmap matrixImageMap;
+        public Bitmap GrayImageMap { get; private set; }
+        public Bitmap SimpleImageMap { get; set; }
+        public Bitmap RandomImageMap { get; set; }
+        public Bitmap MatrixImageMap { get; set; }
 
         public MainWindow()
         {
@@ -46,20 +46,20 @@ namespace cv_7
 
                     Bitmap sourceImage = new Bitmap(filePath);
                     dithHandler.ditheringMatrixSize = 16;
-                    grayImageMap = dithHandler.ProcessBitmap(sourceImage);
-                    var copy1 = new Bitmap(grayImageMap);
-                    var copy2 = new Bitmap(grayImageMap);
-                    var copy3 = new Bitmap(grayImageMap);
+                    GrayImageMap = dithHandler.ProcessBitmap(sourceImage);
+                    var copy1 = new Bitmap(GrayImageMap);
+                    var copy2 = new Bitmap(GrayImageMap);
+                    var copy3 = new Bitmap(GrayImageMap);
                     Parallel.Invoke(
-                            () => simpleImageMap = dithHandler.ProcessBitmap(copy1, "S"),
-                            () => randomImageMap = dithHandler.ProcessBitmap(copy2, "R"),
-                            () => matrixImageMap = dithHandler.MatrixDithering(copy3)
+                            () => SimpleImageMap = dithHandler.ProcessBitmap(copy1, "S"),
+                            () => RandomImageMap = dithHandler.ProcessBitmap(copy2, "R"),
+                            () => MatrixImageMap = dithHandler.MatrixDithering(copy3)
                             );
 
-                    LoadImage(grayImageMap, SourceImage);
-                    LoadImage(simpleImageMap, SimpleImage);
-                    LoadImage(randomImageMap, RandomImage);
-                    LoadImage(matrixImageMap, MatrixImage);
+                    LoadImage(GrayImageMap, SourceImage);
+                    LoadImage(SimpleImageMap, SimpleImage);
+                    LoadImage(RandomImageMap, RandomImage);
+                    LoadImage(MatrixImageMap, MatrixImage);
                     Application.Current.Dispatcher.Invoke(() =>
                     {
                         Mouse.OverrideCursor = null;
@@ -68,7 +68,7 @@ namespace cv_7
             }
             catch (Exception exc)
             {
-                MessageBoxResult res = MessageBox.Show(exc.Message, "Image Processing Error", MessageBoxButton.OK);
+                var res = MessageBox.Show(exc.Message, "Image Processing Error", MessageBoxButton.OK);
             }
         }
 
@@ -76,9 +76,9 @@ namespace cv_7
         {
             try
             {
-                MemoryStream ms = new MemoryStream();
+                var ms = new MemoryStream();
                 source.Save(ms, ImageFormat.Bmp);
-                BitmapImage image = new BitmapImage();
+                var image = new BitmapImage();
                 image.BeginInit();
                 ms.Seek(0, SeekOrigin.Begin);
                 image.StreamSource = ms;
@@ -88,56 +88,49 @@ namespace cv_7
             }
             catch (Exception exc)
             {
-                MessageBoxResult res = MessageBox.Show(exc.Message, "Image Load Error", MessageBoxButton.OK);
+                var res = MessageBox.Show(exc.Message, "Image Load Error", MessageBoxButton.OK);
             }
         }
 
         private string OpenImageDialog()
         {
-            Microsoft.Win32.OpenFileDialog dlg = new Microsoft.Win32.OpenFileDialog();
+            var dlg = new Microsoft.Win32.OpenFileDialog();
             var result = dlg.ShowDialog();
-            if (result == true)
-            {
-                return dlg.FileName;
-            }
-            else
-            {
-                return "";
-            }
+            return result == true ? dlg.FileName : "";
         }
 
         private void SaveImageDialog(Bitmap imageToSave)
         {
             try
             {
-                Microsoft.Win32.SaveFileDialog sdlg = new Microsoft.Win32.SaveFileDialog();
-                sdlg.FileName = "ResImage";
-                sdlg.DefaultExt = ".jpg";
-                sdlg.Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png|BMP (*.bmp)|*.bmp";
-                if (sdlg.ShowDialog() == true)
+                var sdlg = new Microsoft.Win32.SaveFileDialog
                 {
-                    ImageFormat format;
-                    switch (sdlg.Filter)
-                    {
-                        case "JPEG":
-                            format = ImageFormat.Jpeg;
-                            break;
-                        case "PNG":
-                            format = ImageFormat.Png;
-                            break;
-                        case "BMP":
-                            format = ImageFormat.Bmp;
-                            break;
-                        default:
-                            format = ImageFormat.Jpeg;
-                            break;
-                    }
-                    File.WriteAllBytes(sdlg.FileName, ToByteArray(imageToSave, format));
+                    FileName = "ResImage",
+                    DefaultExt = ".jpg",
+                    Filter = "JPEG (*.jpg)|*.jpg|PNG (*.png)|*.png|BMP (*.bmp)|*.bmp"
+                };
+                if (sdlg.ShowDialog() != true) return;
+                ImageFormat format;
+                switch (sdlg.Filter)
+                {
+                    case "JPEG":
+                        format = ImageFormat.Jpeg;
+                        break;
+                    case "PNG":
+                        format = ImageFormat.Png;
+                        break;
+                    case "BMP":
+                        format = ImageFormat.Bmp;
+                        break;
+                    default:
+                        format = ImageFormat.Jpeg;
+                        break;
                 }
+                File.WriteAllBytes(sdlg.FileName, ToByteArray(imageToSave, format));
             }
             catch (Exception exc)
             {
-                MessageBoxResult res = MessageBox.Show(exc.Message, "Save Error", MessageBoxButton.OK);
+                var res = MessageBox.Show(exc.Message, "Save Error", MessageBoxButton.OK);
             }
         }
         
@@ -152,22 +145,22 @@ namespace cv_7
 
         private void SaveSource_Click(object sender, RoutedEventArgs e)
         {
-            SaveImageDialog(grayImageMap);
+            SaveImageDialog(GrayImageMap);
         }
 
         private void SaveSimple_Click(object sender, RoutedEventArgs e)
         {
-            SaveImageDialog(simpleImageMap);
+            SaveImageDialog(SimpleImageMap);
         }
 
         private void SaveRandom_Click(object sender, RoutedEventArgs e)
         {
-            SaveImageDialog(randomImageMap);
+            SaveImageDialog(RandomImageMap);
         }
 
         private void SaveMatrix_Click(object sender, RoutedEventArgs e)
         {
-            SaveImageDialog(matrixImageMap);
+            SaveImageDialog(MatrixImageMap);
         }
     }
 }
