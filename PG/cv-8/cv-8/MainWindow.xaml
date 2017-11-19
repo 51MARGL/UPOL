@@ -1,0 +1,75 @@
+﻿<Window x:Class="cv_8.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cv_8"
+        mc:Ignorable="d"
+        Title="CV_8" Height="506.928" Width="482.831" Background="Transparent">
+    <TabControl Background="LightSlateGray">
+        <TabItem Name="Tabitem1" Header="BWImages">
+            <Border BorderThickness="3" BorderBrush="Black">
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.25*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                    </Grid.RowDefinitions>
+                    <Button x:Name="OpenFileBtn"  Grid.Column="0" Grid.Row="0" Content="Open File..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="OpenFileBtn_Click"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="Floyd Steinberg Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Sierra Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="4" Content="J.Jarvis, C.Judice, W.Ninke Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="4" Content="Stucki Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image x:Name="FloydSteinbergImage" Grid.Column="0" Grid.Row="2" />
+                    <Image x:Name="SierraImage" Grid.Column="1" Grid.Row="2" />
+                    <Image x:Name="JjImage" Grid.Column="0" Grid.Row="5" />
+                    <Image x:Name="StuckiImage" Grid.Column="1" Grid.Row="5"/>
+                    <Button x:Name="SaveSource"  Grid.Column="0" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveSource_Click"/>
+                    <Button x:Name="SaveSimple"  Grid.Column="1" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveSimple_Click"/>
+                    <Button x:Name="SaveRandom"  Grid.Column="0" Grid.Row="6" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveRandom_Click"/>
+                    <Button x:Name="SaveMatrix"  Grid.Column="1" Grid.Row="6" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveMatrix_Click"/>
+                </Grid>
+            </Border>
+        </TabItem>
+        <TabItem Name="TabItem2" Header="PaletteImages">
+            <Border BorderThickness="3" BorderBrush="Black">
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.25*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                    </Grid.RowDefinitions>
+                    <Button x:Name="OpenFileBtn2"  Grid.Column="0" Grid.Row="0" Content="Open File..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="OpenFileBtn_Click2"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="Floyd Steinberg Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Sierra Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="4" Content="J.Jarvis, C.Judice, W.Ninke Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="4" Content="Stucki Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image x:Name="FloydSteinbergImage2" Grid.Column="0" Grid.Row="2" />
+                    <Image x:Name="SierraImage2" Grid.Column="1" Grid.Row="2" />
+                    <Image x:Name="JjImage2" Grid.Column="0" Grid.Row="5" />
+                    <Image x:Name="StuckiImage2" Grid.Column="1" Grid.Row="5"/>
+                    <Button x:Name="SaveSource2"  Grid.Column="0" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveSource_Click2"/>
+                    <Button x:Name="SaveSimple2"  Grid.Column="1" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveSimple_Click2"/>
+                    <Button x:Name="SaveRandom2"  Grid.Column="0" Grid.Row="6" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveRandom_Click2"/>
+                    <Button x:Name="SaveMatrix2"  Grid.Column="1" Grid.Row="6" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveMatrix_Click2"/>
+                </Grid>
+            </Border>
+        </TabItem>
+    </TabControl>
+</Window>
