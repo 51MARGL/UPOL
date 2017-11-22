@@ -61,9 +61,9 @@ namespace cv_8
                         | ((greenColor / 32) << 2)
                         | (blueColor / 64);
 
-                    var errorRed = redColor - palette[tableIndex, 0];
-                    var errorGreen = greenColor - palette[tableIndex, 1];
-                    var errorBlue = blueColor - palette[tableIndex, 2];
+                    var errorRed = (redColor - palette[tableIndex, 0])/32;
+                    var errorGreen = (greenColor - palette[tableIndex, 1])/32;
+                    var errorBlue = (blueColor - palette[tableIndex, 2])/32;
                     switch (switchAlgorithm)
                     {
                         case 0:

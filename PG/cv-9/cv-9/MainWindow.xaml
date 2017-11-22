@@ -1,0 +1,70 @@
+﻿<Window x:Class="cv_9.MainWindow"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:cv_9"
+        mc:Ignorable="d"
+        Title="CV_9" Height="450" Width="525">
+    <TabControl Background="LightSlateGray">
+        <TabItem Name="Tabitem1" Header="Noise Reduction">
+            <Border BorderThickness="3" BorderBrush="Black">
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.25*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                    </Grid.RowDefinitions>
+                    <Button x:Name="OpenFileBtn"  Grid.Column="0" Grid.Row="0" Content="Open File..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="OpenFileBtn_Click"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="Convolution h1 Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Convolution h2 Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="2" Grid.Row="1" Content="Median Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image x:Name="ConvolutionImage" Grid.Column="0" Grid.Row="2" />
+                    <Image x:Name="ConvolutionImage2" Grid.Column="1" Grid.Row="2" />
+                    <Image x:Name="MedianImage" Grid.Column="2" Grid.Row="2" />
+                    <Button x:Name="SaveConvolution"  Grid.Column="0" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveConvolution_Click"/>
+                    <Button x:Name="SaveConvolution2"  Grid.Column="1" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveConvolution2_Click"/>
+                    <Button x:Name="SaveMedian"  Grid.Column="2" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveMedian_Click"/>
+                </Grid>
+            </Border>
+        </TabItem>
+        <TabItem Name="TabItem2" Header="Edge Detection">
+            <Border BorderThickness="3" BorderBrush="Black">
+                <Grid Margin="4">
+                    <Grid.ColumnDefinitions>
+                        <ColumnDefinition Width="*" />
+                        <ColumnDefinition Width="*" />
+                    </Grid.ColumnDefinitions>
+                    <Grid.RowDefinitions>
+                        <RowDefinition Height="0.25*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="0.22*" />
+                        <RowDefinition Height="1*" />
+                        <RowDefinition Height="0.22*" />
+                    </Grid.RowDefinitions>
+                    <Button x:Name="OpenFileBtn2"  Grid.Column="0" Grid.Row="0" Content="Open File..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="OpenFileBtn_Click2"/>
+                    <Label Grid.Column="0" Grid.Row="1" Content="Roberts Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="1" Content="Sobel Image" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="0" Grid.Row="4" Content="Laplacian Image1" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Label Grid.Column="1" Grid.Row="4" Content="Laplacian Image2" HorizontalAlignment="Center" VerticalAlignment="Center"/>
+                    <Image x:Name="RobertsImage" Grid.Column="0" Grid.Row="2" />
+                    <Image x:Name="SobelImage" Grid.Column="1" Grid.Row="2" />
+                    <Image x:Name="LaplacianImage1" Grid.Column="0" Grid.Row="5" />
+                    <Image x:Name="LaplacianImage2" Grid.Column="1" Grid.Row="5"/>
+                    <Button x:Name="SaveRoberts"  Grid.Column="0" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveRoberts_Click" />
+                    <Button x:Name="SaveSobel"  Grid.Column="1" Grid.Row="3" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveSobel_Click" />
+                    <Button x:Name="SaveLaplacian1"  Grid.Column="0" Grid.Row="6" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveLaplacian1_Click" />
+                    <Button x:Name="SaveLaplacian2"  Grid.Column="1" Grid.Row="6" Content="Save..." HorizontalAlignment="Center" VerticalAlignment="Center" Width="100" Click="SaveLaplacian2_Click" />
+                </Grid>
+            </Border>
+        </TabItem>
+    </TabControl>
+</Window>
