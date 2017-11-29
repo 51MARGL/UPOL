@@ -1,0 +1,1 @@
+int NSD(int a, int b);
