@@ -1,0 +1,581 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+  <!-- EF Runtime content -->
+  <edmx:Runtime>
+    <!-- SSDL content -->
+    <edmx:StorageModels>
+    <Schema Namespace="CanteenModel.Store" Provider="System.Data.SqlClient" ProviderManifestToken="2012.Azure" Alias="Self" xmlns:store="http://schemas.microsoft.com/ado/2007/12/edm/EntityStoreSchemaGenerator" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm/ssdl">
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="UnitOfMeasure" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <EntityType Name="Meal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="Name" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Price" Type="float" Nullable="false" />
+        </EntityType>
+        <EntityType Name="MealConsistsOf">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MealId" Type="int" />
+          <Property Name="IngredientId" Type="int" />
+          <Property Name="AmountRequired" Type="float" />
+        </EntityType>
+        <EntityType Name="Menu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="MealId" Type="int" Nullable="false" />
+          <Property Name="ServeDate" Type="date" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserId" Type="int" Nullable="false" />
+          <Property Name="MenuId" Type="int" Nullable="false" />
+          <Property Name="OrderTime" Type="datetime" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Users">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="UserName" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="Password" Type="varchar" MaxLength="20" Nullable="false" />
+          <Property Name="LastLogin" Type="datetime" />
+          <Property Name="PermissionGroup" Type="varchar" MaxLength="10" Nullable="false" />
+        </EntityType>
+        <EntityType Name="Warehouse">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="int" StoreGeneratedPattern="Identity" Nullable="false" />
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="Amount" Type="float" Nullable="false" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view '51DB.dbo.IngredientAmountReqByDate' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="IngredientAmountReqByDate">
+          <Key>
+            <PropertyRef Name="IngredientId" />
+            <PropertyRef Name="IngredientName" />
+            <PropertyRef Name="ServeDate" />
+          </Key>
+          <Property Name="IngredientId" Type="int" Nullable="false" />
+          <Property Name="IngredientName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="ServeDate" Type="date" Nullable="false" />
+          <Property Name="RequiredSumAmount" Type="float" />
+          <Property Name="UnitOfMeasure" Type="nchar" MaxLength="10" />
+        </EntityType>
+        <!--Errors Found During Generation:
+warning 6002: The table/view '51DB.dbo.MenuView' does not have a primary key defined. The key has been inferred and the definition was created as a read-only table/view.-->
+        <EntityType Name="MenuView">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="MealId" />
+            <PropertyRef Name="MealName" />
+            <PropertyRef Name="Price" />
+            <PropertyRef Name="ServeDate" />
+          </Key>
+          <Property Name="Id" Type="int" Nullable="false" />
+          <Property Name="MealId" Type="int" Nullable="false" />
+          <Property Name="MealName" Type="varchar" MaxLength="50" Nullable="false" />
+          <Property Name="Price" Type="float" Nullable="false" />
+          <Property Name="ServeDate" Type="date" Nullable="false" />
+        </EntityType>
+        <Association Name="FK__MealConsi__Ingre__14270015">
+          <End Role="Ingredient" Type="Self.Ingredient" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="MealConsistsOf" Type="Self.MealConsistsOf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MealConsistsOf">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__MealConsi__MealI__1332DBDC">
+          <End Role="Meal" Type="Self.Meal" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="MealConsistsOf" Type="Self.MealConsistsOf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Meal">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MealConsistsOf">
+              <PropertyRef Name="MealId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Menu__MealId__17F790F9">
+          <End Role="Meal" Type="Self.Meal" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Menu" Type="Self.Menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Meal">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Menu">
+              <PropertyRef Name="MealId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Order__MenuId__503BEA1C">
+          <End Role="Menu" Type="Self.Menu" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Menu">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="MenuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Order__UserId__4F47C5E3">
+          <End Role="Users" Type="Self.Users" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Order" Type="Self.Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Users">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Warehouse__Ingre__41EDCAC5">
+          <End Role="Ingredient" Type="Self.Ingredient" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Warehouse" Type="Self.Warehouse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Warehouse">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Function Name="Validate_User" Aggregate="false" BuiltIn="false" NiladicFunction="false" IsComposable="false" ParameterTypeSemantics="AllowImplicitConversion" Schema="dbo">
+          <Parameter Name="UserName" Type="nvarchar" Mode="In" />
+          <Parameter Name="Password" Type="nvarchar" Mode="In" />
+        </Function>
+        <EntityContainer Name="CanteenModelStoreContainer">
+          <EntitySet Name="Ingredient" EntityType="Self.Ingredient" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Meal" EntityType="Self.Meal" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="MealConsistsOf" EntityType="Self.MealConsistsOf" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Menu" EntityType="Self.Menu" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Order" EntityType="Self.Order" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Users" EntityType="Self.Users" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="Warehouse" EntityType="Self.Warehouse" Schema="dbo" store:Type="Tables" />
+          <EntitySet Name="IngredientAmountReqByDate" EntityType="Self.IngredientAmountReqByDate" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [IngredientAmountReqByDate].[IngredientId] AS [IngredientId], 
+    [IngredientAmountReqByDate].[IngredientName] AS [IngredientName], 
+    [IngredientAmountReqByDate].[ServeDate] AS [ServeDate], 
+    [IngredientAmountReqByDate].[RequiredSumAmount] AS [RequiredSumAmount], 
+    [IngredientAmountReqByDate].[UnitOfMeasure] AS [UnitOfMeasure]
+    FROM [dbo].[IngredientAmountReqByDate] AS [IngredientAmountReqByDate]</DefiningQuery>
+          </EntitySet>
+          <EntitySet Name="MenuView" EntityType="Self.MenuView" store:Type="Views" store:Schema="dbo">
+            <DefiningQuery>SELECT 
+    [MenuView].[Id] AS [Id], 
+    [MenuView].[MealId] AS [MealId], 
+    [MenuView].[MealName] AS [MealName], 
+    [MenuView].[Price] AS [Price], 
+    [MenuView].[ServeDate] AS [ServeDate]
+    FROM [dbo].[MenuView] AS [MenuView]</DefiningQuery>
+          </EntitySet>
+          <AssociationSet Name="FK__MealConsi__Ingre__14270015" Association="Self.FK__MealConsi__Ingre__14270015">
+            <End Role="Ingredient" EntitySet="Ingredient" />
+            <End Role="MealConsistsOf" EntitySet="MealConsistsOf" />
+          </AssociationSet>
+          <AssociationSet Name="FK__MealConsi__MealI__1332DBDC" Association="Self.FK__MealConsi__MealI__1332DBDC">
+            <End Role="Meal" EntitySet="Meal" />
+            <End Role="MealConsistsOf" EntitySet="MealConsistsOf" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Menu__MealId__17F790F9" Association="Self.FK__Menu__MealId__17F790F9">
+            <End Role="Meal" EntitySet="Meal" />
+            <End Role="Menu" EntitySet="Menu" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Order__MenuId__503BEA1C" Association="Self.FK__Order__MenuId__503BEA1C">
+            <End Role="Menu" EntitySet="Menu" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Order__UserId__4F47C5E3" Association="Self.FK__Order__UserId__4F47C5E3">
+            <End Role="Users" EntitySet="Users" />
+            <End Role="Order" EntitySet="Order" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Warehouse__Ingre__41EDCAC5" Association="Self.FK__Warehouse__Ingre__41EDCAC5">
+            <End Role="Ingredient" EntitySet="Ingredient" />
+            <End Role="Warehouse" EntitySet="Warehouse" />
+          </AssociationSet>
+        </EntityContainer>
+      </Schema></edmx:StorageModels>
+    <!-- CSDL content -->
+    <edmx:ConceptualModels>
+      <Schema Namespace="CanteenModel" Alias="Self" annotation:UseStrongSpatialTypes="false" xmlns:annotation="http://schemas.microsoft.com/ado/2009/02/edm/annotation" xmlns:customannotation="http://schemas.microsoft.com/ado/2013/11/edm/customannotation" xmlns="http://schemas.microsoft.com/ado/2009/11/edm">
+        <EntityType Name="Meal">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" MaxLength="50" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Price" Type="Double" Nullable="false" />
+          <NavigationProperty Name="MealConsistsOfs" Relationship="Self.FK__MealConsi__MealI__1332DBDC" FromRole="Meal" ToRole="MealConsistsOf" />
+          <NavigationProperty Name="Menus" Relationship="Self.FK__Menu__MealId__17F790F9" FromRole="Meal" ToRole="Menu" />
+        </EntityType>
+        <EntityType Name="MealConsistsOf">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MealId" Type="Int32" />
+          <Property Name="IngredientId" Type="Int32" />
+          <Property Name="AmountRequired" Type="Double" />
+          <NavigationProperty Name="Meal" Relationship="Self.FK__MealConsi__MealI__1332DBDC" FromRole="MealConsistsOf" ToRole="Meal" />
+          <NavigationProperty Name="Ingredient" Relationship="CanteenModel.FK__MealConsi__Ingre__14270015" FromRole="MealConsistsOf" ToRole="Ingredient" />
+        </EntityType>
+        <EntityType Name="Menu">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="MealId" Type="Int32" Nullable="false" />
+          <Property Name="ServeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <NavigationProperty Name="Meal" Relationship="Self.FK__Menu__MealId__17F790F9" FromRole="Menu" ToRole="Meal" />
+          <NavigationProperty Name="Orders" Relationship="CanteenModel.FK__Order__MenuId__503BEA1C" FromRole="Menu" ToRole="Order" />
+        </EntityType>
+        <EntityType Name="User">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserName" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="Password" Type="String" MaxLength="20" FixedLength="false" Unicode="false" Nullable="false" />
+          <Property Name="LastLogin" Type="DateTime" Precision="3" />
+          <Property Name="PermissionGroup" Type="String" Nullable="false" MaxLength="10" FixedLength="false" Unicode="false" />
+          <NavigationProperty Name="Orders" Relationship="CanteenModel.FK__Order__UserId__4F47C5E3" FromRole="User" ToRole="Order" />
+        </EntityType>
+        <Association Name="FK__MealConsi__MealI__1332DBDC">
+          <End Role="Meal" Type="Self.Meal" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="MealConsistsOf" Type="Self.MealConsistsOf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Meal">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MealConsistsOf">
+              <PropertyRef Name="MealId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Menu__MealId__17F790F9">
+          <End Role="Meal" Type="Self.Meal" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Role="Menu" Type="Self.Menu" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Meal">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Menu">
+              <PropertyRef Name="MealId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityContainer Name="Entities" annotation:LazyLoadingEnabled="true">
+          <EntitySet Name="Meals" EntityType="Self.Meal" />
+          <EntitySet Name="MealConsistsOfs" EntityType="Self.MealConsistsOf" />
+          <EntitySet Name="Menus" EntityType="Self.Menu" />
+          <EntitySet Name="Users" EntityType="Self.User" />
+          <AssociationSet Name="FK__MealConsi__MealI__1332DBDC" Association="Self.FK__MealConsi__MealI__1332DBDC">
+            <End Role="Meal" EntitySet="Meals" />
+            <End Role="MealConsistsOf" EntitySet="MealConsistsOfs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Menu__MealId__17F790F9" Association="Self.FK__Menu__MealId__17F790F9">
+            <End Role="Meal" EntitySet="Meals" />
+            <End Role="Menu" EntitySet="Menus" />
+          </AssociationSet>
+          <FunctionImport Name="Validate_User" ReturnType="Collection(Int32)">
+            <Parameter Name="UserName" Mode="In" Type="String" />
+            <Parameter Name="Password" Mode="In" Type="String" />
+          </FunctionImport>
+          <EntitySet Name="Warehouses" EntityType="CanteenModel.Warehouse" />
+          <EntitySet Name="Ingredients" EntityType="CanteenModel.Ingredient" />
+          <AssociationSet Name="FK__MealConsi__Ingre__14270015" Association="CanteenModel.FK__MealConsi__Ingre__14270015">
+            <End Role="Ingredient" EntitySet="Ingredients" />
+            <End Role="MealConsistsOf" EntitySet="MealConsistsOfs" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Warehouse__Ingre__41EDCAC5" Association="CanteenModel.FK__Warehouse__Ingre__41EDCAC5">
+            <End Role="Ingredient" EntitySet="Ingredients" />
+            <End Role="Warehouse" EntitySet="Warehouses" />
+          </AssociationSet>
+          <EntitySet Name="MenuViews" EntityType="CanteenModel.MenuView" />
+          <EntitySet Name="Orders" EntityType="CanteenModel.Order" />
+          <AssociationSet Name="FK__Order__MenuId__503BEA1C" Association="CanteenModel.FK__Order__MenuId__503BEA1C">
+            <End Role="Menu" EntitySet="Menus" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <AssociationSet Name="FK__Order__UserId__4F47C5E3" Association="CanteenModel.FK__Order__UserId__4F47C5E3">
+            <End Role="User" EntitySet="Users" />
+            <End Role="Order" EntitySet="Orders" />
+          </AssociationSet>
+          <EntitySet Name="IngredientAmountReqByDates" EntityType="CanteenModel.IngredientAmountReqByDate" />
+        </EntityContainer>
+        <EntityType Name="Warehouse">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="Amount" Type="Double" Nullable="false" />
+          <NavigationProperty Name="Ingredient" Relationship="CanteenModel.FK__Warehouse__Ingre__41EDCAC5" FromRole="Warehouse" ToRole="Ingredient" />
+        </EntityType>
+        <EntityType Name="Ingredient">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="Name" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="UnitOfMeasure" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <NavigationProperty Name="MealConsistsOfs" Relationship="CanteenModel.FK__MealConsi__Ingre__14270015" FromRole="Ingredient" ToRole="MealConsistsOf" />
+          <NavigationProperty Name="Warehouses" Relationship="CanteenModel.FK__Warehouse__Ingre__41EDCAC5" FromRole="Ingredient" ToRole="Warehouse" />
+        </EntityType>
+        <Association Name="FK__MealConsi__Ingre__14270015">
+          <End Type="CanteenModel.Ingredient" Role="Ingredient" Multiplicity="0..1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CanteenModel.MealConsistsOf" Role="MealConsistsOf" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="MealConsistsOf">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Warehouse__Ingre__41EDCAC5">
+          <End Type="CanteenModel.Ingredient" Role="Ingredient" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CanteenModel.Warehouse" Role="Warehouse" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Ingredient">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Warehouse">
+              <PropertyRef Name="IngredientId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="MenuView">
+          <Key>
+            <PropertyRef Name="Id" />
+            <PropertyRef Name="MealId" />
+            <PropertyRef Name="MealName" />
+            <PropertyRef Name="Price" />
+            <PropertyRef Name="ServeDate" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" />
+          <Property Name="MealId" Type="Int32" Nullable="false" />
+          <Property Name="MealName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+          <Property Name="Price" Type="Double" Nullable="false" />
+          <Property Name="ServeDate" Type="DateTime" Nullable="false" Precision="0" />
+        </EntityType>
+        <EntityType Name="Order">
+          <Key>
+            <PropertyRef Name="Id" />
+          </Key>
+          <Property Name="Id" Type="Int32" Nullable="false" annotation:StoreGeneratedPattern="Identity" />
+          <Property Name="UserId" Type="Int32" Nullable="false" />
+          <Property Name="MenuId" Type="Int32" Nullable="false" />
+          <Property Name="OrderTime" Type="DateTime" Nullable="false" Precision="3" />
+          <NavigationProperty Name="Menu" Relationship="CanteenModel.FK__Order__MenuId__503BEA1C" FromRole="Order" ToRole="Menu" />
+          <NavigationProperty Name="User" Relationship="CanteenModel.FK__Order__UserId__4F47C5E3" FromRole="Order" ToRole="User" />
+        </EntityType>
+        <Association Name="FK__Order__MenuId__503BEA1C">
+          <End Type="CanteenModel.Menu" Role="Menu" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CanteenModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="Menu">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="MenuId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <Association Name="FK__Order__UserId__4F47C5E3">
+          <End Type="CanteenModel.User" Role="User" Multiplicity="1">
+            <OnDelete Action="Cascade" />
+          </End>
+          <End Type="CanteenModel.Order" Role="Order" Multiplicity="*" />
+          <ReferentialConstraint>
+            <Principal Role="User">
+              <PropertyRef Name="Id" />
+            </Principal>
+            <Dependent Role="Order">
+              <PropertyRef Name="UserId" />
+            </Dependent>
+          </ReferentialConstraint>
+        </Association>
+        <EntityType Name="IngredientAmountReqByDate">
+          <Key>
+            <PropertyRef Name="IngredientId" />
+            <PropertyRef Name="ServeDate" />
+            <PropertyRef Name="IngredientName" />
+          </Key>
+          <Property Name="IngredientId" Type="Int32" Nullable="false" />
+          <Property Name="ServeDate" Type="DateTime" Nullable="false" Precision="0" />
+          <Property Name="RequiredSumAmount" Type="Double" />
+          <Property Name="UnitOfMeasure" Type="String" MaxLength="10" FixedLength="true" Unicode="true" />
+          <Property Name="IngredientName" Type="String" Nullable="false" MaxLength="50" FixedLength="false" Unicode="false" />
+        </EntityType>
+      </Schema>
+    </edmx:ConceptualModels>
+    <!-- C-S mapping content -->
+    <edmx:Mappings>
+      <Mapping Space="C-S" xmlns="http://schemas.microsoft.com/ado/2009/11/mapping/cs">
+        <EntityContainerMapping StorageEntityContainer="CanteenModelStoreContainer" CdmEntityContainer="Entities">
+          <EntitySetMapping Name="Meals">
+            <EntityTypeMapping TypeName="CanteenModel.Meal">
+              <MappingFragment StoreEntitySet="Meal">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MealConsistsOfs">
+            <EntityTypeMapping TypeName="CanteenModel.MealConsistsOf">
+              <MappingFragment StoreEntitySet="MealConsistsOf">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MealId" ColumnName="MealId" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="AmountRequired" ColumnName="AmountRequired" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Menus">
+            <EntityTypeMapping TypeName="CanteenModel.Menu">
+              <MappingFragment StoreEntitySet="Menu">
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="MealId" ColumnName="MealId" />
+                <ScalarProperty Name="ServeDate" ColumnName="ServeDate" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Users">
+            <EntityTypeMapping TypeName="CanteenModel.User">
+              <MappingFragment StoreEntitySet="Users">
+                <ScalarProperty Name="PermissionGroup" ColumnName="PermissionGroup" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+                <ScalarProperty Name="UserName" ColumnName="UserName" />
+                <ScalarProperty Name="Password" ColumnName="Password" />
+                <ScalarProperty Name="LastLogin" ColumnName="LastLogin" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <FunctionImportMapping FunctionImportName="Validate_User" FunctionName="CanteenModel.Store.Validate_User" />
+          <EntitySetMapping Name="Warehouses">
+            <EntityTypeMapping TypeName="CanteenModel.Warehouse">
+              <MappingFragment StoreEntitySet="Warehouse">
+                <ScalarProperty Name="Amount" ColumnName="Amount" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Ingredients">
+            <EntityTypeMapping TypeName="CanteenModel.Ingredient">
+              <MappingFragment StoreEntitySet="Ingredient">
+                <ScalarProperty Name="UnitOfMeasure" ColumnName="UnitOfMeasure" />
+                <ScalarProperty Name="Name" ColumnName="Name" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="MenuViews">
+            <EntityTypeMapping TypeName="CanteenModel.MenuView">
+              <MappingFragment StoreEntitySet="MenuView">
+                <ScalarProperty Name="ServeDate" ColumnName="ServeDate" />
+                <ScalarProperty Name="Price" ColumnName="Price" />
+                <ScalarProperty Name="MealName" ColumnName="MealName" />
+                <ScalarProperty Name="MealId" ColumnName="MealId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="Orders">
+            <EntityTypeMapping TypeName="CanteenModel.Order">
+              <MappingFragment StoreEntitySet="Order">
+                <ScalarProperty Name="OrderTime" ColumnName="OrderTime" />
+                <ScalarProperty Name="MenuId" ColumnName="MenuId" />
+                <ScalarProperty Name="UserId" ColumnName="UserId" />
+                <ScalarProperty Name="Id" ColumnName="Id" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+          <EntitySetMapping Name="IngredientAmountReqByDates">
+            <EntityTypeMapping TypeName="CanteenModel.IngredientAmountReqByDate">
+              <MappingFragment StoreEntitySet="IngredientAmountReqByDate">
+                <ScalarProperty Name="IngredientName" ColumnName="IngredientName" />
+                <ScalarProperty Name="UnitOfMeasure" ColumnName="UnitOfMeasure" />
+                <ScalarProperty Name="RequiredSumAmount" ColumnName="RequiredSumAmount" />
+                <ScalarProperty Name="ServeDate" ColumnName="ServeDate" />
+                <ScalarProperty Name="IngredientId" ColumnName="IngredientId" />
+              </MappingFragment>
+            </EntityTypeMapping>
+          </EntitySetMapping>
+        </EntityContainerMapping>
+      </Mapping>
+    </edmx:Mappings>
+  </edmx:Runtime>
+  <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <Connection>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="MetadataArtifactProcessing" Value="EmbedInOutputAssembly" />
+      </DesignerInfoPropertySet>
+    </Connection>
+    <Options>
+      <DesignerInfoPropertySet>
+        <DesignerProperty Name="ValidateOnBuild" Value="true" />
+        <DesignerProperty Name="EnablePluralization" Value="true" />
+        <DesignerProperty Name="IncludeForeignKeysInModel" Value="true" />
+        <DesignerProperty Name="UseLegacyProvider" Value="false" />
+        <DesignerProperty Name="CodeGenerationStrategy" Value="None" />
+      </DesignerInfoPropertySet>
+    </Options>
+    <!-- Diagram content (shape and connector positions) -->
+    <Diagrams></Diagrams>
+  </Designer>
+</edmx:Edmx>

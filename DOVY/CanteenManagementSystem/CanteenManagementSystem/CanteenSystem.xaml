@@ -1,0 +1,196 @@
+﻿<Window x:Class="CanteenManagementSystem.CanteenSystem"
+        xmlns="http://schemas.microsoft.com/winfx/2006/xaml/presentation"
+        xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
+        xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
+        xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
+        xmlns:local="clr-namespace:CanteenManagementSystem"
+        mc:Ignorable="d"
+       Title="CanteenSystem" Height="500" Width="800" FontSize="14" Loaded="Window_Loaded">
+    <Border BorderThickness="3" BorderBrush="Black">
+        <Grid Margin="5">
+            <Grid.ColumnDefinitions>
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+                <ColumnDefinition Width="*" />
+            </Grid.ColumnDefinitions>
+            <Grid.RowDefinitions>
+                <RowDefinition Height="0.5*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+                <RowDefinition Height="1*" />
+            </Grid.RowDefinitions>
+            <Label Content="Canteen Managment System" Grid.Column="1" Grid.Row="0" Grid.ColumnSpan="2" HorizontalAlignment="Center" VerticalAlignment="Top" FontSize="20" FontWeight="Bold"/>
+            <Calendar Name ="Calendar" HorizontalAlignment="Center" Grid.Column="0" Grid.Row="1" Grid.RowSpan="2" VerticalAlignment="Top" SelectedDatesChanged="Calendar_SelectedDatesChanged"/>
+            <Label Name="CurrentLogUser" Content="{Binding Path=CurrentUser}" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Left" VerticalAlignment="Center"/>
+            <Button Name="LogoutBtn"  Content="Logout" Margin="5" Grid.Column="0" Grid.Row="3" HorizontalAlignment="Right" VerticalAlignment="Center" Click="LogoutBtn_Click"/>
+            <TabControl Margin="5" Grid.Column="1" Grid.Row="1" Grid.ColumnSpan="3" Grid.RowSpan="4">
+                <TabItem Header="Daily Menu">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="0.25*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid Name="MenuDataGrid" IsReadOnly="True" SelectionMode="Single" ItemsSource="{Binding}" Margin="5" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2" AlternatingRowBackground="#FF9C9191" AutoGenerateColumns="False">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Meal Number" Binding="{Binding Path=MealId}" />
+                                <DataGridTextColumn Header="Meal Name" Binding="{Binding Path=MealName}" />
+                                <DataGridTextColumn Header="Price($)" Binding="{Binding Path=Price}" />
+                                <DataGridTextColumn Header="Serve Date" Binding="{Binding Path=ServeDate, StringFormat=\{0:dd.MM.yy\}}" />
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Margin="3" Name="BrowseMenuDetails" Click="BrowseMenuDetails_Click" Content="Details"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                                <DataGridTemplateColumn>
+                                    <DataGridTemplateColumn.CellTemplate>
+                                        <DataTemplate>
+                                            <Button Margin="3" Name="PlaceMenuOrder" Content="Place Order" Click="PlaceMenuOrder_Click"/>
+                                        </DataTemplate>
+                                    </DataGridTemplateColumn.CellTemplate>
+                                </DataGridTemplateColumn>
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Button Name="RemoveMenuOffer" Content="Remove Offer" Grid.Column="1" Grid.Row="2" Margin="5"
+                                Command="{Binding Remove}" CommandParameter="{Binding ElementName=MenuDataGrid, Path=SelectedItem}" Click="RemoveMenuOffer_Click">
+                            <Button.Style>
+                                <Style TargetType="Button">
+                                    <Setter Property="IsEnabled" Value="True" />
+                                    <Style.Triggers>
+                                        <DataTrigger Binding="{Binding ElementName=MenuDataGrid, Path=SelectedItem}" Value="{x:Null}">
+                                            <Setter Property="IsEnabled" Value="False" />
+                                        </DataTrigger>
+                                    </Style.Triggers>
+                                </Style>
+                            </Button.Style>
+                        </Button>
+                        <Button Name="AddMenuOffer" Content="Add Menu Offer" Grid.Column="2" Grid.Row="2" Margin="5" Click="AddMenuOffer_Click"/>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Warehouse" Name="WarehouseTab">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="0.25*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid Name="WarehouseDataGrid" IsReadOnly="True" AutoGenerateColumns="False" Margin="5" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="3" Grid.RowSpan="2" AlternatingRowBackground="#FF9C9191">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Id" Binding="{Binding Path=Id}" />
+                                <DataGridTextColumn Header="Ingredient Name" Binding="{Binding Path=Name}" />
+                                <DataGridTextColumn Header="Amount Left" Binding="{Binding Path=Amount}" />
+                                <DataGridTextColumn Header="Amount Used Per Day" Binding="{Binding Path=RequiredSumAmount}" />
+                                <DataGridTextColumn Header="Unit Of Measure" Binding="{Binding Path=UnitOfMeasure}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="3" VerticalAlignment="Bottom">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.5*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox IsReadOnly="True" Text="Filter:" Margin="5"  Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom"/>
+                            <TextBox Name="IdFilter" Margin="5"  Grid.Row="0" Grid.Column="1" TextWrapping="Wrap" Text="Id" VerticalAlignment="Bottom" />
+                            <TextBox Name="NameFilter" Margin="5"  Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" Text="Name" VerticalAlignment="Bottom"/>
+                            <TextBox Name="AmountFilter" Margin="5"  Grid.Row="0" Grid.Column="3" TextWrapping="Wrap" Text="Amount" VerticalAlignment="Bottom" />
+                            <TextBox Name="UnitFilter" Margin="5"  Grid.Row="0" Grid.Column="4" TextWrapping="Wrap" Text="Unit" VerticalAlignment="Bottom" />
+                            <Button Name="ResetFilter" Content="Reset" Margin="5"  Grid.Row="0" Grid.Column="5"  VerticalAlignment="Bottom" Click="ResetFilter_Click" />
+                        </Grid>
+
+                        <Button Name="ChangeIngAmount" Content="Refill" Grid.Column="2" Grid.Row="2" Margin="5" Click="ChangeIngAmount_Click" />
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Orders">
+                    <Grid Margin="5">
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <DataGrid Name="OrdersDataGrid" IsReadOnly="True" AutoGenerateColumns="False" Margin="5" Grid.Column="0" Grid.Row="0" Grid.ColumnSpan="2" Grid.RowSpan="2" AlternatingRowBackground="#FF9C9191">
+                            <DataGrid.Columns>
+                                <DataGridTextColumn Header="Id" Binding="{Binding Path=Id}" />
+                                <DataGridTextColumn Header="User Name" Binding="{Binding Path=UserName}" />
+                                <DataGridTextColumn Header="Menu Id" Binding="{Binding Path=MenuId}" />
+                                <DataGridTextColumn Header="Meal Name" Binding="{Binding Path=MealName}" />
+                                <DataGridTextColumn Header="Price" Binding="{Binding Path=Price}" />
+                                <DataGridTextColumn Header="Order Date" Binding="{Binding Path=OrderDate, StringFormat=\{0:dd.MM.yy\}}" />
+                                <DataGridTextColumn Header="Serving Date" Binding="{Binding Path=ServeDate, StringFormat=\{0:dd.MM.yy\}}" />
+                            </DataGrid.Columns>
+                        </DataGrid>
+                        <Grid Grid.Row="1" Grid.Column="0" Grid.ColumnSpan="2" VerticalAlignment="Bottom">
+                            <Grid.ColumnDefinitions>
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="0.8*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                                <ColumnDefinition Width="*" />
+                            </Grid.ColumnDefinitions>
+                            <TextBox IsReadOnly="True" Text="Filter:" Margin="5"  Grid.Row="0" Grid.Column="0" VerticalAlignment="Bottom"/>
+                            <TextBox Name="CountTextOrder" IsReadOnly="True" Text="Count:" Margin="5,1"  Grid.Row="0" Grid.Column="5" VerticalAlignment="Top"/>
+                            <ComboBox Name="MealsListFilter" Grid.Row="0" Grid.Column="1" Height="30"
+                                      ItemsSource="{Binding}" 
+                                      SelectedValue="{Binding Id}" 
+                                      SelectedValuePath="Id" 
+                                      DisplayMemberPath="Name" SelectionChanged="MealsListFilter_SelectionChanged"/>
+                            <TextBox IsReadOnly="True" Margin="5" Grid.Row="0" Grid.Column="2" TextWrapping="Wrap" Text="Serving Date(From-To):" VerticalAlignment="Bottom"/>
+                            <DatePicker Name="DateFromOrder" Margin="5"  Grid.Row="0" Grid.Column="3" Text="Amount" VerticalAlignment="Bottom" FirstDayOfWeek="Monday" SelectedDateChanged="DateFromOrder_SelectedDateChanged" />
+                            <DatePicker Name="DateTillOrder" Margin="5"  Grid.Row="0" Grid.Column="4" Text="Unit" VerticalAlignment="Bottom" SelectedDateChanged="DateTillOrder_SelectedDateChanged" />
+                            <Button Name="ResetFilterOrder" Content="Reset" Margin="5"  Grid.Row="0" Grid.Column="5"  VerticalAlignment="Bottom" Click="ResetFilterOrder_Click" />
+                        </Grid>
+                    </Grid>
+                </TabItem>
+                <TabItem Header="Monthly Statistics" Name="StatisticsTab">
+                    <Grid>
+                        <Grid.ColumnDefinitions>
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                            <ColumnDefinition Width="*" />
+                        </Grid.ColumnDefinitions>
+                        <Grid.RowDefinitions>
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                            <RowDefinition Height="1*" />
+                        </Grid.RowDefinitions>
+                        <Label Grid.Column="0" Grid.Row="0" VerticalAlignment="Center" Content="Selected Month:" />
+                        <Label Grid.Column="2" Grid.Row="0" VerticalAlignment="Center" Content="Selected Year:" />
+                        <ComboBox Margin="5" Grid.Row="0" Grid.Column="1" VerticalAlignment="Center" Name="MonthPicker" SelectionChanged="MonthPicker_SelectionChanged" />
+                        <ComboBox Margin="5" Grid.Row="0" Grid.Column="3" VerticalAlignment="Center" Name="YearPicker" SelectionChanged="YearPicker_SelectionChanged"/>
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Grid.Column="0" Margin="5" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="Average Orders/Day:" />
+                        <TextBox Name="AverageOrders" IsReadOnly="True" Grid.Column="2" Margin="5" Grid.Row="1" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="" />
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Grid.Column="0" Margin="5" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="Maximum orders:" />
+                        <TextBox Name="MaxOrdersText" IsReadOnly="True" Grid.Column="2" Margin="5" Grid.Row="2" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="" />
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Grid.Column="0" Margin="5" Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="Minimum orders:" />
+                        <TextBox Name="MinOrdersText" IsReadOnly="True" Grid.Column="2" Margin="5" Grid.Row="3" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="" />
+                        <TextBox IsReadOnly="True" TextWrapping="Wrap" Grid.Column="0" Margin="5" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="No orders:" />
+                        <TextBox Name="NoOrdersText" IsReadOnly="True" Grid.Column="2" Margin="5" Grid.Row="4" Grid.ColumnSpan="2" VerticalAlignment="Center" Text="" />
+                    </Grid>
+                </TabItem>
+            </TabControl>
+        </Grid>
+    </Border>
+</Window>
