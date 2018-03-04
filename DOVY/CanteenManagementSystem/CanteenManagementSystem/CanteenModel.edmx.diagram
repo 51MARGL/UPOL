@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<edmx:Edmx Version="3.0" xmlns:edmx="http://schemas.microsoft.com/ado/2009/11/edmx">
+ <!-- EF Designer content (DO NOT EDIT MANUALLY BELOW HERE) -->
+  <edmx:Designer xmlns="http://schemas.microsoft.com/ado/2009/11/edmx">
+    <!-- Diagram content (shape and connector positions) -->
+    <edmx:Diagrams>
+      <Diagram DiagramId="bcb9c1ef1dc445ca8a0739a651c67926" Name="Diagram1">
+        <EntityTypeShape EntityType="CanteenModel.Meal" Width="1.5" PointX="0.75" PointY="1.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CanteenModel.MealConsistsOf" Width="1.5" PointX="3.375" PointY="2.875" IsExpanded="true" />
+        <EntityTypeShape EntityType="CanteenModel.Menu" Width="1.5" PointX="3.375" PointY="0.5" IsExpanded="true" />
+        <EntityTypeShape EntityType="CanteenModel.User" Width="1.5" PointX="8.125" PointY="0.5" IsExpanded="true" />
+        <AssociationConnector Association="CanteenModel.FK__MealConsi__MealI__1332DBDC" ManuallyRouted="false" />
+        <AssociationConnector Association="CanteenModel.FK__Menu__MealId__17F790F9" ManuallyRouted="false" />
+        <EntityTypeShape EntityType="CanteenModel.Warehouse" Width="1.5" PointX="8.125" PointY="3.25" />
+        <EntityTypeShape EntityType="CanteenModel.Ingredient" Width="1.5" PointX="6" PointY="3" />
+        <AssociationConnector Association="CanteenModel.FK__MealConsi__Ingre__14270015" />
+        <AssociationConnector Association="CanteenModel.FK__Warehouse__Ingre__41EDCAC5" />
+        <EntityTypeShape EntityType="CanteenModel.MenuView" Width="1.5" PointX="0.5" PointY="6" />
+        <EntityTypeShape EntityType="CanteenModel.Order" Width="1.5" PointX="6" PointY="0.5" />
+        <AssociationConnector Association="CanteenModel.FK__Order__MenuId__503BEA1C" />
+        <AssociationConnector Association="CanteenModel.FK__Order__UserId__4F47C5E3" />
+        <EntityTypeShape EntityType="CanteenModel.IngredientAmountReqByDate" Width="1.5" PointX="2.125" PointY="6" />
+      </Diagram>
+    </edmx:Diagrams>
+  </edmx:Designer>
+</edmx:Edmx>
