@@ -1,0 +1,579 @@
+body {
+    font-family: 'Open Sans', sans-serif;
+    margin: 0px;
+}
+
+.top-head {
+    margin-top: 30px;
+    margin-bottom: 10px;
+}
+
+main, header {
+    padding: 0px;
+    margin: 0px;
+    max-width: 1200px;
+    margin: auto;
+    padding: 0px;
+}
+
+footer {
+    padding: 0px;
+    margin-top: 50px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    height: 530px;
+    background-color: #000000;
+    width: 100%;
+}
+
+.top-nav-bar {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    flex-wrap: wrap;
+    align-items: center;
+}
+
+.top-nav a {
+    text-decoration: none;
+    color: #000000;
+    margin-right: 10px;
+}
+
+.logo h1 {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+}
+
+.logo a {
+    text-decoration: none;
+}
+
+.logo .logo-express {
+    letter-spacing: 5px;
+    font-family: 'Sacramento', cursive;
+    font-size: 70px;
+    text-align: left;
+    color: #000000;
+}
+
+.logo .logo-blog {
+    font-family: 'Open Sans Bold', sans-serif;
+    text-align: center;
+    color: #00aeef;
+    font-size: 20px;
+    margin: 0px 0 -35px 90px;
+    order: -1;
+}
+
+.top-head .social-links {
+    text-decoration: none;
+}
+
+.top-head .social-links ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+    align-content: center;
+}
+
+.top-head .social-links li {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.menu {
+    padding: 0px;
+    margin: 0px;
+    font-size: 16px;
+}
+
+.menu ul {
+    margin-top: 30px;
+    padding: 0px;
+    border: 1px solid rgb(221, 221, 221);
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: flex-start;
+}
+
+.menu li {
+    cursor: pointer;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    text-align: center;
+    height: 50px;
+    flex-grow: 0.1;
+}
+
+.menu li:last-child {
+    margin-left: auto;
+    flex-grow: 0.05;
+}
+
+.menu li:last-child button {
+    height: 100%;
+    background-color: #ffffff;
+    color: #ffffff;
+    font-weight: bold;
+    border: 1px solid rgb(221, 221, 221);
+    text-decoration: none;
+}
+
+.menu .selected-button {
+    background-color: #03a5e1;
+    border-style: 0px solid;
+    color: #ffffff;
+    font-weight: bold;
+}
+
+.menu .not-selected-button {
+    background-color: #ffffff;
+    color: #000000;
+    font-weight: bold;
+}
+
+.menu .not-selected-button:hover {
+    background-color: #222222;
+    color: #ffffff;
+}
+
+.slider {
+    background-color: #222222;
+    display: flex;
+    justify-content: flex-start;
+}
+
+.selected-post-preview {
+    font-weight: bold;
+    position: relative;
+    width: 65%;
+    color: #ffffff;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+}
+
+.selected-post-preview img {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    z-index: 0;
+}
+
+.selected-post-preview header {
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+    margin: 0 0 30px 30px;
+}
+
+.selected-post-preview h4 {
+    color: #00aeef;
+    font-size: 20px;
+    margin: 0px;
+    padding: 0px;
+}
+
+.selected-post-preview h3 {
+    font-size: 26px;
+    width: 250px;
+}
+
+.selected-post-preview a {
+    text-decoration: none;
+    color: #ffffff;
+}
+
+.selected-post-preview time {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.selected-post-preview .author {
+    display: inline-block;
+    vertical-align: top;
+}
+
+.slider ul {
+    color: #ffffff;
+    display: flex;
+    justify-content: space-between;
+    flex-direction: column;
+    list-style-type: none;
+    margin: 5px 0px;
+    padding: 0;
+    overflow-y: auto;
+}
+
+.slider .post-preview {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    margin: 5px 0px;
+}
+
+.slider .post-preview img {
+    margin: 0px 10px;
+    width: 163px;
+    align-self: center;
+}
+
+.slider .post-preview header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+    width: 100%;
+}
+
+.slider .post-preview h3 {
+    margin: 0px;
+    padding: 0px;
+    font-size: 16px;
+}
+
+.post-metadata {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    font-size: 12px;
+    font-weight: bold;
+}
+
+.post-metadata .author {
+    margin-right: 5px;
+}
+
+.post-metadata time {
+    margin-right: 1rem;
+}
+
+.post-metadata a {
+    color: #00aeef;
+    text-decoration: none;
+    margin-right: 3px;
+}
+
+.category {
+    display: flex;
+    flex-direction: column;
+}
+
+.category-head {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    flex-wrap: wrap;
+    margin: 20px 0;
+}
+
+.category-head h2 {
+    border-left: 5px solid #00aeef;
+    padding-left: 1rem;
+    padding-top: 0.5rem;
+    padding-bottom: 0.5rem;
+    font-size: 20px;
+}
+
+.category-head .hr-line {
+    border: 0px;
+    background: #00aeef;
+    height: 2px;
+    align-self: center;
+    flex-grow: 1;
+    margin: 1rem 1rem 0 1rem;
+}
+
+.category-head nav ul {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    list-style-type: none;
+    padding: 0;
+    margin: 0 -10px;
+    height: 100%;
+}
+
+.category-head nav li {
+    font-weight: bold;
+    align-self: center;
+    margin: 0 10px;
+}
+
+.category-head nav li:nth-last-child(3) {
+    margin-right: 3rem;
+}
+
+.category .post-block {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    border-bottom: 1px solid #000000;
+    padding-bottom: 30px;
+    margin: -10px 0;
+}
+
+.category .post-block ul {
+    list-style-type: none;
+    display: flex;
+    flex-direction: row;
+    padding: 0px;
+    /*hack space between items*/
+    margin: -10px 0;
+}
+
+.category .post-block ul li {
+    margin: 10px 0;
+}
+
+.category .post-block .post-preview-detailed p {
+    flex-grow: 1;
+}
+
+.category .post-block .post-preview-detailed {
+    font-size: 16px;
+    display: flex;
+    flex-direction: row;
+    justify-content: space-between;
+}
+
+.category .post-preview-detailed button {
+    min-width: 133px;
+    max-width: 133px;
+    min-height: 35px;
+    max-height: 35px;
+    margin-bottom: 30px;
+    border-radius: 5px;
+    background-color: #00aeef;
+    color: #ffffff;
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+    font-size: 14px;
+}
+
+.category .post-preview-detailed h3 {
+    font-size: 16px;
+    font-weight: bold;
+}
+
+.category .post-preview {
+    display: flex;
+    justify-content: flex-start;
+}
+
+.category .post-preview img {
+    width: 100px;
+    height: 100px;
+    margin-right: 20px;
+}
+
+.category .post-preview header {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.category .post-preview h3 {
+    margin: 0px;
+    padding: 0px;
+    font-size: 16px;
+}
+
+.category .post-preview .post-content {
+    display: flex;
+    flex-direction: column;
+    justify-content: space-around;
+}
+
+.category .post-preview-large {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    justify-content: flex-end;
+    min-width: 370px;
+    max-width: 370px;
+    height: 340px;
+}
+
+.category .post-preview-large img {
+    position: absolute;
+    z-index: 0;
+    width: 100%;
+    height: 100%;
+}
+
+.category .post-preview-large header {
+    position: relative;
+    z-index: 10;
+    color: #ffffff;
+    margin: 30px 30px;
+}
+
+.world-news .post-block ul {
+    /*hack space between items*/
+    margin: 10px -15px;
+}
+
+.world-news .post-block ul li {
+    /*hack space between items*/
+    margin: 0 15px;
+}
+
+.world-news .post-block .post-preview-detailed {
+    flex-direction: column;
+    border-bottom: 1px solid #000000;
+}
+
+.world-news .post-preview-detailed img {
+    width: 100%;
+}
+
+.fashion .post-block ul {
+    flex-direction: column;
+}
+
+.fashion .post-preview-detailed img {
+    min-width: 370px;
+    margin-right: 30px;
+}
+
+.two-col {
+    display: flex;
+    justify-content: space-between;
+}
+
+.two-col .left-col {
+    width: 770px;
+    margin-right: 60px;
+}
+
+.lifestyle .post-block {
+    flex-direction: row;
+}
+
+.lifestyle .post-preview-large {
+    margin-right: 30px;
+}
+
+.lifestyle .post-block ul {
+    flex-direction: column;
+}
+
+.sports .post-block ul {
+    margin: -10px -15px;
+}
+
+.sports .post-block ul li {
+    width: 370px;
+    margin: 20px 15px;
+}
+
+.sports .post-preview-detailed {
+    margin: 10px 0 0 0;
+}
+
+.sports .post-preview-detailed img {
+    min-width: 370px;
+    height: 340px;
+    margin-right: 30px;
+}
+
+.technology {
+    margin-right: 30px;
+}
+
+.technology .post-block {
+    border: none;
+}
+
+.technology .post-block ul {
+    flex-direction: column;
+}
+
+.technology .post-preview-large {
+    min-width: 370px;
+    max-width: 370px;
+    height: 220px;
+}
+
+.technology .post-preview-large img {
+    min-height: 220px;
+}
+
+.food-health .post-block {
+    border: none;
+}
+
+.food-health .post-block ul {
+    flex-direction: column;
+}
+
+aside {
+    width: 340px;
+}
+
+aside .post-block {
+    border-bottom: none !important;
+    padding: 0 !important;
+}
+
+aside .post-block ul {
+    flex-direction: column !important;
+}
+
+aside .post-block .post-preview {
+    border-bottom: 1px solid #000000;
+    padding-bottom: 20px;
+}
+
+aside .post-block .post-preview img {
+    width: 75px;
+    height: 75px;
+}
+
+aside .post-block .post-preview h3 {
+    font-size: 14px;
+}
+
+aside .categories ul {
+    list-style-type: none;
+    padding: 0;
+    margin: -10px 0;
+}
+
+aside .categories ul li {
+    display: flex;
+    justify-content: space-between;
+    border-bottom: 1px solid #000000;
+    padding-bottom: 20px;
+    color: #222222;
+    font-size: 14px;
+    margin: 10px 0;
+}
+
+aside .categories ul li h4 {
+    margin: 0;
+}
+
+aside .categories ul li div {
+    font-weight: bold;
+}
+
+aside .banner {
+    margin-top: 40px;
+    height: 340px;
+    width: 340px;
+    background-color: #222222;
+    display: flex;
+}
+
+aside .banner img {
+    height: 320px;
+    width: 320px;
+    margin: auto;  /* Magic! */
+}
