@@ -1,6 +1,15 @@
 body {
     font-family: 'Open Sans', sans-serif;
     margin: 0px;
+    text-align: center
+}
+
+button {
+    cursor: pointer;
+}
+
+img {
+    object-fit: cover;
 }
 
 .black {
@@ -9,6 +18,10 @@ body {
 
 .white {
     color: #ffffff;
+}
+
+.grey {
+    color: #666666;
 }
 
 .kinda-blue {
@@ -24,6 +37,41 @@ main, header, .footer-container {
     padding: 0px;
     max-width: 1200px;
     margin: auto;
+    text-align: left;
+}
+
+main>* {
+    width: 100%;
+}
+
+header>* {
+    width: 100%;
+}
+
+.footer-container>* {
+    width: 100%;
+}
+
+a {
+    text-decoration: none;
+}
+
+.scrollToTop{
+	width:75px; 
+	height:75px;
+	padding:0; 	
+	text-decoration: none;
+	position:fixed;
+	bottom:30px;
+	right:30px;
+    display:none;	
+    z-index: 99;
+    border-radius: 50%;
+}
+
+.scrollToTop img{
+    width: 100%;
+    height: 100%;
 }
 
 .top-nav-bar {
@@ -36,11 +84,19 @@ main, header, .footer-container {
 
 .top-nav a {
     text-decoration: none;
-    color: #000000;
+    color: #666666;
     margin-right: 10px;
 }
 
 .logo h1 {
+    display: flex;
+    flex-direction: column;
+    align-content: center;
+    align-items: center;
+    margin-left: -50px;
+}
+
+.logo h2 {
     display: flex;
     flex-direction: column;
     align-content: center;
@@ -62,7 +118,7 @@ main, header, .footer-container {
     font-family: 'Open Sans Bold', sans-serif;
     text-align: center;
     font-size: 20px;
-    margin: 0px 0 -35px 90px;
+    margin: 0px 0 -35px 80px;
     order: -1;
 }
 
@@ -91,7 +147,7 @@ main, header, .footer-container {
 .menu ul {
     margin-top: 30px;
     padding: 0px;
-    border: 1px solid rgb(221, 221, 221);
+    border: 1px solid #dddddd;
     display: flex;
     flex-wrap: wrap;
     justify-content: flex-start;
@@ -107,6 +163,10 @@ main, header, .footer-container {
     flex-grow: 0.1;
 }
 
+.menu li a {
+    color: #666666;
+}
+
 .menu li:last-child {
     margin-left: auto;
     flex-grow: 0.05;
@@ -117,12 +177,12 @@ main, header, .footer-container {
     background-color: #ffffff;
     color: #ffffff;
     font-weight: bold;
-    border: 1px solid rgb(221, 221, 221);
+    border: 1px solid #dddddd;
     text-decoration: none;
 }
 
 .menu .selected-button {
-    background-color: #03a5e1;
+    background-color: #00aeef;
     border-style: 0px solid;
     color: #ffffff;
     font-weight: bold;
@@ -130,12 +190,41 @@ main, header, .footer-container {
 
 .menu .not-selected-button {
     background-color: #ffffff;
-    color: #000000;
     font-weight: bold;
 }
 
 .menu .not-selected-button:hover {
-    background-color: #222222;
+    background-color: #00aeef;
+}
+
+.menu .not-selected-button:hover a {
+    color: #ffffff;
+}
+
+.post-metadata {
+    display: flex;
+    flex-direction: row;
+    justify-content: flex-start;
+    font-size: 12px;
+    font-weight: bold;
+    color: #666666;
+}
+
+.post-metadata .author {
+    margin-right: 5px;
+}
+
+.post-metadata time {
+    margin-right: 1rem;
+}
+
+.post-metadata a {
+    color: #00aeef;
+    text-decoration: none;
+    margin-right: 3px;
+}
+
+.slider .post-metadata {
     color: #ffffff;
 }
 
@@ -145,13 +234,20 @@ main, header, .footer-container {
     justify-content: flex-start;
 }
 
+.slider .selected-post-preview-container {
+    width: 60%;
+    position: relative;
+}
+
 .slider .selected-post-preview {
     font-weight: bold;
-    position: relative;
-    width: 65%;
+    position: absolute;
+    width: 100%;
+    height: 100%;
     display: flex;
     flex-direction: column;
     justify-content: flex-end;
+    z-index: 0;
 }
 
 .slider .selected-post-preview img {
@@ -161,7 +257,7 @@ main, header, .footer-container {
     z-index: 0;
 }
 
-.slider .selected-post-preview header {
+.slider .selected-post-preview .post-content {
     z-index: 10;
     display: flex;
     flex-direction: column;
@@ -176,7 +272,7 @@ main, header, .footer-container {
 
 .slider .selected-post-preview h3 {
     font-size: 26px;
-    width: 250px;
+    width: 40%;
 }
 
 .slider .selected-post-preview a {
@@ -202,40 +298,25 @@ main, header, .footer-container {
     list-style-type: none;
     margin: 5px 0px;
     padding: 0;
+    max-width: 40%;
     overflow-y: auto;
 }
 
 .slider .post-preview {
     margin: 5px 0px;
+    position: relative;
 }
 
 .slider .post-preview img {
     margin: 0px 10px;
-    width: 165px;
+    min-width: 165px;
+    max-width: 165px;
     height: 90px;
     align-self: center;
 }
 
-.post-metadata {
-    display: flex;
-    flex-direction: row;
-    justify-content: flex-start;
-    font-size: 12px;
-    font-weight: bold;
-}
-
-.post-metadata .author {
-    margin-right: 5px;
-}
-
-.post-metadata time {
-    margin-right: 1rem;
-}
-
-.post-metadata a {
-    color: #00aeef;
-    text-decoration: none;
-    margin-right: 3px;
+.slider .post-preview h4 {
+    display: none;
 }
 
 .category {
@@ -265,7 +346,7 @@ main, header, .footer-container {
     height: 2px;
     align-self: center;
     flex-grow: 1;
-    margin: 1rem 1rem 0 1rem;
+    margin: 15px 20px 0 20px;
 }
 
 .category-head nav ul {
@@ -282,6 +363,7 @@ main, header, .footer-container {
     font-weight: bold;
     align-self: center;
     margin: 0 10px;
+    cursor: pointer;
 }
 
 .category-head nav li:nth-last-child(3) {
@@ -292,7 +374,7 @@ main, header, .footer-container {
     display: flex;
     flex-direction: column;
     justify-content: space-between;
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #dddddd;
     padding-bottom: 30px;
     margin: -10px 0;
 }
@@ -310,8 +392,8 @@ main, header, .footer-container {
     margin: 10px 0;
 }
 
-.post-block .post-preview-detailed p {
-    flex-grow: 1;
+.post-block .post-content p {
+    color: #666666;
 }
 
 .post-block .post-preview-detailed {
@@ -325,6 +407,7 @@ main, header, .footer-container {
     display: flex;
     flex-direction: column;
     justify-content: space-around;
+    height: 100%;
 }
 
 .post-preview-detailed button {
@@ -332,7 +415,6 @@ main, header, .footer-container {
     max-width: 133px;
     min-height: 35px;
     max-height: 35px;
-    margin-bottom: 30px;
     border-radius: 5px;
     background-color: #00aeef;
     color: #ffffff;
@@ -340,6 +422,7 @@ main, header, .footer-container {
     border: none;
     text-decoration: none;
     font-size: 14px;
+    cursor: pointer;
 }
 
 .post-preview-detailed h3 {
@@ -353,8 +436,10 @@ main, header, .footer-container {
 }
 
 .post-preview img {
-    width: 100px;
-    height: 100px;
+    min-width: 100px;
+    max-width: 100px;
+    min-height: 100px;
+    max-height: 100px;
     margin-right: 20px;
 }
 
@@ -395,6 +480,10 @@ main, header, .footer-container {
     margin: 30px 30px;
 }
 
+.world-news .category-head {
+    margin-top: 20px;
+}
+
 .world-news .post-block {
     margin-top: -20px;
     padding-bottom: 20px;
@@ -412,12 +501,14 @@ main, header, .footer-container {
 
 .world-news .post-block .post-preview-detailed {
     flex-direction: column;
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #dddddd;
     margin-bottom: 10px;
+    padding-bottom: 30px;
 }
 
 .world-news .post-preview-detailed img {
     width: 100%;
+    height: 220px;
 }
 
 .fashion .post-block ul {
@@ -426,7 +517,7 @@ main, header, .footer-container {
 }
 
 .fashion .post-block ul li {
-    margin: -10px 0;
+    margin: 10px 0;
 }
 
 .fashion .post-preview-detailed img {
@@ -434,6 +525,10 @@ main, header, .footer-container {
     height: 220px;
     margin-right: 30px;
     align-self: center;
+}
+
+.fashion .post-preview-detailed h3 {
+    margin-top: 0;
 }
 
 .two-col {
@@ -472,6 +567,10 @@ main, header, .footer-container {
     margin: 20px 15px;
 }
 
+.sports .post-preview-detailed {
+    margin-bottom: 10px;
+}
+
 .sports .post-preview-detailed img {
     min-width: 370px;
     height: 340px;
@@ -480,6 +579,10 @@ main, header, .footer-container {
 
 .technology {
     margin-right: 30px;
+}
+
+.technology .category-head .hr-line {
+    visibility: hidden;
 }
 
 .technology .post-block {
@@ -498,6 +601,10 @@ main, header, .footer-container {
 
 .technology .post-preview-large img {
     min-height: 220px;
+}
+
+.food-health .category-head .hr-line {
+    visibility: hidden;
 }
 
 .food-health .post-block {
@@ -522,13 +629,15 @@ aside .post-block ul {
 }
 
 aside .post-block .post-preview {
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #dddddd;
     padding-bottom: 20px;
 }
 
 aside .post-block .post-preview img {
-    width: 75px;
-    height: 75px;
+    min-width: 75px;
+    max-width: 75px;
+    min-height: 75px;
+    max-height: 75px;
 }
 
 aside .post-block .post-preview h3 {
@@ -544,11 +653,12 @@ aside .categories ul {
 aside .categories ul li {
     display: flex;
     justify-content: space-between;
-    border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #dddddd;
     padding-bottom: 20px;
     color: #222222;
     font-size: 14px;
     margin: 10px 0;
+    cursor: pointer;
 }
 
 aside .categories ul li h4 {
@@ -581,7 +691,11 @@ footer {
     justify-content: space-between;
     background-color: #000000;
     width: 100%;
-    color: #ffffff;
+    color: #d1d1d1;
+}
+
+footer .post-metadata {
+    color: #d1d1d1;
 }
 
 .footer-container {
@@ -606,7 +720,7 @@ footer {
     align-self: flex-start;
 }
 
-.footer-info .logo h1 {
+.footer-info .logo h2 {
     text-align: left;
     padding: 0px;
     margin: 0px;
@@ -660,6 +774,7 @@ footer .category-head h2 {
     font-size: 16px;
     margin-bottom: 30px;
     height: 20px;
+    color: #ffffff;
 }
 
 .footer-most-viewed ul {
@@ -671,7 +786,7 @@ footer .category-head h2 {
 }
 
 .footer-most-viewed .bordered {
-    border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid #d1d1d1;
     padding-bottom: 20px !important;
 }
 
@@ -710,7 +825,7 @@ footer .category-head h2 {
 }
 
 .footer-twitter .bordered {
-    border-bottom: 1px solid #ffffff;
+    border-bottom: 1px solid #d1d1d1;
     padding-bottom: 20px !important;
 }
 
@@ -737,8 +852,8 @@ footer .category-head h2 {
     height: 75px;
     line-height: 75px;
     background-color: #000000;
-    border-top: 1px solid #ffffff;
-    color: #ffffff;
+    border-top: 1px solid #d1d1d1;
+    color: #d1d1d1;
     text-align: center;
     vertical-align: middle;
     width: 100%;
