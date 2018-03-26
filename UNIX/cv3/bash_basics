@@ -1,0 +1,296 @@
+# Cesta k bash
+# Spusteni skriptu bash bash_basics.sh
+# Poku oznacime souboru pridame prava spusteni (napr chmod u+x bash_basics.sh)
+# tak je mozne skript spustit pomoci ./bash_basics.sh
+#!/bin/bash
+
+# Prirazeni
+
+number=10
+letters=ABC
+string="Hello World!"
+
+# Argumenty skriptu
+# $0 = nazev skriptu
+# $n = n-ty argument skriptu
+# $# = pocet predanych argumentu. Argument $0 se nepocita
+
+# Vypis na standartni vystup
+
+echo "Hello"
+echo 'Hello'
+
+#Vypis promennych
+
+echo $number
+echo "My number is $number"
+
+# Pri nejednoznacnosti nazvu promenne se pouziva ${a}
+
+# Nevypise hodnotu promenne letters.
+# Nazev promenne je $lettersDEFG a ne $letters.
+echo "Fisrt letters are $lettersDEFG"
+
+# Reseni nejednoznacnosti
+echo "Fisrt letters are ${letters}DEFG"
+
+# Polaceni specialniho vyznamu $
+echo "\$number = $number"
+
+# Nacitani vstupu
+
+#read name
+echo $name
+
+# Ulozeni vysledku prikazu do promenne
+
+ls_result=$(ls -la)
+echo $ls_result
+
+# Aritmenticke operace
+
+# Zakladni operatory
+#
+# a + b  scitani
+# a - b  odcitani
+# a * b  nasobeni
+# a / b  deleni
+# a % b  modulo
+# a ** b exponentiace
+
+number=$(($number * $number + 20))
+
+# Podminky
+
+# Zjisteni jestli ma promenna hodnotu. Pouziti napriklad pri zjisteni jestli byl zadan parametr
+# Existuji operace -z (zero), -n (nonzero)
+
+if [ -z $1 ]; then
+   echo "NO"
+else
+    echo "YES"
+fi
+
+
+
+# Porovnavani cisel
+# operatory: -eq (==), -ne (!=), -gt (>), -ge (>=), -lt (<), -le (<=)
+
+if [ $number -eq 30 ]; then
+    echo "1. Variable \$number is equal to 30"
+fi
+
+# Pokud promenna number neobsahuje hodnotu tak vyse uvedene porovani skonci chybou.
+# Tento problem se da vyresit substituci
+
+unset number # Po provedeni promenna neobsahuje zadnou hodnotu
+
+# Vyraz ${number-30} rika ze pokud $number nema hodnotu nahrad ji hodnotou 30
+
+if [ ${number:=30} -eq 30 ]; then
+    echo "2. Variable \$number is equal to 30"
+fi
+
+echo $number # Number stale nema zadnou hodnotu
+
+# Vyraz ${number:=30} rika ze pokud $number nema hodnotu tak proved prirazeni na hodnotu 30
+
+if [ ${number:=30} -eq 30 ]; then
+    echo "3. Variable \$number is equal to 30"
+fi
+
+echo $number # Zde ma number hodnotu 30
+
+# Porovnavani cisel 2
+
+number=60
+
+unset number
+
+if (( ${number-60} == 60)); then
+    echo "1. Variable \$number is equal to 60"
+fi
+
+# Jine reseni substituce
+if (("x$number" == "x60")); then
+    echo "2. Variable \$number is equal to 60"
+fi
+
+# Porovnavani retezcu
+# operatory: =, ==, <, >,
+# POZOR [ "$a"="$b" ] neni ekvivalentni [ "$a" = "$b" ]
+name_1="John"
+name_2="Jimmy"
+
+if [ "$name_1" = "$name_2" ]; then
+    echo "Name are not equal"
+fi
+
+# Rozhodovani pomoci IF
+
+if [ "$name_1" = "John" ]; then
+    echo "\$name_1 = John"
+fi
+
+# Else
+
+if [ "$name_1" = "John" ]; then
+    echo "\$name_1 = John"
+else
+    echo "\$name_1 != John"
+fi
+
+
+# Else-If
+
+if [ "$name_1" = "John" ]; then
+  echo "\$name_1 = John"
+elif [ "$name_2" = "Jimmy" ]; then
+  echo "\$name_2 = Jimmy"
+else
+  echo "\$name_1 = $name_1 and \$name_2 = $name_2"
+fi
+
+# Slozitejsi podminky
+
+number=50
+
+if [ $number -gt 30 ] && [ $number -lt 200 ]; then
+    echo "Number is between 30 and 200"
+fi
+
+# Ekvivalentni s predchozim
+
+if [[ $number -gt 30 && $number -lt 200 ]]; then
+    echo "Number is between 30 and 200"
+fi
+
+# Case
+mycase=1
+case $mycase in
+    1) echo "You selected bash";;
+    2) echo "You selected perl";;
+    3) echo "You selected phyton";;
+    4) echo "You selected c++";;
+    5) exit
+esac
+
+
+# Cyklus for
+
+# Pocet iteraci zadany vyctem prvku
+for i in 1 2 3 4 5; do
+   echo "Welcome $i times"
+done
+
+# Pocet iteraci zadany rozsahem. Podporuje Bash verze 3.0+
+for i in {1..5}; do
+   echo "Welcome $i times"
+done
+
+echo "Bash version ${BASH_VERSION}..."
+
+# Pocet iteraci zadany pomoci dolni a horni hranice a kroku. Dostupne od verze 4
+for i in {0..10..2}
+do
+     echo "Welcome $i times"
+done
+
+# C-style for cyklus
+
+for (( c=1; c<=5; c++ )); do
+   echo "Welcome $c times"
+done
+
+# Nekonecny cyklus
+
+for (( ; ; )); do
+   echo "infinite loops [ hit CTRL+C to stop]"
+   break;
+done
+
+
+# Cyklus while
+
+count=4
+while [ $count -gt 0 ]; do
+  echo "Value of count is: $count"
+  count=$(($count - 1))
+done
+
+
+# Cyklus until
+
+count=1
+until [ $count -gt 5 ]; do
+  echo "Value of count is: $count"
+  count=$(($count + 1))
+done
+
+# Dale v bashi existuje break a continue a pouziti je stejne jako v jinych programovacich jazycich.
+
+
+# Retezce
+
+STRING="this is a string"
+
+# Delka retezce
+echo ${#STRING}
+
+# Index podretezce
+STRING="this is a string"
+SUBSTRING="t"
+expr index "$STRING" "$SUBSTRING" # -> Prvni vyskyt t je na indexu 1
+
+# Pokud vynechame delku podretezce tak se pokracuje az do konce
+STRING="this is a string"
+echo ${STRING:1}           # $STRING bez prvniho znaku
+echo ${STRING:12}          # ring
+
+# Nahrazeni retezce
+
+# Nahrazeni prvniho vyskytu
+STRING="to be or not to be"
+echo ${STRING[@]/be/eat}  # to eat or not to be
+
+# Nahrazeni vsech vyskytu
+
+STRING="to be or not to be"
+echo ${STRING[@]//be/eat} # to eat or not to eat
+
+# Odstraneni podretezce (nahrazeni prazdnym)
+STRING="to be or not to be"
+echo ${STRING[@]// not/} # to be or to be
+
+# Funkce
+
+# Definice funkce
+function add {
+    echo $(($1 + $2))
+}
+
+# Volani funkce je totozne s volanim prikazu
+add 1 1
+
+# Pokud chceme ulozit vysledek do promenne tak musime v tele funkce pouzit echo
+
+sum=$(add 2 2)
+
+echo $sum
+
+
+# Prace se soubory
+
+# Existence souboru
+
+filename="text.txt"
+if [ -e "$filename" ]; then
+    echo "$filename exists as a file"
+fi
+
+# Existence adresare
+
+directory_name="test_directory"
+if [ -d "$directory_name" ]; then
+    echo "$directory_name exists as a directory"
+fi
