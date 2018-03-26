@@ -4,6 +4,10 @@ body {
     text-align: center;
 }
 
+img {
+    object-fit: cover;
+}
+
 button {
     cursor: pointer;
 }
@@ -41,6 +45,24 @@ header>* {
 
 .footer-container>* {
     width: 100%;
+}
+
+.scrollToTop {
+    width: 75px;
+    height: 75px;
+    padding: 0;
+    text-decoration: none;
+    position: fixed;
+    bottom: 30px;
+    right: 30px;
+    display: none;
+    z-index: 99;
+    border-radius: 50%;
+}
+
+.scrollToTop img {
+    width: 100%;
+    height: 100%;
 }
 
 .top-nav-bar {
@@ -87,27 +109,68 @@ a {
     order: -1;
 }
 
-.menu ul {
+.menu>ul {
     padding: 0px;
     display: flex;
     justify-content: space-between;
     font-size: 16px;
+    position: relative;
+    z-index: 0;
     width: 710px;
 }
 
-.menu li {
+.menu .submenu-space{
+    min-height: 35px;
+    max-height: 35px;
+    display: none;
+}
+.menu ul ul {    
+    padding: 0px;
+    font-size: 16px;
+    flex-direction: column;
+    position: absolute;    
+    display: none;    
+    background-color: #ffffff;
+    border-top: 1px solid #00aeef;
+    border-bottom: 1px solid #00aeef;
+}
+
+.menu>ul>li:hover .submenu-space {
+    display: block;
+}
+
+.menu>ul>li:hover>div>ul {
+    display: flex;
+}
+
+.menu ul li {
     cursor: pointer;
     display: flex;
     flex-direction: column;
-    justify-content: center;
     text-align: center;
     height: 50px;
+    line-height: 50px;
     flex-grow: 1;
     font-size: 16px;
     font-weight: bold;
+    white-space: nowrap;
+    position: relative;
+}
+.menu ul li ul li{
+    text-align: left;    
+    padding: 0 15px;
+    border-bottom: 1px solid #dddddd;
+}
+.menu ul li ul li:last-child{
+    border-bottom: none;
+}
+.menu ul li a {
+    height: 100%;
+    position: relative;
+    vertical-align: middle;
 }
 
-.menu li button {
+.menu>ul>li button {
     height: 100%;
     background-color: #ffffff;
     color: #ffffff;
@@ -116,11 +179,11 @@ a {
     text-decoration: none;
 }
 
-.menu .not-selected-button:hover {
+.menu ul li:hover {
     background-color: #00aeef;
 }
 
-.menu .not-selected-button:hover a {
+.menu ul li:hover>a {
     color: #ffffff;
 }
 
@@ -297,6 +360,10 @@ a {
     border: none;
     text-decoration: none;
     font-size: 14px;
+}
+
+.post-preview-detailed button a {
+    color: #ffffff;
 }
 
 .post-preview-detailed h3 {
@@ -645,7 +712,6 @@ footer ul {
     display: flex;
     flex-direction: column;
     justify-content: flex-start;
-    ;
     margin: 50px 0;
 }
 
