@@ -54,8 +54,7 @@ $(document).ready(function () {
                 right: '0px',
                 opacity: 1
             }, 1000, function () {
-                slideIndex++;
-                if (slideIndex >= $postList.length) { slideIndex = 0 }
+                slideIndex= (slideIndex + 1) % $postList.length;               
             });
         });
     }
