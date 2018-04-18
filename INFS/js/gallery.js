@@ -41,11 +41,23 @@ $(document).ready(function () {
     $('.next').click(function () {
         slideIndex = (slideIndex + 1) % $imageList.length;
         displaySlideImage(slideIndex);
+        if (interval_id) {
+            clearInterval(interval_id);
+            interval_id = setInterval(function () {
+                displaySlideImage(slideIndex = (slideIndex + 1) % $imageList.length);
+            }, 3000);
+        }
     })
 
     $('.prev').click(function () {
         slideIndex = (slideIndex - 1) % $imageList.length;
         displaySlideImage(slideIndex);
+        if (interval_id) {
+            clearInterval(interval_id);
+            interval_id = setInterval(function () {
+                displaySlideImage(slideIndex = (slideIndex + 1) % $imageList.length);
+            }, 3000);
+        }
     })
 
     $('.play').click(function () {

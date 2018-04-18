@@ -1,5 +1,6 @@
-<link href="/css/category.css" rel="stylesheet" />
+
 <link href="/css/post-page.css" rel="stylesheet" />
+<link href="/css/category.css" rel="stylesheet" />
 <header>
     <div class="top-nav-bar">
         <div class="logo">

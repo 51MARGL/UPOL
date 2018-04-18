@@ -3,26 +3,36 @@ class PagesController
 {
     public function home()
     {
-        require_once 'views/pages/home.php';
+        $page = "home.php";
+        require_once 'views/layout.php';
     }
 
     public function category()
     {
-        require_once 'views/pages/category.php';
+        if (isset($_GET['location'])) {
+            $location = str_replace("And", " & ", $_GET['location']);     
+        } else {
+            $location = 'Latest Articles';
+        }
+        $page = "category.php";
+        require_once 'views/layout.php';
     }
     
     public function post_page()
     {
-        require_once 'views/pages/post_page.php';
+        $page = "post_page.php";
+        require_once 'views/layout.php';
     }
 
     public function gallery()
     {
-        require_once 'views/pages/gallery.php';
+        $page = "gallery.php";
+        require_once 'views/layout.php';
     }
     
     public function error()
     {
-        require_once 'views/pages/error.php';
+        $page = "error.php";
+        require_once 'views/layout.php';
     }
 }

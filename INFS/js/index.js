@@ -54,12 +54,66 @@ $(document).ready(function () {
                 right: '0px',
                 opacity: 1
             }, 1000, function () {
-                slideIndex= (slideIndex + 1) % $postList.length;               
+                slideIndex = (slideIndex + 1) % $postList.length;
             });
         });
     }
 
+    function loadSliderAsync() {
+        $.ajax({
+            url: '/index.php?controller=posts&action=getCount',
+            type: 'GET',
+            data: "count=6",
+            success: function (data) {
+                $data = $(data).filter("div");
+                $(".slider .selected-post-preview").html($data.eq(0).html());
+                $(".slider .post-preview").each(function (index, element) {
+                    var elem = $(element);
+                    elem.html($data.eq(index + 1).html());
+                });
+
+                if (!interval_id)
+                    interval_id = setInterval(slideThroughList, 6000);
+            }
+        });
+    }
+
+    function loadWorldAsync() {
+        $.ajax({
+            url: '/index.php?controller=posts&action=getByCategoryDetailed',
+            type: 'GET',
+            data: "category=World&count=3",
+            success: function (data) {
+                $data = $(data).filter("div"); 
+                console.log($data);               
+                $(".world-news .post-preview-detailed").each(function (index, element) {
+                    var elem = $(element);
+                    elem.html($data.eq(index).html());
+                });
+
+                if (!interval_id)
+                    interval_id = setInterval(slideThroughList, 6000);
+            }
+        });
+        $.ajax({
+            url: '/index.php?controller=posts&action=getByCategory',
+            type: 'GET',
+            data: "category=World&count=9",
+            success: function (data) {
+                $data = $(data).filter("div"); 
+                console.log($data);               
+                $(".world-news .post-preview").each(function (index, element) {
+                    var elem = $(element);
+                    elem.html($data.eq(index).html());
+                });
+
+                if (!interval_id)
+                    interval_id = setInterval(slideThroughList, 6000);
+            }
+        });
+    }
+
     //main
-    if (!interval_id)
-        interval_id = setInterval(slideThroughList, 6000);
+    loadSliderAsync();
+    loadWorldAsync();
 });

@@ -1,3 +1,4 @@
+
 <link href="/css/category.css" rel="stylesheet" />
 <header>
     <div class="top-nav-bar">
@@ -104,8 +105,8 @@
 </header>
 <section class="location-container grey">
     <div class="location">
-        <h2>Latest Articles</h2>
-        <h3>Home / Latest Articles</h3>
+        <h2><?php echo $location ?></h2>
+        <h3>Home / <?php echo $location ?></h3>
     </div>
 </section>
 <main>
@@ -395,12 +396,12 @@
                     <h2>Subscribe</h2>
                 </div>
                 <form class="subscribe-form">
-                    <label for="mailField">Subscribe to our newsletter</label>
+                    <label for="mail">Subscribe to our newsletter</label>
                     <div>
                         <input type="email" name="mail" id="mailField" placeholder="Email">
                         <button type="submit">Subscribe</button>
                     </div>
-                    <label for="mailField" class="under">Don't worry we don't spam</label>
+                    <label for="mail" class="under">Don't worry we don't spam</label>
                 </form>
             </section>
 

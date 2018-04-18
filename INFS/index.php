@@ -9,4 +9,4 @@ if (isset($_GET['controller']) && isset($_GET['action'])) {
     $action = 'home';
 }
 
-require_once 'views/layout.php';
+require_once 'routes.php';
