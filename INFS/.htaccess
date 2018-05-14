@@ -1,0 +1,28 @@
+RewriteEngine On
+
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+
+RewriteRule ^(home/?)$ index.php?controller=pages&action=home [L,NC]
+RewriteRule ^(post_?page/?)$ index.php?controller=pages&action=post_page [L,NC]
+RewriteRule ^(category/)([a-zA-Z\s\%\+\d]+)/?$ index.php?controller=pages&action=category&location=$2 [L,NC]
+RewriteRule ^(category/?)$ index.php?controller=pages&action=category [L,NC]
+RewriteRule ^(gallery/?)$ index.php?controller=pages&action=gallery [L,NC]
+RewriteRule ^(pages/error/)([a-zA-Z\s!\.,]+/?)$ index.php?controller=pages&action=error&error=$2 [L,NC]
+RewriteRule ^(pages/error/?)$ index.php?controller=pages&action=error [L,NC]
+RewriteRule ^(admin)$ admin/ [L,NC]
+RewriteRule ^(admin/)$ index.php?controller=adminPages&action=dashboard [L,NC]
+RewriteRule ^(admin/dashboard/?)$ index.php?controller=adminPages&action=dashboard [L,NC]
+RewriteRule ^(admin/categories/?)$ index.php?controller=adminPages&action=categories [L,NC]
+RewriteRule ^(admin/posts/?)$ index.php?controller=adminPages&action=posts [L,NC]
+RewriteRule ^(admin/users/?)$ index.php?controller=adminPages&action=users [L,NC]
+RewriteRule ^(admin/users/)(\d+/?)$ index.php?controller=adminPages&action=users&page=$2 [L,NC]
+RewriteRule ^(admin/users/profile/)(\d+/?)$ index.php?controller=adminPages&action=profile&userid=$2 [L,NC]
+RewriteRule ^(admin/login/?)$ index.php?controller=adminPages&action=login [L,NC]
+RewriteRule ^(admin/login/?)([a-zA-Z\s!\.,]+/?)$ index.php?controller=adminPages&action=login&error=$2 [L,NC]
+RewriteRule ^(admin/login/?)([a-zA-Z\s!\.,]+)/([A-Za-z0-9]+(?:[\s_-][A-Za-z0-9]+)*/?)$ index.php?controller=adminPages&action=login&error=$2&username=$3 [L,NC]
+RewriteRule ^(admin/edit/?)$ index.php?controller=adminPages&action=edit [L,NC]
+RewriteRule ^(user/logout/?)$ index.php?controller=user&action=logout [L,NC]
+RewriteRule ^(user/login/?)$ index.php?controller=user&action=login [L,NC]
+RewriteRule ^(user/add_new/?)$ index.php?controller=user&action=add_new [L,NC]
+RewriteRule ^(user/delete/)(\d+/?)$ index.php?controller=user&action=delete&id=$2 [L,NC]

@@ -1,0 +1,68 @@
+.list-group a {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+}
+
+.list-group a>* {
+  flex-basis: 1;
+}
+
+.list-group a .badge {
+  flex-basis: 0.1;
+  align-self: flex-end;
+}
+
+.card .card>* {
+  margin: auto;
+  height: 50px;
+}
+
+#header-login {
+  margin-top: 50px;
+}
+
+.card-header-btn {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+}
+
+.card-header-btn button {
+  display: flex;
+  align-items: center;
+}
+
+.modal-body .form-group.form-inline {
+  display: flex;
+  justify-content: space-between;
+}
+
+.modal-body .form-group.required .control-label:after {
+  content: "*";
+  color: red;
+}
+
+.pagination>li>.page-link {
+  color: #000;
+}
+
+.pagination>li.active>.page-link {
+  color: #fff;
+  background-color: #343a40 ! important;
+  border-color: #eee ! important;
+}
+
+.pagination>li>a:focus, .pagination>li>a:hover, .pagination>li>span:focus, .pagination>li>span:hover {
+  z-index: 3;
+  color: #fff;
+  background-color: #555555;
+  border-color: #eee;
+}
+
+main .profile-img img{
+  width: 200px;
+  height: 200px;
+  object-fit: cover;
+  border-radius: 50%;
+}
