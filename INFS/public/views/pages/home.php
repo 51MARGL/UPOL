@@ -49,22 +49,22 @@
             <div class="hr-line"></div>
             <nav>
                 <ul>
-                    <li class="kinda-blue">All</li>
-                    <li>Asia</li>
-                    <li>Europe</li>
-                    <li>America</li>
+                    <li class="cat-selector kinda-blue" data-category="world" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('world')->id))?>">All</li>
+                    <li class="cat-selector" data-category="asia" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('asia')))?>">Asia</li>
+                    <li class="cat-selector" data-category="europe" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('europe')))?>">Europe</li>
+                    <li class="cat-selector" data-category="america" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('america')))?>">America</li>
 
                     <li>
-                        <img src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
+                        <img class="btn-left" src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
                     </li>
                     <li>
-                        <img src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
+                        <img class="btn-right <?php echo count(Post::get_by_category(Category::get_by_url_name('world')->id)) > 12 ? "active" : ""?>" src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
                     </li>
                 </ul>
             </nav>
         </div>
 
-        <div class="post-block">
+        <div class="post-block" data-coffset="0">
             <ul class="detailed-list">
                 <li>
                     <article class="post-preview-detailed">
@@ -143,48 +143,28 @@
 
     </section>
 
-    <section class="category fashion">
+    <section class="category fashion" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('fashion')->id))?>">
         <div class="category-head">
             <h2>Fashion</h2>
             <div class="hr-line"></div>
             <nav>
                 <ul>
-                    <li>
+                    <li class="btn-left">
                         <img src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
                     </li>
-                    <li>
+                    <li class="btn-right <?php echo count(Post::get_by_category(Category::get_by_url_name('fashion')->id)) > 3 ? "active" : ""?>">
                         <img src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
                     </li>
                 </ul>
             </nav>
         </div>
 
-        <div class="post-block">
+        <div class="post-block" data-coffset="0">
             <ul>
                 <li>
 
                     <article class="post-preview-detailed">
-                        <img src="/public/img/index/slider-post-black.png" alt="title" />
-                        <div class="post-content">
-                            <h3>Masters at Work: Behind the scenes with the world's leading creatives</h3>
-                            <div class="post-metadata">
-                                <time datetime="2016-12-14">December 14, 2016</time>
-                                <div class="author">by
-                                    <a rel="author" href="/category/">John Doe</a>
-                                </div>
-                                <a href="/post_page/">8</a>
-                                Comments
-                            </div>
-                            <p>
-                                Cras tristique malesuada sollicitudin. Aliquam ut augue sodales, porttitor augue at, rhoncus ligula. Vivamus eget purus id
-                                magna posuere vestibulum. Vivamus eget nisl neque. Sed condimentum sodales lacus vel pretium.
-                                Etiam pretium turpis vitae fermentum eleifend. Phasellus at mi quis ante gravida imperdiet
-                                vitae eu libero. In dictum eros sapien, eget cursus eros convallis sit amet.
-                            </p>
-                            <button>
-                                <a href="/post_page/">Read More</a>
-                            </button>
-                        </div>
+
                     </article>
 
                 </li>
@@ -192,27 +172,7 @@
                 <li>
 
                     <article class="post-preview-detailed">
-                        <img src="/public/img/index/slider-post-black.png" alt="title" />
-                        <div class="post-content">
-                            <h3>Masters at Work: Behind the scenes with the world's leading creatives</h3>
-                            <div class="post-metadata">
-                                <time datetime="2016-12-14">December 14, 2016</time>
-                                <div class="author">by
-                                    <a rel="author" href="/category/">John Doe</a>
-                                </div>
-                                <a href="/post_page/">8</a>
-                                Comments
-                            </div>
-                            <p>
-                                Cras tristique malesuada sollicitudin. Aliquam ut augue sodales, porttitor augue at, rhoncus ligula. Vivamus eget purus id
-                                magna posuere vestibulum. Vivamus eget nisl neque. Sed condimentum sodales lacus vel pretium.
-                                Etiam pretium turpis vitae fermentum eleifend. Phasellus at mi quis ante gravida imperdiet
-                                vitae eu libero. In dictum eros sapien, eget cursus eros convallis sit amet.
-                            </p>
-                            <button>
-                                <a href="/post_page/">Read More</a>
-                            </button>
-                        </div>
+                       
                     </article>
 
                 </li>
@@ -220,27 +180,7 @@
                 <li>
 
                     <article class="post-preview-detailed">
-                        <img src="/public/img/index/slider-post-black.png" alt="title" />
-                        <div class="post-content">
-                            <h3>Masters at Work: Behind the scenes with the world's leading creatives</h3>
-                            <div class="post-metadata">
-                                <time datetime="2016-12-14">December 14, 2016</time>
-                                <div class="author">by
-                                    <a rel="author" href="/category/">John Doe</a>
-                                </div>
-                                <a href="/post_page/">8</a>
-                                Comments
-                            </div>
-                            <p>
-                                Cras tristique malesuada sollicitudin. Aliquam ut augue sodales, porttitor augue at, rhoncus ligula. Vivamus eget purus id
-                                magna posuere vestibulum. Vivamus eget nisl neque. Sed condimentum sodales lacus vel pretium.
-                                Etiam pretium turpis vitae fermentum eleifend. Phasellus at mi quis ante gravida imperdiet
-                                vitae eu libero. In dictum eros sapien, eget cursus eros convallis sit amet.
-                            </p>
-                            <button>
-                                <a href="/post_page/">Read More</a>
-                            </button>
-                        </div>
+                       
                     </article>
 
                 </li>
@@ -249,85 +189,47 @@
         </div>
     </section>
 
-    <div class="two-col">
+    <div class="two-col nowrap">
         <div class="left-col">
-            <section class="category lifestyle">
+            <section class="category lifestyle" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('lifestyle')->id))?>">
                 <div class="category-head">
                     <h2>Lifestyle</h2>
                     <div class="hr-line"></div>
                     <nav>
                         <ul>
-                            <li>
+                            <li class="btn-left">
                                 <img src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
                             </li>
-                            <li>
+                            <li class="btn-right <?php echo count(Post::get_by_category(Category::get_by_url_name('lifestyle')->id)) > 4 ? "active" : ""?>">
                                 <img src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
                             </li>
                         </ul>
                     </nav>
                 </div>
 
-                <div class="post-block">
+                <div class="post-block" data-coffset="0">
                     <article class="post-preview-large">
-                        <img src="/public/img/index/slider-post-black.png" alt="title" />
-                        <div class="post-content">
-                            <h3>Behind the scenes with the world's leading creatives</h3>
-                            <div class="post-metadata">
-                                <time datetime="2016-12-14">December 14, 2016</time>
-                                <div class="author">by
-                                    <a rel="author" href="/category/">John Doe</a>
-                                </div>
-                                <a href="/post_page/">8</a>
-                                Comments
-                            </div>
-                        </div>
+                        
                     </article>
 
                     <ul>
                         <li>
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>Bolivian women who wrestle in petticoats</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </article>
                         </li>
 
                         <li>
 
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>Why this club night is more than a party</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </article>
 
                         </li>
 
                         <li>
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>The forbidden art that's boom -ing in Jordan</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </article>
                         </li>
                     </ul>
@@ -335,76 +237,38 @@
 
             </section>
 
-            <section class="category sports">
+            <section class="category sports" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('sports')->id))?>">
                 <div class="category-head">
                     <h2>Sports</h2>
                     <div class="hr-line"></div>
                     <nav>
                         <ul>
-                            <li>
+                            <li class="btn-left">
                                 <img src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
                             </li>
-                            <li>
+                            <li class="btn-right <?php echo count(Post::get_by_category(Category::get_by_url_name('sports')->id)) > 5 ? "active" : ""?>">
                                 <img src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
                             </li>
                         </ul>
                     </nav>
                 </div>
 
-                <div class="post-block">
+                <div class="post-block" data-coffset="0">
 
                     <article class="post-preview-detailed">
-                        <img src="/public/img/index/slider-post-black.png" alt="title" />
-                        <div class="post-content">
-                            <h3>Virgil Abloh debuts abstract furniture</h3>
-                            <div class="post-metadata">
-                                <time datetime="2016-12-14">December 14, 2016</time>
-                                <div class="author">by
-                                    <a rel="author" href="/category/">John Doe</a>
-                                </div>
-                                <a href="/post_page/">8</a>
-                                Comments
-                            </div>
-                            <p>
-                                Cras tristique malesuada sollicitudin. Aliquam ut augue sodales, porttitor augue at, rhoncus ligula. Vivamus eget purus id
-                                magna posuere vestibulum. Vivamus eget nisl neque. Sed condimentum sodales lacus vel pretium.
-                                Etiam pretium turpis vitae fermentum eleifend. Phasellus at mi quis ante gravida imperdiet
-                                vitae eu libero. In dictum eros sapien, eget cursus eros convallis sit amet.
-                            </p>
-                            <button>
-                                <a href="/post_page/">Read More</a>
-                            </button>
-                        </div>
+                       
                     </article>
 
                     <ul>
                         <li>
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>Bolivian women who wrestle in petticoats</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                               
                             </article>
                         </li>
 
                         <li>
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>Bolivian women who wrestle in petticoats</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </article>
                         </li>
                     </ul>
@@ -412,31 +276,13 @@
                     <ul>
                         <li>
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>Bolivian women who wrestle in petticoats</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                               
                             </article>
                         </li>
 
                         <li>
                             <article class="post-preview">
-                                <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                <div class="post-content">
-                                    <h3>Bolivian women who wrestle in petticoats</h3>
-                                    <div class="post-metadata">
-                                        <time datetime="2016-12-14">December 14, 2016</time>
-                                        <div class="author">by
-                                            <a rel="author" href="/category/">John Doe</a>
-                                        </div>
-                                    </div>
-                                </div>
+                                
                             </article>
                         </li>
                     </ul>
@@ -445,56 +291,34 @@
             </section>
 
             <div class="two-col nowrap">
-                <section class="category technology">
+                <section class="category technology" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('technology')->id))?>">
 
                     <div class="category-head">
                         <h2>Technology</h2>
                         <div class="hr-line"></div>
                         <nav>
                             <ul>
-                                <li>
+                                <li class="btn-left">
                                     <img src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
                                 </li>
-                                <li>
+                                <li class="btn-right <?php echo count(Post::get_by_category(Category::get_by_url_name('technology')->id)) > 2 ? "active" : ""?>">
                                     <img src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
                                 </li>
                             </ul>
                         </nav>
                     </div>
 
-                    <div class="post-block">
+                    <div class="post-block" data-coffset="0">
                         <ul>
                             <li>
                                 <article class="post-preview-large">
-                                    <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                    <div class="post-content">
-                                        <h3>Behind the scenes with the world's leading creatives</h3>
-                                        <div class="post-metadata">
-                                            <time datetime="2016-12-14">December 14, 2016</time>
-                                            <div class="author">by
-                                                <a rel="author" href="/category/">John Doe</a>
-                                            </div>
-                                            <a href="/post_page/">8</a>
-                                            Comments
-                                        </div>
-                                    </div>
+                                   
                                 </article>
                             </li>
 
                             <li>
                                 <article class="post-preview-large">
-                                    <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                    <div class="post-content">
-                                        <h3>Behind the scenes with the world's leading creatives</h3>
-                                        <div class="post-metadata">
-                                            <time datetime="2016-12-14">December 14, 2016</time>
-                                            <div class="author">by
-                                                <a rel="author" href="/category/">John Doe</a>
-                                            </div>
-                                            <a href="/post_page/">8</a>
-                                            Comments
-                                        </div>
-                                    </div>
+                                    
                                 </article>
                             </li>
                         </ul>
@@ -502,79 +326,43 @@
 
                 </section>
 
-                <section class="category food-health">
+                <section class="category food-health" data-max-length="<?php echo count(Post::get_by_category(Category::get_by_url_name('food-health')->id))?>">
                     <div class="category-head">
                         <h2>Food &amp; Health</h2>
                         <div class="hr-line"></div>
                         <nav>
                             <ul>
-                                <li>
+                                <li class="btn-left">
                                     <img src="/public/img/index/btn-arrow-left.png" alt="btn-left" />
                                 </li>
-                                <li>
+                                <li class="btn-right <?php echo count(Post::get_by_category(Category::get_by_url_name('food-health')->id)) > 4 ? "active" : ""?>">
                                     <img src="/public/img/index/btn-arrow-right.png" alt="btn-right" />
                                 </li>
                             </ul>
                         </nav>
                     </div>
 
-                    <div class="post-block">
+                    <div class="post-block" data-coffset="0">
                         <ul>
                             <li>
                                 <article class="post-preview">
-                                    <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                    <div class="post-content">
-                                        <h3>Bolivian women who wrestle in petticoats</h3>
-                                        <div class="post-metadata">
-                                            <time datetime="2016-12-14">December 14, 2016</time>
-                                            <div class="author">by
-                                                <a rel="author" href="/category/">John Doe</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </article>
                             </li>
 
                             <li>
                                 <article class="post-preview">
-                                    <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                    <div class="post-content">
-                                        <h3>Bolivian women who wrestle in petticoats</h3>
-                                        <div class="post-metadata">
-                                            <time datetime="2016-12-14">December 14, 2016</time>
-                                            <div class="author">by
-                                                <a rel="author" href="/category/">John Doe</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </article>
                             </li>
                             <li>
                                 <article class="post-preview">
-                                    <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                    <div class="post-content">
-                                        <h3>Bolivian women who wrestle in petticoats</h3>
-                                        <div class="post-metadata">
-                                            <time datetime="2016-12-14">December 14, 2016</time>
-                                            <div class="author">by
-                                                <a rel="author" href="/category/">John Doe</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </article>
                             </li>
                             <li>
                                 <article class="post-preview">
-                                    <img src="/public/img/index/slider-post-black.png" alt="title" />
-                                    <div class="post-content">
-                                        <h3>Bolivian women who wrestle in petticoats</h3>
-                                        <div class="post-metadata">
-                                            <time datetime="2016-12-14">December 14, 2016</time>
-                                            <div class="author">by
-                                                <a rel="author" href="/category/">John Doe</a>
-                                            </div>
-                                        </div>
-                                    </div>
+                                    
                                 </article>
                             </li>
                         </ul>
@@ -673,49 +461,14 @@
                     <h2>Most Viewed</h2>
                 </div>
                 <ul>
-                    <li>
-                        <article class="post-preview bordered">
-                            <img src="/public/img/index/slider-post-white.png" alt="title" />
-                            <div class="post-content">
-                                <h3>Bolivian women who wrestle in petticoats</h3>
-                                <div class="post-metadata">
-                                    <time datetime="2016-12-14">December 14, 2016</time>
-                                    <div class="author">by
-                                        <a rel="author" href="/category/">John Doe</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-                    </li>
-
-                    <li>
-                        <article class="post-preview bordered">
-                            <img src="/public/img/index/slider-post-white.png" alt="title" />
-                            <div class="post-content">
-                                <h3>Bolivian women who wrestle in petticoats</h3>
-                                <div class="post-metadata">
-                                    <time datetime="2016-12-14">December 14, 2016</time>
-                                    <div class="author">by
-                                        <a rel="author" href="/category/">John Doe</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-                    </li>
-                    <li>
-                        <article class="post-preview">
-                            <img src="/public/img/index/slider-post-white.png" alt="title" />
-                            <div class="post-content">
-                                <h3>Bolivian women who wrestle in petticoats</h3>
-                                <div class="post-metadata">
-                                    <time datetime="2016-12-14">December 14, 2016</time>
-                                    <div class="author">by
-                                        <a rel="author" href="/category/">John Doe</a>
-                                    </div>
-                                </div>
-                            </div>
-                        </article>
-                    </li>
+                    <?php foreach ($most_viewed as $post) { ?>                        
+                        <li>
+                            <article class="post-preview bordered">
+                                <?php require("public/views/posts/getSingle.php");?>
+                            </article>
+                        </li>
+                    <?php } ?>
+                    
                 </ul>
             </section>
 

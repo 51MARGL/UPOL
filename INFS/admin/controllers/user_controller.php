@@ -159,7 +159,146 @@ class UserController
             if (file_exists(ROOTPATH . $deleted->profile_img)) {
                 unlink($file);
             }
+            if ($deleted->id == unserialize($_SESSION['current_user'])->id) {
+                redirect('user', 'logout');
+            }
             redirect('admin', 'users');
         }
+    }
+
+    public function edit()
+    {
+        if (!isset($_SESSION['logged_in'])) {
+            redirect('admin', 'login');
+        }
+
+        if (isset($_POST['id'])) {
+            if (unserialize($_SESSION['current_user'])->rights !== 'SA'
+                && unserialize($_SESSION['current_user'])->id !== $_POST['id']) {
+                redirect('pages', 'error', ['Invalid Rights!']);
+            }
+
+            $userToEdit = User::get_by_userid($_POST['id']);
+            if (empty($userToEdit)) {
+                echo "{
+                    \"success\": 0,
+                    \"error\": {
+                        \"message\": \"Error occured. Can't find user\"
+                    }
+                }";
+            } else if (isset($_POST['username'], $_POST['email'], $_POST['pswd'], $_POST['pswd_conf'], $_POST['first_name'], $_POST['second_name'])) {
+                $username = $_POST['username'];
+                $email = $_POST['email'];
+                $password = hash('sha256', $_POST['pswd']);
+                $password_cnf = hash('sha256', $_POST['pswd_conf']);
+                $first_name = $_POST['first_name'];
+                $second_name = $_POST['second_name'];
+                $about = $_POST['editor2'];
+
+                if (empty($username) or empty($email) or empty($password) or empty($password_cnf) or empty($first_name) or empty($second_name)) {
+                    echo "{
+                    \"success\": 0,
+                    \"error\": {
+                        \"message\": \"Error occured. Missing required fields\"
+                    }
+                }";
+                } else {
+                    if (!empty(User::get_by_username($username)->username) && User::get_by_username($username)->username != $userToEdit->username) {
+                        echo "{
+                        \"success\": 0,
+                        \"error\": {
+                            \"message\": \"Error occured. Username alreay exists.\"
+                        }
+                    }";
+                    } else if (!preg_match("/^[A-Za-z0-9]+$/", $username)) {
+                        echo "{
+                        \"success\": 0,
+                        \"error\": {
+                            \"message\": \"Error occured. Username can contain digits and letters only.\"
+                        }
+                    }";
+                    } else {
+
+                        if (!filter_var($email, FILTER_VALIDATE_EMAIL)) {
+                            echo "{
+                            \"success\": 0,
+                            \"error\": {
+                                \"message\": \"Error occured. Invalid email format.\"
+                        }
+                    }";
+                        } else {
+                            if ($password !== $password_cnf) {
+                                echo "{
+                                \"success\": 0,
+                                \"error\": {
+                                    \"message\": \"Error occured. Passwords don't match.\"
+                                        }
+                                    }";
+                            } else {
+                                if (isset($_FILES['profileimage']) && $_FILES['profileimage']['error'] == 0) {
+                                    require_once 'uploader/upload.php';
+                                    $target_dir = "/uploader/files/";
+                                    $file_name = basename($_FILES["profileimage"]["name"]);
+                                    $imageFileType = strtolower(pathinfo($file_name, PATHINFO_EXTENSION));
+                                    $result = json_decode(upload_file($target_dir, $file_name, $imageFileType, $_FILES["profileimage"]["tmp_name"]), true);
+
+                                    if ($result['uploaded'] == 0) {
+                                        $message = $result['error']['message'];
+                                        echo "{
+                                \"success\": 0,
+                                \"error\": {
+                                    \"message\": \"$message\"
+                                }
+                            }";
+                                    } else {
+                                        $profile_img = $result['url'];
+                                        User::edit($userToEdit->id, $username, $email, $password, $first_name, $second_name, $profile_img, $about, $userToEdit->rights);
+                                        echo "{
+                                    \"success\": 1
+                                }";
+                                    }
+                                } else {
+                                    $profile_img = '/uploader/files/profiledefault.png';
+                                    User::edit($userToEdit->id, $username, $email, $password, $first_name, $second_name, $userToEdit->profile_img, $about, $userToEdit->rights);
+                                    echo "{
+                                \"success\": 1
+                            }";
+                                }
+                            }
+                        }
+                    }
+                }
+            } else {
+                echo "{
+                \"success\": 0,
+                \"error\": {
+                    \"message\": \"Error occured. Missing required fields\"
+                }
+            }";
+            }
+        } else {
+            echo "{
+            \"success\": 0,
+            \"error\": {
+                \"message\": \"Error occured. Can't find user1\"
+            }
+        }";
+        }
+    }
+
+    public function autocomplete_filter()
+    {
+        if (!isset($_SESSION['logged_in'])) {
+            redirect('admin', 'login');
+        }
+        
+        foreach (User::all() as $user){
+            $list[] = $user->first_name . " " . $user->second_name;       
+            $list[] = $user->email;  
+            foreach(preg_split('/(?<=[.?!\n])\s+(?=[a-z])/i', strip_tags($user->about)) as $sentence){
+                $list[] = substr($sentence,0,40);            
+            }                       
+        }
+        echo json_encode(array_values(array_filter(array_unique($list))));
     }
 }

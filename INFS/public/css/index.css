@@ -79,7 +79,6 @@ a {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
-    flex-wrap: wrap;
     align-items: center;
 }
 
@@ -165,23 +164,30 @@ a {
     flex-grow: 0.1;
 }
 
+.menu li:last-child {
+    display: flex;
+    flex-direction: row;
+    align-self: flex-end;
+    margin-left: auto;
+}
+
 .menu li a {
     color: #666666;
     width: 100%;
     height: 100%;
 }
 
-.menu li:last-child {
-    margin-left: auto;
-    flex-grow: 0.05;
-}
-
-.menu li:last-child button {
+.menu li .btn-search {
     height: 100%;
     background-color: #ffffff;
-    color: #ffffff;
     font-weight: bold;
-    border: 1px solid #dddddd;
+    text-decoration: none;
+}
+
+.menu li .btn-login {
+    height: 100%;
+    background-color: #ffffff;
+    font-weight: bold;
     text-decoration: none;
 }
 
@@ -203,6 +209,20 @@ a {
 
 .menu .not-selected-button:hover a {
     color: #ffffff;
+}
+
+.menu .btn-search, .menu .btn-login {
+    width: 75%;
+    height: 75%;
+    display: block;
+    line-height: 46px;
+    align-self: flex-end;
+}
+
+.menu .btn-search i, .menu .btn-login i {
+    color: #00aeef;
+    vertical-align: middle;
+    text-align: center;
 }
 
 .post-metadata {
@@ -319,7 +339,7 @@ a {
     align-self: center;
 }
 
-.post-preview h4 {
+.post-preview h4, .post-preview-large h4 {
     display: none;
 }
 
@@ -377,7 +397,7 @@ a {
 .post-block {
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    justify-content: start;
     border-bottom: 1px solid #dddddd;
     padding-bottom: 30px;
     margin: -10px 0;
@@ -405,6 +425,8 @@ a {
     display: flex;
     flex-direction: row;
     justify-content: space-between;
+    height: 220px;
+    position: relative;
 }
 
 .post-block .post-preview-detailed .post-content {
@@ -443,6 +465,7 @@ a {
 .post-preview {
     display: flex;
     justify-content: flex-start;
+    position: relative;
 }
 
 .post-preview img {
@@ -474,6 +497,7 @@ a {
     min-width: 370px;
     max-width: 370px;
     height: 340px;
+    position: relative;
 }
 
 .post-preview-large img {
@@ -489,9 +513,11 @@ a {
     color: #ffffff;
     margin: 30px 30px;
 }
-.post-preview-large .post-metadata{
+
+.post-preview-large .post-metadata {
     color: #ffffff;
 }
+
 .world-news .category-head {
     margin-top: 20px;
 }
@@ -505,9 +531,11 @@ a {
     /*hack space between items*/
     margin: 10px -15px;
 }
-.world-news .post-block .detailed-list{
+
+.world-news .post-block .detailed-list {
     margin-bottom: 50px;
 }
+
 .world-news .post-block ul li {
     /*hack space between items*/
     margin: 0px 15px;
@@ -516,11 +544,13 @@ a {
 .world-news .post-preview {
     width: 380px;
 }
+
 .world-news .post-block .post-preview-detailed {
     padding-bottom: 30px;
-    border-bottom: 1px solid #dddddd;    
+    border-bottom: 1px solid #dddddd;
     flex-direction: column;
     height: 100%;
+    width: 380px;
 }
 
 .world-news .post-preview-detailed img {
@@ -551,13 +581,16 @@ a {
 
 .two-col {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
     flex-wrap: wrap;
+    margin-top: 10px;
 }
 
 .two-col .left-col {
     width: 770px;
     margin-right: 60px;
+    border-right: 1px solid #dddddd;
+    padding-right: 45px;
 }
 
 .nowrap {
@@ -589,14 +622,26 @@ a {
     margin-bottom: 10px;
 }
 
+.sports .post-preview-detailed h3 {
+    margin-top: 0px;
+}
+
 .sports .post-preview-detailed img {
     min-width: 370px;
-    height: 340px;
+    height: 220px;
     margin-right: 30px;
+    align-self: center;
+}
+
+.sports .post-preview-detailed p {
+    height: 200px;
+    overflow: hidden;
 }
 
 .technology {
-    margin-right: 30px;
+    border-right: 1px solid #dddddd;
+    padding-right: 15px;
+    padding-bottom: 40px;
 }
 
 .technology .category-head .hr-line {
@@ -621,6 +666,11 @@ a {
     min-height: 220px;
 }
 
+.food-health {
+    margin-left: 15px;
+    width: 400px;
+}
+
 .food-health .category-head .hr-line {
     visibility: hidden;
 }
@@ -635,6 +685,7 @@ a {
 
 aside {
     width: 340px;
+    margin-left: -15px;
 }
 
 aside .post-block {
@@ -678,7 +729,9 @@ aside .categories ul li {
     margin: 10px 0;
     cursor: pointer;
 }
-
+aside .categories ul li:hover{
+    color: #00aeef;
+}
 aside .categories ul li h4 {
     margin: 0;
 }
@@ -705,7 +758,6 @@ aside .banner img {
 footer {
     padding: 0px;
     display: block;
-    margin-top: 50px;
     justify-content: space-between;
     background-color: #000000;
     width: 100%;
@@ -875,4 +927,122 @@ footer .category-head h2 {
     text-align: center;
     vertical-align: middle;
     width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    .top-nav, .social-links {
+        visibility: hidden;
+    }
+    .logo h1 {
+        margin: auto;
+    }
+    .logo .logo-blog {
+        width: 200px;
+    }
+    .menu{
+        margin-top: -25px;
+    }
+    .menu ul {
+        flex-direction: column;
+    }
+    .menu li:last-child {
+        margin: 0;
+        align-self: auto;
+    }
+    .slider {
+        display: none;
+        margin: 0;
+    }
+    .category-head {
+        width: 100%;
+    }
+    .world-news ul {
+        display: none;
+    }
+    .world-news .post-block .post-preview-detailed {
+        width: 100%;
+    }
+    .world-news .detailed-list {
+        display: flex;
+        flex-direction: column;
+    }
+    .fashion .post-preview-detailed {
+        flex-direction: column;
+        height: 100%
+    }
+    .fashion .post-preview-detailed img {
+        margin-right: 0;
+        width: 100%;
+    }
+    .two-col {
+        flex-direction: column;
+    }
+    .two-col .left-col {
+        width: 100%;
+        margin: 0;
+        border: none;
+        padding: 0;
+    }
+    .lifestyle .post-block {
+        flex-direction: column;
+    }
+    .lifestyle .post-preview-large {
+        max-width: 100%;
+        margin-right: 0;
+        margin-bottom: 15px;
+    }
+    .sports .post-block .post-preview-detailed {
+        width: 100%;
+        flex-direction: column;
+        height: 100%;
+    }
+    .sports .post-block .post-preview-detailed img {
+        width: 100%;
+        margin: 0;
+    }
+    .sports .post-block .post-preview-detailed p {
+        height: 100%;
+    }
+    .sports .post-block ul {
+        display: none;
+    }
+    .technology {
+        padding: 0;
+        border: 0;
+    }
+    .technology .post-preview-large {
+        margin: 0;
+        width: 100%;
+        max-width: 100%;
+    }
+    .food-health {
+        margin: 0;
+        width: 100%;
+    }
+    aside {
+        display: none;
+    }
+    footer .logo{
+        margin:auto;
+    }
+    .footer-content {
+        flex-direction: column;
+    }
+    .footer-content section {
+        width: 100%;
+    }
+    .footer-info {
+        margin: 0;
+    }
+    .footer-info .social-circles{
+        margin:auto;
+    }
+    footer .footer-most-viewed, footer .footer-twitter{
+        display: none;
+    }
+    
 }

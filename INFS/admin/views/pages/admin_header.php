@@ -27,14 +27,8 @@
       </ul>
   
       <ul class="navbar-nav ml-auto"> 
-        <li>
-          <form class="form-inline navbar-right" action="">
-            <input class="form-control mr-sm-2" type="text" placeholder="Search">
-            <button class="btn btn-secondary" type="submit">Search</button>
-          </form>
-        </li>
         <li class="nav-item">
-              <a class="nav-link" href="#"><i class="material-icons">person</i></a>
+              <a class="nav-link" href="/admin/users/profile/<?php echo unserialize($_SESSION['current_user'])->id; ?>"><i class="material-icons">person</i></a>
             </li>
         <li class="nav-item">
               <a class="nav-link" href="/user/logout/"><i class="material-icons">exit_to_app</i></a>

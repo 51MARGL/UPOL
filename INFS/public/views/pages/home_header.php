@@ -1,3 +1,4 @@
+<link href="https://fonts.googleapis.com/icon?family=Material+Icons" rel="stylesheet">
 <header class="top-head">
 
     <div class="top-nav-bar">
@@ -57,31 +58,30 @@
                 <a href="/home/">Home</a>
             </li>
             <li class="not-selected-button">
-                <a href="/category/World/">World</a>
+                <a href="/home/categories/world/">World</a>
             </li>
             <li class="not-selected-button">
-                <a href="/category/Sport/">Sport</a>
+                <a href="/home/categories/sports/">Sports</a>
             </li>
             <li class="not-selected-button">
-                <a href="/category/Lifestyle/">Lifestyle</a>
+                <a href="/home/categories/lifestyle/">Lifestyle</a>
             </li>
             <li class="not-selected-button">
-                <a href="/category/Health/">Health</a>
+                <a href="/home/categories/food-health/">Food &amp; Health</a>
             </li>
             <li class="not-selected-button">
-                <a href="/category/Fashion/">Fashion</a>
+                <a href="/home/categories/fashion/">Fashion</a>
             </li>
             <li class="not-selected-button">
-                <a href="/category/PostAndPages/">Post &amp; Pages</a>
+                <a href="/home/categories/technology/">Technology</a>
             </li>
             <li class="not-selected-button">
                 <a href="/gallery/">Gallery</a>
             </li>
 
             <li>
-                <button class="btn-search">
-                    <img src="/public/img/index/Search-icon.png" alt="Search icon" />
-                </button>
+                <a class="btn-login" href="/admin/login/"><i class="material-icons">exit_to_app</i></a>
+                <a class="btn-search" href="/home/posts/search/"><i class="material-icons">search</i></a>
             </li>
         </ul>
     </nav>

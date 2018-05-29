@@ -183,16 +183,18 @@ a {
     border-bottom: none;
 }
 
+.menu>ul>li:last-child{
+    flex-direction: row;
+}
 .menu ul li a {
     height: 100%;
     position: relative;
     vertical-align: middle;
 }
 
-.menu>ul>li button {
+.menu>ul>li .btn-search, .menu>ul>li .btn-login {
     height: 100%;
     background-color: #000000;
-    color: #000000;
     font-weight: bold;
     border: none;
     text-decoration: none;
@@ -204,6 +206,18 @@ a {
 
 .menu ul li:hover>a {
     color: #ffffff;
+}
+
+.menu .btn-search, .menu .btn-login {
+    width: 100%;
+    height: 100%;
+    display: block;
+    line-height: 44px;
+}
+.menu .btn-search i, .menu .btn-login i {
+    color: #00aeef;
+    vertical-align: middle;
+
 }
 
 .location-container {
@@ -580,4 +594,73 @@ footer form button {
     text-align: center;
     vertical-align: middle;
     width: 100%;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    main .row {
+        flex-direction: column;
+    }
+    main .row .column{
+        margin: 5px 0;
+    }
+    .two-col {
+        flex-direction: column;
+    }
+    .two-col .left-col {
+        width: 100%;
+        margin: 0;
+        border: none;
+        padding: 0;
+    }
+    .logo {
+        margin: auto;
+    }
+
+    .top-nav-bar{
+        flex-direction: column;
+        height: 100%;
+    }
+    .menu ul{
+        flex-direction: column;
+        width: 100%;
+    }
+    aside {
+        display: none;
+    }
+
+    .post-block ul li .post-preview-detailed{
+        flex-direction: column;
+        width: 100%;
+        margin: 0;
+    }
+    .post-block ul li .post-preview-detailed img{
+        margin: 0;
+        width:100%;
+    }
+
+    .page-list ul{
+        justify-content: center;
+    }
+    footer{
+        height: 100%;
+    }
+
+    .footer-content{
+        flex-direction: column;
+    }
+
+    .footer-content section {
+        margin: 15px 0;
+        width: 100%;
+    }
+    footer .footer-useful-links, footer .footer-follow{
+        display: none;
+    }
+    footer form{
+        margin:auto;
+    }
 }

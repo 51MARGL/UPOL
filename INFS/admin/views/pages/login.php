@@ -38,7 +38,7 @@
           <?php } ?>
 
           <div class="form-group">
-            <label>Email Address</label>
+            <label>Username</label>
             <input type="text" required value="<?php echo htmlspecialchars($username); ?>" name="username" class="form-control" placeholder="User Name">
           </div>
           <div class="form-group">

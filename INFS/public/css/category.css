@@ -115,24 +115,26 @@ a {
     justify-content: space-between;
     font-size: 16px;
     position: relative;
-    z-index: 0;
+    z-index: 60;
     width: 710px;
 }
 
-.menu .submenu-space{
+.menu .submenu-space {
     min-height: 35px;
     max-height: 35px;
     display: none;
 }
-.menu ul ul {    
+
+.menu ul ul {
     padding: 0px;
     font-size: 16px;
     flex-direction: column;
-    position: absolute;    
-    display: none;    
+    position: absolute;
+    display: none;
     background-color: #ffffff;
     border-top: 1px solid #00aeef;
     border-bottom: 1px solid #00aeef;
+    z-index: 100;
 }
 
 .menu>ul>li:hover .submenu-space {
@@ -156,27 +158,45 @@ a {
     white-space: nowrap;
     position: relative;
 }
-.menu ul li ul li{
-    text-align: left;    
+
+.menu ul li:last-child {
+    flex-direction: row;
+}
+
+.menu ul li ul li {
+    text-align: left;
     padding: 0 15px;
     border-bottom: 1px solid #dddddd;
 }
-.menu ul li ul li:last-child{
+
+.menu ul li ul li:last-child {
     border-bottom: none;
 }
+
 .menu ul li a {
     height: 100%;
     position: relative;
     vertical-align: middle;
 }
 
-.menu>ul>li button {
+.menu>ul>li .btn-search, .menu>ul>li .btn-login {
     height: 100%;
     background-color: #ffffff;
-    color: #ffffff;
     font-weight: bold;
     border: none;
     text-decoration: none;
+}
+
+.menu .btn-search, .menu .btn-login {
+    width: 100%;
+    height: 100%;
+    display: block;
+    line-height: 44px;
+}
+
+.menu .btn-search i, .menu .btn-login i {
+    color: #00aeef;
+    vertical-align: middle;
 }
 
 .menu ul li:hover {
@@ -348,22 +368,21 @@ a {
     font-size: 12px;
 }
 
-.post-preview-detailed button {
+.post-preview-detailed a.read-more {
     min-width: 133px;
     max-width: 133px;
     min-height: 35px;
     max-height: 35px;
+    line-height: 35px;
     border-radius: 5px;
     background-color: #00aeef;
     color: #ffffff;
     font-weight: bold;
     border: none;
-    text-decoration: none;
     font-size: 14px;
-}
-
-.post-preview-detailed button a {
-    color: #ffffff;
+    cursor: pointer;
+    text-align: center;
+    vertical-align: middle;
 }
 
 .post-preview-detailed h3 {
@@ -421,6 +440,10 @@ a {
 
 .post-preview-large .post-content h3 {
     font-size: 16px;
+}
+
+.post-preview-large .post-content h3 a {
+    color: #ffffff;
 }
 
 .post-preview-large .post-metadata {
@@ -584,6 +607,14 @@ aside .whats-hot .post-preview-large {
     width: 370px;
 }
 
+aside .whats-hot .post-preview-large p {
+    display: none;
+}
+
+aside .whats-hot .post-preview-large a.read-more {
+    display: none;
+}
+
 aside .most-popular ul li:last-child .post-preview {
     border-bottom: none;
 }
@@ -628,6 +659,10 @@ aside .post-block .post-preview {
     padding-bottom: 20px;
 }
 
+aside .post-block .post-preview h4 {
+    display: none;
+}
+
 aside .post-block .post-preview img {
     width: 75px;
     height: 75px;
@@ -661,8 +696,18 @@ aside .post-block .post-preview h3 {
     vertical-align: middle;
 }
 
-.page-list ul li.current-page {
-    border: 1px solid #dedede;
+.page-list ul li.prev, .page-list ul li.next {
+    border: none;
+    border-radius: 0;
+    cursor: pointer;
+    margin: 0 5px;
+    width: 70px;
+    text-align: center;
+    vertical-align: middle;
+}
+
+.page-list ul li.active {
+    border: 1px solid #666666;
     border-radius: 50%;
 }
 
@@ -671,14 +716,8 @@ aside .post-block .post-preview h3 {
     color: #ffffff;
 }
 
-.page-list ul li.dots:hover {
-    background-color: #ffffff;
-    color: #666666;
-}
-
-.page-list ul li.dots {
-    background-color: #ffffff;
-    cursor: default;
+.page-list ul li:hover a {
+    color: #ffffff;
 }
 
 footer {
@@ -820,4 +859,120 @@ footer form button {
     text-align: center;
     vertical-align: middle;
     width: 100%;
+}
+
+.pagination .disabled {
+    pointer-events: none;
+    cursor: default;
+    opacity: 0.6;
+}
+
+.pagination a {
+    width: 100%;
+    height: 100%;
+    display: block;
+}
+
+.autocomplete-items {
+    width: 370px;
+}
+
+.search-form .autocomplete input[name="filter"] {
+    width: 355px;
+    height: 40px;
+    border: 1px solid #dddddd;
+    font-size: 14px;
+    padding-left: 15px;
+    display: inline-block;
+}
+
+.search-form .autocomplete input[name="filter"]::placeholder {
+    font-size: 14px;
+    color: #666666;
+}
+
+.search-form .autocomplete button {
+    background-color: #00aeef;
+    color: #ffffff;
+    font-weight: bold;
+    border: none;
+    text-decoration: none;
+    height: 44px;
+    font-size: 14px;
+    cursor: pointer;
+    width: 100px;
+    border: 1px solid #dddddd;
+    margin-left: -5px;
+}
+
+@media screen and (max-width: 768px) {
+    body {
+        overflow-x: hidden;
+        width: 100%;
+    }
+    .two-col {
+        flex-direction: column;
+    }
+    .two-col .left-col {
+        width: 100%;
+        margin: 0;
+        border: none;
+        padding: 0;
+    }
+    .logo {
+        margin: auto;
+    }
+    .top-nav-bar {
+        flex-direction: column;
+        height: 100%;
+    }
+    .menu ul {
+        flex-direction: column;
+        width: 100%;
+    }
+    aside {
+        display: none;
+    }
+    .post-block ul li .post-preview-detailed {
+        flex-direction: column;
+        width: 100%;
+        margin: 0;
+    }
+    .post-block ul li .post-preview-detailed img {
+        margin: 0;
+        width: 100%;
+    }
+    .page-list ul {
+        justify-content: center;
+    }
+    footer {
+        height: 100%;
+    }
+    .footer-content {
+        flex-direction: column;
+    }
+    .footer-content section {
+        margin: 15px 0;
+        width: 100%;
+    }
+    footer .footer-useful-links, footer .footer-follow {
+        display: none;
+    }
+    footer form {
+        margin: auto;
+    }
+    .search-form .autocomplete input[name="filter"] {
+        width: 45%;
+    }
+    .search-form .autocomplete .autocomplete-items {
+        width: 51%;
+    }
+
+    .menu>ul>li:hover .submenu-space {
+        display: none;
+    }
+    
+    .menu>ul>li:hover>div>ul {
+        display: none;
+    }
 }

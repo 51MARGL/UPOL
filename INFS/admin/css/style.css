@@ -26,9 +26,14 @@
   display: flex;
   justify-content: space-between;
   align-items: center;
+  flex-wrap: wrap;
 }
 
 .card-header-btn button {
+  display: flex;
+  align-items: center;  
+}
+.card-header-btn a {
   display: flex;
   align-items: center;
 }
@@ -38,7 +43,7 @@
   justify-content: space-between;
 }
 
-.modal-body .form-group.required .control-label:after {
+.form-group.required .control-label:after {
   content: "*";
   color: red;
 }
@@ -65,4 +70,60 @@ main .profile-img img{
   height: 200px;
   object-fit: cover;
   border-radius: 50%;
+}
+
+.form-inline label{
+  justify-content: start;
+  width: 25%;
+}
+
+.form-inline .inline-quarter-size{
+  width: 25%;
+}
+
+.tags-form span.badge.delete-tag{
+  margin-right: -8px;
+  margin-left: 10px;
+}
+
+.tags-form {
+  display: flex;
+  flex-wrap: wrap;
+  cursor: text;
+}
+
+.tags-form span.badge.delete-tag:hover{
+  background-color: red;
+  color: #fff;
+}
+
+.tags-form input{
+  border: none;
+  outline: none;
+  margin-left: 3px;
+  width: auto;
+}
+
+@media screen and (max-width: 768px) {
+
+  .form-inline label{
+    justify-content: start;
+    width: 50%;
+  }
+  
+  .form-inline .inline-quarter-size{
+    width: 50%;
+  }
+
+  .table th, .table td{
+    padding: 5px;
+  }
+
+  .page-item .page-link{
+    padding: .4rem .65rem;
+  }
+
+  table td .btn{
+    width: 100%;
+  }
 }

@@ -29,6 +29,11 @@
     margin: 15px 0px;
 }
 
+.single-post-block .post-content #cke_editor1 {
+    margin: 0;
+    border: none;
+}
+
 .single-post-block .text q {
     display: block;
     font-size: 20px;
@@ -216,6 +221,12 @@
     align-self: center;
 }
 
+.prev-next a {
+    align-self: center;
+    height: 20px;
+    margin: auto 0;    
+}
+
 .prev-next img {
     align-self: center;
     height: 20px;
@@ -289,6 +300,10 @@
     color: #666666;
 }
 
+.comment-section .post-content {
+    width: 100%;
+}
+
 .comment-section ul {
     list-style-type: none;
     padding: 0;
@@ -304,7 +319,7 @@
 
 .comment-section>ul li article {
     display: flex;
-    justify-content: space-between;
+    justify-content: flex-start;
 }
 
 .comment-section>ul li article h3 {
@@ -320,12 +335,23 @@
 
 .comment-section ul li article .post-metadata {
     margin-bottom: 30px;
+    line-height: 22px;
+}
+
+.comment-section ul li article .post-metadata > *{
+    vertical-align: middle;
+    line-height: 25px;
 }
 
 .comment-section ul li article .post-metadata div {
     margin-right: 45px;
+    cursor: pointer;
 }
-
+.comment-section .delete-reply i{
+    font-weight: bold;
+    color: red;
+    font-size: 16px;   
+}
 .comment-section article .sub-comments li {
     border-top: 1px solid #dddddd;
     border-bottom: none;
@@ -367,6 +393,18 @@
     resize: none;
 }
 
+.reply .reply-to-person{
+    margin-bottom: 5px;
+}
+.reply .name-hold{
+    font-weight: bold;
+}
+.reply .remove-reply {
+    margin: 0 5px;
+    cursor: pointer;
+    font-weight: bold;
+    color: red;
+}
 .reply form>* {
     margin: 10px 0;
 }
@@ -398,4 +436,16 @@
     border: 1px solid #dddddd;
     align-self: flex-end;
     border-radius: 5px;
+}
+
+@media screen and (max-width: 768px) {
+
+    .related .post-block ul{
+        flex-direction: column;
+    }
+    .related .post-block ul .post-preview-large{
+        margin: 0;
+        min-width: 100%;
+        max-width: 100%;
+    }
 }

@@ -2,14 +2,13 @@ $(document).ready(function () {
     $('#userForm').on('submit', function (e) {
 
         e.preventDefault();
-        for ( instance in CKEDITOR.instances ) {
+        for (instance in CKEDITOR.instances) {
             CKEDITOR.instances[instance].updateElement();
         }
         var formData = new FormData(this);
         $.ajax({
             type: 'POST',
             url: '/user/add_new/',
-            data: $('#userForm').serialize(),
             data: formData,
             success: function (jsonData) {
                 var obj = $.parseJSON(jsonData);
@@ -32,6 +31,71 @@ $(document).ready(function () {
     $('.user-delete').on('click', function (e) {
         if (!confirm("Are You sure?")) {
             e.preventDefault();
+        }
+    });
+
+    $('#editUser').on('show.bs.modal', function (e) {
+
+        //get data-id attribute of the clicked element
+        var id = $(e.relatedTarget).data('id');
+        var username = $(e.relatedTarget).data('username');
+        var email = $(e.relatedTarget).data('email');
+        var first_name = $(e.relatedTarget).data('first_name');
+        var second_name = $(e.relatedTarget).data('second_name');
+        var profile_img = $(e.relatedTarget).data('profile_img');
+        var about = $(e.relatedTarget).data('about');
+
+        //populate the 
+        $(e.currentTarget).find('input[name="id"]').val(id);
+        $(e.currentTarget).find('input[name="username"]').val(username);
+        $(e.currentTarget).find('input[name="email"]').val(email);
+        $(e.currentTarget).find('input[name="first_name"]').val(first_name);
+        $(e.currentTarget).find('input[name="second_name"]').val(second_name);
+        CKEDITOR.instances.editor2.setData(about);
+    });
+
+    $('#userFormEdit').on('submit', function (e) {
+
+        e.preventDefault();
+        for (instance in CKEDITOR.instances) {
+            CKEDITOR.instances[instance].updateElement();
+        }        
+        var formData = new FormData(this);
+        $.ajax({
+            type: 'POST',
+            url: '/user/edit/',
+            data: formData,
+            success: function (jsonData) {
+                var obj = $.parseJSON(jsonData);
+                if (obj.success === 0) {
+                    alert(obj.error.message);
+                }
+                else {
+                    alert('Successfuly updated');
+                    window.location.reload(true);
+                }
+            },
+            error: function () {
+                alert('Error occured. Form was not submitted');
+            },
+            contentType: false,
+            processData: false
+        });
+    });
+
+
+    $.ajax({
+        type: 'GET',
+        url: "/user/autocomplete_filter/",
+        success: function (jsonData) {
+            var autoList = $.parseJSON(jsonData);
+
+            $(".autocomplete input").autocomplete(autoList, function () {
+                if ($(".autocomplete input").val().length > 0) {
+                    window.location.href = "/admin/users/filter=" + escape($(".autocomplete input").val()) + "/";
+                }
+            });
+
         }
     });
 });

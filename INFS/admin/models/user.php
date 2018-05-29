@@ -60,7 +60,36 @@ class User
             ':sn' => $second_name,
             ':em' => $email,
             ':pri' => $profile_img,
-            ':ab' => $about
+            ':ab' => $about,
+        ));
+    }
+
+    public static function edit($id, $username, $email, $password, $first_name, $second_name, $profile_img, $about, $rights)
+    {
+        $db = Db::getInstance();
+        $id = intval($id);
+        $username = strval($username);
+        $email = strval($email);
+        $first_name = strval($first_name);
+        $second_name = strval($second_name);
+        $profile_img = strval($profile_img);
+        $about = strval($about);
+        $rights = strval($rights);
+
+        $req = $db->prepare("UPDATE User SET username = :un, u_password = :upswd,
+                            rights = :r, first_name = :fn, second_name = :sn, email = :em,
+                            profile_img = :pri, about = :ab
+                            where id = :id;");        
+        $req->execute(array(
+            ':un' => $username,
+            ':upswd' => $password,
+            ':fn' => $first_name,
+            ':sn' => $second_name,
+            ':em' => $email,
+            ':pri' => $profile_img,
+            ':ab' => $about,
+            ':r' => $rights,
+            ':id' => $id
         ));
     }
 
@@ -118,10 +147,10 @@ class User
         $count = intval($count);
         $offset = intval($offset);
 
-        $req = $db->prepare('SELECT * FROM User LIMIT :count OFFSET :offset');      
-        $req->bindValue(':offset', $offset, PDO::PARAM_INT); 
-        $req->bindValue(':count', $count, PDO::PARAM_INT);   
-        $req->execute(); 
+        $req = $db->prepare('SELECT * FROM User LIMIT :count OFFSET :offset');
+        $req->bindValue(':offset', $offset, PDO::PARAM_INT);
+        $req->bindValue(':count', $count, PDO::PARAM_INT);
+        $req->execute();
         foreach ($req->fetchAll() as $user) {
             $list[] = new User($user['id'], $user['username'],
                 $user['u_password'], $user['rights'],
@@ -137,8 +166,29 @@ class User
     {
         $db = Db::getInstance();
         $id = intval($id);
-        $req = $db->prepare('DELETE FROM User WHERE id = :id');   
-        $req->bindValue(':id', $id, PDO::PARAM_INT);   
+        $req = $db->prepare('DELETE FROM User WHERE id = :id');
+        $req->bindValue(':id', $id, PDO::PARAM_INT);
         $req->execute();
+    }
+
+    public static function filter($filter)
+    {
+        $db = Db::getInstance();
+        $filter = strval($filter);
+        $req = $db->prepare("SELECT * FROM User
+                            WHERE LOWER(CONCAT(first_name, ' ', second_name)) LIKE LOWER(:fltr) 
+                                    OR LOWER(email) LIKE LOWER(:fltr) OR LOWER(about) LIKE LOWER(:fltr)");
+        $req->bindValue(':fltr', "%$filter%");
+        $req->execute();
+
+        foreach ($req->fetchAll() as $user) {
+            $list[] = new User($user['id'], $user['username'],
+                               $user['u_password'], $user['rights'],
+                               $user['first_name'], $user['second_name'],
+                               $user['email'], $user['profile_img'],
+                               $user['about']);
+        }
+
+        return $list;
     }
 }

@@ -1,4 +1,5 @@
 <?php
+define('ROOTPATH', $_SERVER['DOCUMENT_ROOT']);
 
 function upload_file($target_dir, $file_name, $imageFileType, $tmp_name)
 {

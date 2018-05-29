@@ -29,15 +29,15 @@
             </a>
             <a href="/admin/categories/" class="list-group-item text-dark">
               <i class="material-icons">class</i> <span>Categories</span>
-              <span class="badge card bg-dark text-white">12</span>
+              <span class="badge card bg-dark text-white"><?php echo count(Category::all());?></span>
             </a>
             <a href="/admin/posts/" class="list-group-item text-dark">
               <i class="material-icons">description</i> <span>Posts</span>
-              <span class="badge card bg-dark text-white">33</span>
+              <span class="badge card bg-dark text-white"><?php echo count(Post::all());?></span>
             </a>
             <a href="/admin/users/" class="list-group-item text-dark">
               <i class="material-icons">people</i> <span>Users</span>
-              <span class="badge card bg-dark text-white">203</span>
+              <span class="badge card bg-dark text-white"><?php echo count(User::all());?></span>
             </a>
           </div>
   
@@ -49,33 +49,28 @@
   
             <h3 class="card-header bg-dark text-white">Website Overview</h3>
   
-            <div class="row">
+            <div class="row justify-content-between">            
               <div class="col-md-3">
                 <div class="card card-body bg-light">
                   <h2>
-                    <i class="material-icons">people</i> 203</h2>
+                    <i class="material-icons">people</i><?php echo count(User::all());?></h2>
                   <h4>Users</h4>
                 </div>
               </div>
+                        
               <div class="col-md-3">
                 <div class="card card-body bg-light">
                   <h2>
-                  <i class="material-icons">class</i></span> 12</h2>
+                  <i class="material-icons">class</i></span><?php echo count(Category::all());?></h2>
                   <h4>Categories</h4>
                 </div>
               </div>
+                    
               <div class="col-md-3">
                 <div class="card card-body bg-light">
                   <h2>
-                  <i class="material-icons">description</i> 33</h2>
+                  <i class="material-icons">description</i><?php echo count(Post::all());?></h2>
                   <h4>Posts</h4>
-                </div>
-              </div>
-              <div class="col-md-3">
-                <div class="card card-body bg-light">
-                  <h2>
-                  <i class="material-icons">assessment</i> 12,334</h2>
-                  <h4>Visitors</h4>
                 </div>
               </div>
             </div>
@@ -83,42 +78,48 @@
   
           <!-- Latest Posts -->
           <div class="card">
-            <div class="card-header bg-dark text-white">
+            <div class="card-header bg-dark text-white card-header-btn">
               <h3>Latest Posts</h3>
+              <a class='btn btn-default bg-dark text-white' href='/admin/posts/add'>
+                <i class="material-icons">note_add</i> Add New
+              </a>
             </div>
             <div class="card-body">
-              <table class="table table-striped table-hover">
-                <tr>
-                  <th>Title</th>
-                  <th>Author</th>
-                  <th>Created</th>
-                  <th></th>
-                </tr>
-                <tr>
-                  <td>Blog Post 1</td>
-                  <td>John Doe</td>
-                  <td>Dec 12, 2016</td>
-                  <td><a class="btn btn-default" href="/admin/edit/">Edit</a> <a class="btn btn-danger" href="#">Delete</a></td>
-                </tr>
-                <tr>
-                  <td>Blog Post 2</td>
-                  <td>John Doe</td>
-                  <td>Dec 13, 2016</td>
-                  <td><a class="btn btn-default" href="/admin/edit/">Edit</a> <a class="btn btn-danger" href="#">Delete</a></td>
-                </tr>
-                <tr>
-                  <td>Blog Post 3</td>
-                  <td>John Doe</td>
-                  <td>Dec 13, 2016</td>
-                  <td><a class="btn btn-default" href="/admin/edit/">Edit</a> <a class="btn btn-danger" href="#">Delete</a></td>
-                </tr>
-                <tr>
-                  <td>Blog Post 4</td>
-                  <td>John Doe</td>
-                  <td>Dec 14, 2016</td>
-                  <td><a class="btn btn-default" href="/admin/edit/">Edit</a> <a class="btn btn-danger" href="#">Delete</a></td>
-                </tr>
-              </table>
+            <table class="table table-striped table-hover">
+              <tr>
+                <th>Title</th>
+                <th>Category</th>
+                <th>Author</th>
+                <th>Date</th>
+                <th></th>
+              </tr>
+              <?php
+$rows = '';
+foreach ($postsToDisplay as $post) {
+    $heading = htmlspecialchars($post->heading);
+    $category = htmlspecialchars($post->category->name);
+    $first_name = htmlspecialchars($post->author->first_name);
+    $second_name = htmlspecialchars($post->author->second_name);
+    $date = (new DateTime($post->time))->format('F d, Y');
+    $editDelete = '';
+    if (unserialize($_SESSION['current_user'])->rights == 'SA'
+        || unserialize($_SESSION['current_user'])->id == $post->author->id) {
+        $editDelete = "<a class='btn btn-dark' href='/admin/posts/edit/$post->id'>Edit</a>
+                       <a class='btn btn-danger post-delete' href='/post/delete/$post->id'>Delete</a>";
+    }
+    $rows .= "<tr>
+                <td>$heading</td>
+                <td>$category</td>
+                <td>$first_name $second_name</td>
+                <td>$date</td>
+                <td>$editDelete</td>
+              </tr>";
+}
+echo $rows;
+?>
+            </table>
+
+            <?php require_once "admin/views/pages/pagination.php"?>
             </div>
           </div>
         </div>

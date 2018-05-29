@@ -1,11 +1,6 @@
 <?php
 class PostsController
 {
-    public function __construct($model)
-    {
-        require_once $model;
-    }
-
     public function getAll()
     {
         $posts = Post::all();
@@ -28,7 +23,18 @@ class PostsController
             return call('pages', 'error');
         }
 
-        $posts = Post::getByCategory($_GET['category'], $_GET['count']);
+        if (isset($_GET['offset'])) {
+            $offset = $_GET['offset'];
+        } else {
+            $offset = 0;
+        }
+
+        if (is_int($_GET['category'])) {
+            $category = $_GET['category'];
+        } else {
+            $category = Category::get_by_url_name($_GET['category'])->id;
+        }
+        $posts = array_slice(Post::get_by_category($category), $offset, $_GET['count']);
         require_once 'public/views/posts/getMultiple.php';
     }
 
@@ -38,17 +44,29 @@ class PostsController
             return call('pages', 'error');
         }
 
-        $posts = Post::getByCategory($_GET['category'], $_GET['count']);
+        if (isset($_GET['offset'])) {
+            $offset = $_GET['offset'];
+        } else {
+            $offset = 0;
+        }
+
+        if (is_int($_GET['category'])) {
+            $category = $_GET['category'];
+        } else {
+            $category = Category::get_by_url_name($_GET['category'])->id;
+        }
+        
+        $posts = array_slice(Post::get_by_category($category), $offset, $_GET['count']);
         require_once 'public/views/posts/getMultipleDetailed.php';
     }
 
     public function getCount()
-    {        
+    {
         if (!isset($_GET['count'])) {
             return call('pages', 'error');
         }
 
-        $posts = Post::getCount($_GET['count']);
+        $posts = Post::get_with_offset($_GET['count']);
         require_once 'public/views/posts/getMultiple.php';
     }
 }
